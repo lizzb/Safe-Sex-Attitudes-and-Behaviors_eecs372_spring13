@@ -13,6 +13,13 @@ breed [females female]
 undirected-link-breed [sexual-partners sexual-partner] ;; can have multiple???
 undirected-link-breed [friends friend]
 
+links-own
+[
+  group    ; a way to access the links in each group 
+  strength ; is there a better way to do this???.... how about strenght increases likelihood of talking to linkmates
+]
+
+
 
 ;; set female ranges - avg safe sex desire, avg attitude, avg education
 ;; set male ranges???    
@@ -38,6 +45,11 @@ globals
                             ;; Used as an upper bound for generating random chance of coupling
                             ;; (default is scale 0 - 100)
                             
+  max-friendship-factor     ;; Upper bound for generating random chance of making a friend
+  
+  average-friendship-tendency
+  
+                            
   max-condom-factor         ;; Maximum condom use value
                             ;; Used as an upper bound for generating random chance of using a condom
                             ;; (default is scale 0 - 100)
@@ -57,8 +69,8 @@ globals
   ;max-init-att (for boss) 50 (set min slider as min-init-att)
   
   ;;will-be-symptomatic? ;; If true, this person will be symptomatic if infected with an STI
-  males-symptomatic
-  females-symptomatic
+  males-symptomatic?
+  females-symptomatic?
   
 ]
 
@@ -89,6 +101,8 @@ turtles-own
   ;;---------------------------------------------------------------------
   
 
+  friendship-tendency ;; How likely this person is to make a new friend
+  
   
   
   infected?            ;; If true, the person is infected (and infectious)
@@ -105,7 +119,6 @@ turtles-own
                       ;; will be updated if more friends get infected, and bigger impact for stronger links
 
   
-  
   coupling-tendency  ;; How likely the person is to join a couple.
   commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links??
                        
@@ -118,11 +131,6 @@ turtles-own
                      ;; (determined by slider & normal distribution)
 ]
 
-links-own
-[
-  group    ; a way to access the links in each group 
-  strength ; is there a better way to do this???
-]
 
 
 
@@ -152,23 +160,23 @@ end
 ;; or... i guess i could just access the global maybe....????
 
 to set-females-symptomatic?
-  set females-symptomatic true
-  set males-symptomatic false
+  set females-symptomatic? true
+  set males-symptomatic? false
 end
 
 to set-males-symptomatic?
-  set males-symptomatic true
-  set females-symptomatic false
+  set males-symptomatic? true
+  set females-symptomatic? false
 end
 
 to set-both-symptomatic?
-  set females-symptomatic true
-  set males-symptomatic true 
+  set females-symptomatic? true
+  set males-symptomatic? true 
 end
 
 to set-neither-symptomatic?
-  set males-symptomatic false
-  set females-symptomatic false
+  set males-symptomatic? false
+  set females-symptomatic? false
 end
 
 ;;
@@ -184,6 +192,8 @@ to setup-globals
   
   run word "set-" symptomatic?
   
+  set max-friendship-factor 20.0 ;; .... edit...?
+  
   set max-coupling-factor 10.0
   set max-condom-factor 11.0
   
@@ -195,6 +205,7 @@ to setup-globals
   set average-coupling-tendency max-coupling-factor / 2 ;should be less than max-coupling-factor ; 5
   set average-commitment 20
   set infection-chance 50 ;; %50 chance of being infected by having unprotected sex with infected partner
+  set average-friendship-tendency max-friendship-factor / 2 ;should be less than max-coupling-factor ; 5
   
   
   ;; arbitrary #'s....... TODO *****
@@ -270,14 +281,15 @@ to setup-clusters
 ;    ask leaders [ set attitude min-init-att + random ( max-init-att - min-init-att ) ]
 ;  ]
 
-  ;; if (not Boss-influence?)
-  ;[
+
+  ;; comment or uncomment this if you want a group "leader" to be in the center of the friend group
+  ;; was only using leaders for spatial setup, but they also connect to other leaders,
+  ;; but seems odd having a central friend
   ;ask leaders [ die ] ;; was only using leaders for spatial setup
-  ;]
   
   ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
   
-  ; the dissenter is a technological expert who is completely against the technology
+
 end
 
 
@@ -329,7 +341,7 @@ to setup-people
     set partner nobody             ;; The person that is our current partner in a couple.
     set infected? false            ;; If true, the person is infected.
     set known? false               ;; The person is infected and knows it (due to being symptomatic)
-    ;; set will-be-symptomatic set by globals
+   
     
     ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...
     
@@ -341,6 +353,8 @@ to setup-people
     assign-commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links ??
     assign-coupling-tendency  ;; How likely the person is to join a couple.
     assign-condom-use
+    
+    assign-friendship-tendency
   ]
     
   ;; initial-people / count turtles
@@ -451,6 +465,10 @@ to assign-condom-use  ;; turtle procedure
 end
 
 
+to assign-friendship-tendency  ;; turtle procedure
+  set friendship-tendency random-near average-friendship-tendency
+end
+
 
 ;;
 ;; Infect random patient 0 (or multiple, if you wish)
@@ -478,8 +496,6 @@ to select
         ask candidate
         [ 
           become-infected
-          ;set shape word shape " sick"
-          ;set infected? true
           display
           set picked? true
         ]
@@ -488,7 +504,23 @@ to select
   if picked? [stop]
 end 
 
-
+to check-for-decision
+  ; the turtles check again to see if they are ready to make a decision
+      if attitude > 99
+      [
+        set adopt true 
+        set color green
+        set attitude 100
+      ]
+      
+      if attitude < 1
+      [
+        set reject true
+        set color red 
+        set attitude 0
+      ]
+      
+end
 
 
 
@@ -508,25 +540,12 @@ to go
 ;    [
 ;      if Group-liking? [ talk-to-group ]
 ;      if Boss-influence? [ talk-to-boss ]
-;      
+;         
 ;      ; the friend updates their attitude from the effects of the hypotheses
 ;      set attitude attitude + change-amt
 ;      
-;      ; the turtles check again to see if they are ready to make a decision
-;      if attitude > 99
-;      [
-;        set adopt true 
-;        set color green
-;        set attitude 100
-;      ]
-;      
-;      if attitude < 1
-;      [
-;        set reject true
-;        set color red 
-;        set attitude 0
-;      ]
-;      
+      ;check-for-decision
+      
 ;      set label round attitude
 ;    ]
 ;  ]
@@ -621,7 +640,7 @@ end
 ;; creating/destroying links
 
 to update-links ;; turtle procedure
-  make-friends
+  ;make-friends
     ;; Create, strengthen, weaken, or break links with friends or sexual partners
 
   ; Strengthen links with friends or sexual partners
@@ -646,12 +665,27 @@ end
 ;;;
 
 
-to make-friends
+to make-friends ;; turtle procedure 
   
-  let choice (min-one-of (other turtles with [not link-neighbor? myself])
-                   [distance myself])
-  if choice != nobody [ create-friend-with choice ]
-  
+;  let choice (min-one-of (other turtles with [not link-neighbor? myself])
+;                   [distance myself])
+;  if choice != nobody [ create-friend-with choice ]
+;  
+
+  let choice (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself])
+  ;let potential-partner one-of friend-neighbors with [not coupled?]
+   
+  if choice != nobody ;if potential-partner != nobody
+    [ 
+      ;; no need to check for gender compatibility,
+      ;; everyone can be friends with each other, yay!
+        
+        if random-float max-friendship-factor < [friendship-tendency] of choice
+        [
+          create-friend-with choice [ assign-link-color]
+        ]
+ 
+    ]
 end
 
 ;; People have a chance to couple depending on their gender,
@@ -663,7 +697,12 @@ to couple  ;; turtle procedure
   ;;***
   ;let potential-partner one-of friends with [not coupled?] ;;one-of (turtles-at -1 0) with [not coupled?] 
 
-  let potential-partner one-of friend-neighbors with [not coupled?]
+;; one of vs one min of???
+
+  let potential-partner (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself])
+  ; uncomment this to require that people be friends first before entering a sexual relationship
+  
+  ;set potential-partner one-of friend-neighbors with [not coupled?]
   if potential-partner != nobody
     [ 
       ;;
@@ -689,7 +728,10 @@ to couple  ;; turtle procedure
           ]
           
           ;; CHANGE BREED OF LINK
-          ask friend-with partner [die]
+          ;; fIX THIS
+          ;if [partner one-of friend-neighbors]
+          ; [ask friend-with partner [die]
+          ;]
           create-sexual-partner-with partner [ assign-link-color]
           
         ]
@@ -708,6 +750,7 @@ to uncouple  ;; turtle procedure
       [ 
         ;; BREAK THE LINK HERE --- BETTER WAY TO DO THIS???? *****
         ask sexual-partner-with partner [die]
+        
         ;; or turn back into friends?
         ;create-friend-with partner [ assign-link-color]
         
@@ -733,12 +776,13 @@ end
 
 
 to spread-virus
-  ask turtles with [infected?]
+  ask turtles with [infected? and coupled?] ;; was just infected before
   [
     ;; chance to spread infection to sexual partners on every tick
     ;; (that is, if they have any sexual partners)
-    ask sexual-partner-neighbors with [not infected?]
-    [
+    ;ask sexual-partner-neighbors with [not infected?]
+    ;ask partner?
+    ;[
       
       ;; Note that for condom use to occur, both people must want to use one.  If
       ;; either person chooses not to use a condom, infection is possible.  Changing the
@@ -748,13 +792,12 @@ to spread-virus
 
       ;; ADJUST THIS FOR FEMALE AND MALE
       if random-float max-condom-factor > condom-use or
-      random-float max-condom-factor > ([condom-use] of partner)
+      random-float max-condom-factor > ([condom-use] of partner) ;;one-of sexual-partner-neighbors) 
       [
         if (random-float 100 < infection-chance)
         [ ask partner [ become-infected ] ]  
       ]  
-      ;if (random-float 100 < infection-chance) [ become-infected ]
-    ]
+    ;]
   ]
 end
 
@@ -768,36 +811,23 @@ end
 ;; not realistic, std symptoms dont instantly show up
 to check-infected
   ;; check if agent is male and symptomatic
-  ifelse is-male? self
+  if is-male? self and males-symptomatic?
   [
-    ;; if "only females" are symptomatic, that means males are not
-    ;; (because males or both genders symptomatic not selected)
-    if males-symptomatic? ;;ifelse [symptomatic?] 
-    [
-      set known? true 
-      set had-std? true
-    ]
-    ;; otherwise, males are symptomatic of an STI
-    ;[
-    ;  ;; don't change their knowledge state about known? or had-std?
-    ;]
+    set known? true 
+    set had-std? true
   ]
-  ;; check if agent is female and symptomatic
+  
+  if is-female? self and females-symptomatic?
   [
-    
+    set known? true 
+    set had-std? true
     
     
   ]
   
-  ifelse infected?
-  [ ifelse is-male? self
-    [set shape "male sick"]
-    [set shape "female sick"]
-  ]
-  [ ifelse is-male? self
-    [set shape "male"]
-    [set shape "female"]
-  ]
+  ;  ;; don't change their knowledge state about known? or had-std? otherwise
+  
+  assign-shape
   
   
 end
@@ -863,15 +893,11 @@ end
 ;;; REPORTER / MONITOR PROCEDURES
 ;;;
 
-to-report females-symptomatic?
-  ;; global variable has no question mark
-  report females-symptomatic
-end
-
-to-report males-symptomatic?
-  ;; global variable has no question mark
-  report males-symptomatic
-end
+;to-report females-symptomatic?
+;end
+;
+;to-report males-symptomatic?
+;end
 
 to-report %infected
   ifelse any? turtles
@@ -917,8 +943,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -15
 15
@@ -960,9 +986,9 @@ MONITOR
 
 SLIDER
 5
-155
+235
 185
-188
+268
 average-condom-usage
 average-condom-usage
 0
@@ -1098,10 +1124,10 @@ count males with [infected?]
 11
 
 TEXTBOX
-205
-290
-295
-320
+125
+310
+215
+340
 (doesn't do anything yet)
 11
 0.0
@@ -1146,10 +1172,10 @@ parental-discussion?
 -1000
 
 SLIDER
-175
-320
-295
-353
+95
+340
+215
+373
 religiousness
 religiousness
 0
@@ -1162,9 +1188,9 @@ HORIZONTAL
 
 SLIDER
 5
-120
+200
 190
-153
+233
 average-outspokenness
 average-outspokenness
 0
@@ -1194,7 +1220,7 @@ num-clusters
 num-clusters
 1
 20
-7
+5
 1
 1
 NIL
@@ -1495,9 +1521,9 @@ HORIZONTAL
 
 SLIDER
 5
-85
+165
 120
-118
+198
 vocality
 vocality
 0
@@ -1510,9 +1536,9 @@ HORIZONTAL
 
 SLIDER
 125
-85
+165
 240
-118
+198
 propensity
 propensity
 0
