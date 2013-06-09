@@ -78,6 +78,8 @@ globals
   males-symptomatic?         ;; If true, males will be symptomatic IF infected with an STI
   females-symptomatic?       ;; If true, males will be symptomatic IF infected with an STI
   
+  
+ max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
 ]
 
 
@@ -135,6 +137,8 @@ turtles-own
 
   condom-use          ;; The percent chance a person uses protection while in a couple
                       ;; (determined by slider & normal distribution)
+                      
+ 
 ]
 
 
@@ -195,6 +199,12 @@ to setup-globals
   set had-training false ; only allows training to happen once
  
   ;;--------------------------------------------------------------------- 
+  
+  set max-number-friends  ( ( average-node-degree - 1 ) * group-size ) / 2 ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+  
+  ;; Default number of links generated if Group-liking enabled....they talk to coworkers
+  ;; i.e. the number of inter-group links created, in addition to a link with the leader
+  ;let num-links ( ( average-node-degree - 1 ) * group-size ) / 2
   
   run word "set-" symptomatic?
   
@@ -504,8 +514,8 @@ end
 to infect-random
   if (count turtles > 1)
   [
-              ;; because don't want to have to wait for first tick to display appropriate color of dot
-          ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
+    ;; because don't want to have to wait for first tick to display appropriate color of dot
+    ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
     ask n-of 1 turtles with [not infected?] [ become-infected check-infected ] 
   ] 
 end
@@ -562,8 +572,6 @@ end
 ;;;                                               ;;;
 
 to go
-  
-
  
  ;; from sophia sullivan starter code for reference
  
@@ -652,6 +660,7 @@ to go
    ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
 
    ;; turtle is not coupled, give them a chance to couple/want to couple
+   ;; maybe do if else and give them a chance to make a friend??
     [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
   ]
   
@@ -725,7 +734,7 @@ to make-friends ;; turtle procedure
   let choice (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself])
   ;let potential-partner one-of friend-neighbors with [not coupled?]
    
-  if choice != nobody ;if potential-partner != nobody
+  if (choice != nobody and count friend-neighbors <= max-number-friends) ;if potential-partner != nobody
     [ 
       ;; no need to check for gender compatibility,
       ;; everyone can be friends with each other, yay!
@@ -749,10 +758,13 @@ to couple  ;; turtle procedure
 
 ;; one of vs one min of???
 
-  let potential-partner (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself])
   ; uncomment this to require that people be friends first before entering a sexual relationship
-  
-  ;set potential-partner one-of friend-neighbors with [not coupled?]
+  ;; first try testing for friends
+  let potential-partner one-of friend-neighbors with [not coupled?]
+
+  ;; in case they have no friends, do this... except it might override...
+  set potential-partner (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself * 2])
+
   if potential-partner != nobody
     [ 
       ;;
@@ -880,8 +892,7 @@ to check-infected
   
 end
 
-;from become-resistant from virus on a network
-;  ask my-links [ set color gray - 2 ]
+
 
 
 
@@ -946,6 +957,14 @@ end
 ;
 ;to-report males-symptomatic?
 ;end
+
+to-report avg-friends-per-turtle
+  
+end
+
+to-report avg-partners-per-turtle
+  
+end
 
 to-report %infected
   ifelse any? turtles
@@ -1268,7 +1287,7 @@ num-clusters
 num-clusters
 1
 20
-6
+8
 1
 1
 NIL
@@ -1283,7 +1302,7 @@ average-node-degree
 average-node-degree
 1
 group-size - 1
-3
+6
 1
 1
 NIL
@@ -1606,7 +1625,7 @@ group-size
 group-size
 1
 50
-5
+11
 1
 1
 NIL
