@@ -67,11 +67,11 @@ globals
   max-init-sex-ed ;; maximum possible starting level of sex education range (if full sex education??)
   
   
-  ;min-init-group-liking 50
+  ;min-init-group-liking 50 65
   ;max-init-group-liking 82
-  ;min-init-attitude 9 (set max slider as max-init-attitude)
+  ;min-init-attitude 9 (set max slider as max-init-attitude) 25
   ;max-init-attitude 50 (set min slider as min-init-attitude)
-  ;min-init-att (for boss) 50 (set max slider as max-init-att)
+  ;min-init-att (for boss) 50 (set max slider as max-init-att)31
   ;max-init-att (for boss) 50 (set min slider as min-init-att)
   
   ;; The next two values are determined by the symptomatic? chooser/drop-down
@@ -111,6 +111,8 @@ turtles-own
   
   ;;---------------------------------------------------------------------
   
+  safe-sex-likelihood ;; attitude? used for color *********
+  
   group-membership ; which cluster/friend group the friends and leaders are mainly part of
   ; but this still applies to some social butterflies - assume they have a core friend group 
   ; in addition to more out-of-group links than others
@@ -145,7 +147,7 @@ turtles-own
   condom-use          ;; The percent chance a person uses protection while in a couple
                       ;; (determined by slider & normal distribution)
                       
- 
+  mesosystem-condom-encouragement ;; how much their upbringing (parents beliefs, life experiences, religious attitudes) encouraged safe sex
 ]
 
 
@@ -317,7 +319,12 @@ to setup-clusters
   
   ;;ask leaders [ die ] ;; was only using leaders for spatial setup
   
-  ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
+  
+  ;;
+  ;; THESE WERE REMOVED - replace with condom usage?
+  ;;
+  ;;
+  ;;ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
   
 
 end
@@ -381,10 +388,8 @@ to setup-people
     
     ;; The below variables may be different in each turtle, and the values
     ;; follow an approximately normal distribution
-    assign-commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links ??
+    assign-commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links ?? nah
     assign-coupling-tendency  ;; How likely the person is to join a couple.
-    assign-condom-use
-    
     assign-friendship-tendency
   ]
     
@@ -394,6 +399,9 @@ to setup-people
   
   ask turtles
   [ 
+    assign-condom-use ;; must do gender first!!!
+    assign-safe-sex-likelihood ;; must do condom use first!!
+    
     assign-turtle-color    ;; color is determined by gender
     assign-shape    ;; shape is determined by gender and sick status
     set size 2.5    ;set size 3; 1.5
@@ -404,7 +412,9 @@ end
 
 
 
-
+to assign-safe-sex-likelihood
+  set safe-sex-likelihood (condom-use + mesosystem-condom-encouragement)
+end
 
 
 to setup-links
@@ -460,9 +470,49 @@ end
 ;; green = more likely to practice safe sex, red/grey? less likely ***
 
 to assign-turtle-color  ;; turtle procedure 
-  ifelse is-male? self ;; CHANGE THIS to attitude *****
-  [set color green]
-  [set color grey]
+;  ifelse is-male? self ;; CHANGE THIS to attitude *****
+;  [set color green]
+;  [set color grey]
+
+;; MAKE GRADIENT
+  ;;ifelse (safe-sex-likelihood > 50)
+   ; [set color green]
+   ; [set color red]
+    if(safe-sex-likelihood > 0) [set color 14]  ;; fix for 5??
+      if(safe-sex-likelihood > 10) [set color 15]   
+        if(safe-sex-likelihood > 20) [set color 16] 
+          if(safe-sex-likelihood > 30) [set color 17] 
+            if(safe-sex-likelihood > 40) [set color 18] 
+              if(safe-sex-likelihood > 47) [set color 19] 
+                if(safe-sex-likelihood > 53) [set color 64] 
+                  if(safe-sex-likelihood > 60) [set color 65]
+                    if(safe-sex-likelihood > 70) [set color 66]  
+                      if(safe-sex-likelihood > 80) [set color 67]  
+                        if(safe-sex-likelihood > 90) [set color 68]  
+  if(safe-sex-likelihood > 95) [set color 69]  
+
+
+
+
+
+
+
+
+
+
+;  64-69….19-14
+;69
+;68
+;67
+;66
+;65
+;;;64
+;;;19
+;18
+;17
+;16
+;15
+;14
 end
 
 ;; ----- assign-link-color ----- ;;
@@ -504,7 +554,11 @@ end
 ;; approximately "normal" distribution around the average values.
 
 to assign-condom-use  ;; turtle procedure
-  set condom-use random-near average-condom-usage
+  ifelse (is-female? self)
+  [ set condom-use random-near avg-female-condom-intention ]
+  [ set condom-use random-near avg-male-condom-intention ]
+  
+  ;average-condom-usage
 end
 
 to assign-commitment  ;; turtle procedure
@@ -517,6 +571,10 @@ end
 
 to assign-friendship-tendency  ;; turtle procedure
   set friendship-tendency random-near average-friendship-tendency
+end
+
+to assign-mesosystem-condom-encouragement
+  set mesosystem-condom-encouragement random-near avg-mesosystem-condom-encouragement
 end
 
 
@@ -743,6 +801,8 @@ to make-friends ;; turtle procedure
 ;                   [distance myself])
 ;  if choice != nobody [ create-friend-with choice ]
 ;  
+
+;; FIX THIS TO BE MORE LIKE COUPLING....take itno account friend groups and shit
 
   let choice (min-one-of other turtles with [not link-neighbor? myself] [distance myself])
   ;let potential-partner one-of friend-neighbors with [not coupled?]
@@ -1041,11 +1101,11 @@ end
 ;end
 
 to-report avg-friends-per-turtle
-  
+  report mean [count friend-neighbors] of turtles
 end
 
 to-report avg-partners-per-turtle
-  
+  report mean [count sexual-partner-neighbors] of turtles
 end
 
 to-report %infected
@@ -1106,10 +1166,10 @@ weeks
 30.0
 
 BUTTON
-325
-130
-400
-163
+330
+105
+405
+138
 setup
 setup
 NIL
@@ -1123,36 +1183,21 @@ NIL
 1
 
 MONITOR
-355
-500
-420
-545
+345
+380
+410
+425
 % infected
 %infected
 2
 1
 11
 
-SLIDER
-5
-105
-180
-138
-average-condom-usage
-average-condom-usage
-0
-100
-60
-1
-1
-NIL
-HORIZONTAL
-
 MONITOR
-305
-365
-355
-410
+5
+335
+55
+380
 #F
 count females
 17
@@ -1160,10 +1205,10 @@ count females
 11
 
 MONITOR
-355
-365
-405
-410
+55
+335
+105
+380
 #M
 count males
 17
@@ -1171,10 +1216,10 @@ count males
 11
 
 MONITOR
-290
-500
-355
-545
+280
+380
+345
+425
 # infected
 count turtles with [infected?]
 17
@@ -1202,10 +1247,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
 MONITOR
-280
-455
-355
-500
+255
+335
+330
+380
 % F infected
 %F-infected
 2
@@ -1213,10 +1258,10 @@ MONITOR
 11
 
 MONITOR
-355
-455
-430
-500
+330
+335
+405
+380
 % M infected
 %M-infected
 2
@@ -1224,10 +1269,10 @@ MONITOR
 11
 
 BUTTON
-330
-245
-400
-278
+335
+220
+405
+253
 NIL
 select
 T
@@ -1241,20 +1286,20 @@ NIL
 1
 
 TEXTBOX
-300
-215
-405
-243
+305
+190
+410
+218
 Select an individual to have an STD
 11
 0.0
 1
 
 MONITOR
-280
-410
-355
-455
+105
+335
+180
+380
 #F infected
 count females with [infected?]
 17
@@ -1262,10 +1307,10 @@ count females with [infected?]
 11
 
 MONITOR
-355
-410
-430
-455
+180
+335
+255
+380
 #M infected
 count males with [infected?]
 17
@@ -1273,20 +1318,20 @@ count males with [infected?]
 11
 
 TEXTBOX
-20
-230
-285
-280
+10
+60
+325
+95
 Could include parental influences, religious upbringing/teachings, etc. before person reached college
 11
 0.0
 1
 
 BUTTON
-305
-170
-400
-203
+310
+145
+405
+178
 NIL
 infect-random
 NIL
@@ -1300,39 +1345,24 @@ NIL
 1
 
 CHOOSER
-795
-115
-887
-160
+10
+130
+102
+175
 sex-ed-type
 sex-ed-type
 "full" "abstinence" "none"
 1
 
-SLIDER
-5
-65
-160
-98
-avg-outspokenness
-avg-outspokenness
-0
-100
-100
-1
-1
-NIL
-HORIZONTAL
-
 CHOOSER
 795
-65
+55
 960
-110
+100
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
-3
+0
 
 SLIDER
 5
@@ -1365,10 +1395,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-735
-225
-895
-258
+860
+175
+1020
+208
 hyp1-degree
 hyp1-degree
 0
@@ -1380,10 +1410,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-735
-190
-895
-223
+860
+140
+1020
+173
 max-init-group-liking
 max-init-group-liking
 0
@@ -1395,10 +1425,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-735
-155
-895
-188
+860
+105
+1020
+138
 min-init-group-liking
 min-init-group-liking
 0
@@ -1410,10 +1440,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-830
-280
-930
-313
+790
+330
+890
+363
 training?
 training?
 1
@@ -1421,10 +1451,10 @@ training?
 -1000
 
 SWITCH
-935
-280
-1060
-313
+895
+330
+1020
+363
 training-time?
 training-time?
 0
@@ -1432,10 +1462,10 @@ training-time?
 -1000
 
 SLIDER
-900
-190
-1060
-223
+860
+250
+1020
+283
 max-init-boss-liking
 max-init-boss-liking
 0
@@ -1447,10 +1477,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-900
-155
-1060
-188
+860
+215
+1020
+248
 min-init-boss-liking
 min-init-boss-liking
 0
@@ -1462,10 +1492,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-900
-230
-1060
-263
+860
+290
+1020
+323
 hyp2-degree
 hyp2-degree
 0
@@ -1477,10 +1507,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-885
-315
-1060
-348
+845
+365
+1020
+398
 training-effect
 training-effect
 0
@@ -1492,10 +1522,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-885
-350
-1060
-383
+845
+400
+1020
+433
 training-time
 training-time
 0
@@ -1505,71 +1535,6 @@ training-time
 1
 NIL
 HORIZONTAL
-
-SLIDER
-895
-465
-1040
-498
-max-init-attitude
-max-init-attitude
-min-init-attitude
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-895
-390
-1040
-423
-min-init-attitude
-min-init-attitude
-0
-max-init-attitude
-25
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-895
-505
-1040
-538
-max-init-att
-max-init-att
-min-init-att
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-TEXTBOX
-750
-495
-890
-513
-Initial attitudes of bosses
-11
-0.0
-1
-
-TEXTBOX
-750
-415
-900
-433
-Initial attitudes of workers
-11
-0.0
-1
 
 MONITOR
 775
@@ -1581,21 +1546,6 @@ change-time
 17
 1
 11
-
-SLIDER
-895
-425
-1040
-458
-min-init-att
-min-init-att
-0
-max-init-att
-31
-1
-1
-NIL
-HORIZONTAL
 
 PLOT
 435
@@ -1632,36 +1582,6 @@ NIL
 HORIZONTAL
 
 SLIDER
-185
-65
-300
-98
-vocality
-vocality
-0
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-185
-105
-300
-138
-propensity
-propensity
-0
-100
-88
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
 125
 10
 240
@@ -1677,10 +1597,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-335
-285
-400
-318
+340
+260
+405
+293
 go-once
 go
 NIL
@@ -1694,10 +1614,10 @@ NIL
 1
 
 BUTTON
-330
-325
-400
-358
+335
+300
+405
+333
 NIL
 go
 T
@@ -1716,8 +1636,8 @@ MONITOR
 765
 485
 avg friends per turtle
-mean [count friend-neighbors] of turtles
-4
+;;mean [count friend-neighbors] of turtles\navg-friends-per-turtle
+3
 1
 11
 
@@ -1727,16 +1647,16 @@ MONITOR
 810
 560
 avg sexual partners of turtles
-mean [count sexual-partner-neighbors] of turtles
-4
+;;mean [count sexual-partner-neighbors] of turtles\navg-partners-per-turtle
+3
 1
 11
 
 SLIDER
 5
-145
+210
 215
-178
+243
 avg-male-condom-intention
 avg-male-condom-intention
 0
@@ -1749,9 +1669,9 @@ HORIZONTAL
 
 SLIDER
 5
-180
+245
 215
-213
+278
 avg-female-condom-intention
 avg-female-condom-intention
 0
@@ -1764,18 +1684,28 @@ HORIZONTAL
 
 SLIDER
 10
-275
+95
 285
-308
+128
 avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-78
+62
 1
 1
 NIL
 HORIZONTAL
+
+TEXTBOX
+5
+190
+285
+208
+Intention/desire to use a condom == attitude
+11
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT? 
@@ -2002,7 +1932,7 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 Polygon -7500403 true true 90 195 75 255 225 255 180 105 120 105 135 180 135 165 120 105
-Circle -2674135 true false 113 98 72
+Circle -1 true false 113 98 72
 
 female sick unknown
 false
@@ -2013,7 +1943,7 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 Polygon -7500403 true true 90 195 75 255 225 255 180 105 120 105 135 180 135 165 120 105
-Circle -1184463 true false 113 98 72
+Circle -16777216 true false 113 98 72
 
 fish
 false
@@ -2090,7 +2020,7 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
-Circle -2674135 true false 120 105 60
+Circle -1 true false 120 105 60
 
 male sick unknown
 false
@@ -2100,7 +2030,7 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
-Circle -1184463 true false 120 105 60
+Circle -16777216 true false 120 105 60
 
 pentagon
 false
