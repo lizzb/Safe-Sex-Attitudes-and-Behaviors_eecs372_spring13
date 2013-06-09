@@ -79,7 +79,7 @@ globals
   females-symptomatic?       ;; If true, males will be symptomatic IF infected with an STI
   
   
- max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+
 ]
 
 
@@ -105,6 +105,10 @@ turtles-own
   
   adopt  ; records when a person makes decision to adopt the technology
   reject ; records true when a person makes a decision to reject technology
+  
+  
+   max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+   initial-number-friends
   
   ;;---------------------------------------------------------------------
   
@@ -155,7 +159,7 @@ to setup
   setup-clusters ;; setup nodes
   setup-people   ;; setup nodes
   infect-random  ;; ask n-of initial-outbreak-size turtles [become-infected]
-  setup-spatially-clustered-network ;; comment out this line to get more discrete cliques
+  ;setup-spatially-clustered-network ;; comment out this line to get more discrete cliques
   setup-links
   reset-ticks
 end
@@ -200,7 +204,7 @@ to setup-globals
  
   ;;--------------------------------------------------------------------- 
   
-  set max-number-friends  ( ( average-node-degree - 1 ) * group-size ) / 2 ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+  ;;set max-number-friends  ( ( average-node-degree - 1 ) * group-size ) / 2 ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
   
   ;; Default number of links generated if Group-liking enabled....they talk to coworkers
   ;; i.e. the number of inter-group links created, in addition to a link with the leader
@@ -208,7 +212,7 @@ to setup-globals
   
   run word "set-" symptomatic?
   
-  set max-friendship-factor 25.0 ;; .... edit...?
+  set max-friendship-factor 10.0 ;; .... edit...?
   
   set max-coupling-factor 10.0
   set max-condom-factor 11.0
@@ -286,7 +290,12 @@ to setup-clusters
   ]
   
   ;; group liking will always be enabled for my simulation
-    ask people [ set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )]
+  ask people
+  [
+    set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )
+    set initial-number-friends (count friend-neighbors)
+    set max-number-friends initial-number-friends + (average-node-degree / 2)
+  ]
   
   ;; Boss-influence factors.... not entirely sure on this meaning either...
 ;  ifelse (Boss-influence?) [
@@ -667,8 +676,7 @@ to go
   ;; give everyone (coupled or not) a chance to make a friend
   ask turtles
   [
-    if (random-float max-friendship-factor < friendship-tendency)
-    [ make-friends ]
+    if (random-float max-friendship-factor < friendship-tendency) [ make-friends ]
   ]
   
   ;; possibly move uncouple here??
@@ -731,10 +739,10 @@ to make-friends ;; turtle procedure
 ;  if choice != nobody [ create-friend-with choice ]
 ;  
 
-  let choice (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself])
+  let choice (min-one-of other turtles with [not link-neighbor? myself] [distance myself])
   ;let potential-partner one-of friend-neighbors with [not coupled?]
    
-  if (choice != nobody and count friend-neighbors <= max-number-friends) ;if potential-partner != nobody
+  if (choice != nobody and (count friend-neighbors <= max-number-friends)) ;if potential-partner != nobody
     [ 
       ;; no need to check for gender compatibility,
       ;; everyone can be friends with each other, yay!
@@ -756,14 +764,41 @@ to couple  ;; turtle procedure
   ;;***
   ;let potential-partner one-of friends with [not coupled?] ;;one-of (turtles-at -1 0) with [not coupled?] 
 
-;; one of vs one min of???
-
+;; one of vs one min of??? ********
+  let groupID group-membership
+  
   ; uncomment this to require that people be friends first before entering a sexual relationship
   ;; first try testing for friends
-  let potential-partner one-of friend-neighbors with [not coupled?]
-
+  let potential-partner one-of friend-neighbors ;; create variable that we will overwrite
+  
+  ask one-of people with [group-membership = groupID]
+      [
+        let choice (one-of other people with [not link-neighbor? myself and group-membership = groupID])
+        if choice != nobody
+            create-sexual-partner-with choice
+            
+  
+  ;; male agent
+  ifelse is-male? self
+  [
+    ;; find female potential partner
+    set potential-partner (min-one-of other females with [not link-neighbor? myself] [distance myself])
+    set potential-partner (one-of other females with [not link-neighbor? myself and group-membership = groupID])
+  ]
+  ;; female agent
+  [
+    ;; find male potential partner
+    ;; first try looking for a close-by male
+    set potential-partner one-of other males with [not link-neighbor? myself] [distance myself])
+    
+    ;; then try looking at existing male friends
+    set potential-partner one-of other male friend-neighbors with [not coupled?]
+    
+    ;; preferably find a male within your social group (hence this one is second, to overwrite the first)
+    set potential-partner (one-of other males with [not link-neighbor? myself and group-membership = groupID])
+  ]
   ;; in case they have no friends, do this... except it might override...
-  set potential-partner (min-one-of (other turtles with [not link-neighbor? myself]) [distance myself * 2])
+;;  set potential-partner (min-one-of other turtles with [not link-neighbor? myself] [distance myself]) ;; distance myself * 2
 
   if potential-partner != nobody
     [ 
@@ -774,9 +809,9 @@ to couple  ;; turtle procedure
       ;; the asking turtle is male and potential partner female, or vice versa
       ;;
       
-      if ( (is-male? self and is-female? potential-partner) or
-        (is-female? self and is-male? potential-partner) )
-      [ 
+      ;;if ( (is-male? self and is-female? potential-partner) or
+      ;;  (is-female? self and is-male? potential-partner) )
+      ;[ 
         ;; normal coupling probability
         
         if random-float max-coupling-factor < [coupling-tendency] of potential-partner
@@ -796,7 +831,7 @@ to couple  ;; turtle procedure
           ;]
           create-sexual-partner-with partner [ assign-link-color]
           
-        ]
+        ;]
       ]
     ]
 end
@@ -852,7 +887,7 @@ to spread-virus
       ;; wants to use a condom, infection will not occur.
 
 
-      ;; ADJUST THIS FOR FEMALE AND MALE
+      ;; ADJUST THIS FOR FEMALE AND MALE?????
       if random-float max-condom-factor > condom-use or
       random-float max-condom-factor > ([condom-use] of partner) ;;one-of sexual-partner-neighbors) 
       [
@@ -1060,7 +1095,7 @@ average-condom-usage
 average-condom-usage
 0
 100
-50
+80
 1
 1
 NIL
@@ -1287,7 +1322,7 @@ num-clusters
 num-clusters
 1
 20
-8
+4
 1
 1
 NIL
@@ -1302,7 +1337,7 @@ average-node-degree
 average-node-degree
 1
 group-size - 1
-6
+4
 1
 1
 NIL
@@ -1546,7 +1581,7 @@ min-init-att
 min-init-att
 0
 max-init-att
-50
+31
 1
 1
 NIL
@@ -1625,7 +1660,7 @@ group-size
 group-size
 1
 50
-11
+8
 1
 1
 NIL
