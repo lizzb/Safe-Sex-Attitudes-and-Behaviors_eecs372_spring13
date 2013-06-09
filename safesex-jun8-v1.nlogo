@@ -16,7 +16,7 @@ undirected-link-breed [friends friend]
 links-own
 [
   group    ; a way to access the links in each group 
-  strength ; is there a better way to do this???.... how about strenght increases likelihood of talking to linkmates
+  ;strength ; is there a better way to do this???.... how about strenght increases likelihood of talking to linkmates
 ]
 
 
@@ -89,11 +89,10 @@ turtles-own
   ;; ---------- Old starter code ---------- ;;
   
   sex-education ; the level of accurate education this agent has about safe sex
+  
   attitude  ; feelings about new technology
   
-  group-membership ; which cluster/friend group the friends and leaders are mainly part of
-  ; but this still applies to some social butterflies - assume they have a core friend group 
-  ; in addition to more out-of-group links than others
+
   
   group-liking ; how the worker feels about his workgroup
   boss-liking  ; how the worker feels about his boss
@@ -106,12 +105,16 @@ turtles-own
   adopt  ; records when a person makes decision to adopt the technology
   reject ; records true when a person makes a decision to reject technology
   
-  
-   max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
-   initial-number-friends
+  initial-number-friends
+  max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+   
   
   ;;---------------------------------------------------------------------
   
+  group-membership ; which cluster/friend group the friends and leaders are mainly part of
+  ; but this still applies to some social butterflies - assume they have a core friend group 
+  ; in addition to more out-of-group links than others
+
 
   ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
   
@@ -312,7 +315,7 @@ to setup-clusters
   ;; was only using leaders for spatial setup, but they also connect to other leaders,
   ;; but seems odd having a central friend
   
-  ;ask leaders [ die ] ;; was only using leaders for spatial setup
+  ;;ask leaders [ die ] ;; was only using leaders for spatial setup
   
   ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
   
@@ -613,7 +616,7 @@ to go
 ;        ask friends with [ adopt = false and reject = false ]
 ;        [ set attitude attitude + training-effect ] 
 ;      ]
-;    ;; training-time == false/off
+;    ;; changetime != training time
 ;      [
 ;      ifelse count friends with [ adopt = true or reject = true ] = change-counts 
 ;      ; if nobody has made a new decision within 50 ticks, have a training session
@@ -630,6 +633,7 @@ to go
 ;          set had-training true
 ;        ] 
 ;      ]
+;; training-time == false/off
 ;      ; if the friend count is different than change-counts,
 ;      ; someone has made a decision and the clock resets
 ;      [
@@ -687,10 +691,11 @@ to go
   
   
   ;; keep slightly adjusting the layout of the model to be easier to view/understand
-  update-network-layout
+  ;update-network-layout
+  ; if this is uncommented, they tend to get closer, increasing tendency to infect everyone fast and disrupt teh whole social clique thing
   
-  ;; Stop if every single turtle is healthy???
-   ;if all? turtles [not infected?] [ stop ]
+  ;; Stop if every single turtle is infected
+  if all? turtles [infected?] [ stop ]
    
    
   ;;maybe no stop condition? based on attitude??
@@ -755,51 +760,91 @@ to make-friends ;; turtle procedure
     ]
 end
 
+
+
 ;; People have a chance to couple depending on their gender,
 ;; their tendency to couple, and if they ..... (meet.?)
 
 to couple  ;; turtle procedure 
   
+  
+  ;; one of vs one min of??? ********
+  
   ;; need to figure out how to change the breed of a link here (from friend to lover)
   ;;***
   ;let potential-partner one-of friends with [not coupled?] ;;one-of (turtles-at -1 0) with [not coupled?] 
 
-;; one of vs one min of??? ********
+  
+  ;; ----- Try to find a valid partner -----
+  ;; first try existing friend link of opposite sex
+  ;; then try opposite sex within friend group, but not a current link
+  ;; then try a nearby opposite sex person as a last resort
+
+
+  ;ask one-of males with [group-membership = groupID]
+  ;[
+   ;     let choice (one-of other males with [not link-neighbor? myself and group-membership = groupID])
+    ;    if choice != nobody
+     ;       create-sexual-partner-with choice
+
+  ;; this agent's social/friend group id
   let groupID group-membership
   
-  ; uncomment this to require that people be friends first before entering a sexual relationship
-  ;; first try testing for friends
+ 
   let potential-partner one-of friend-neighbors ;; create variable that we will overwrite
   
-  ask one-of people with [group-membership = groupID]
-      [
-        let choice (one-of other people with [not link-neighbor? myself and group-membership = groupID])
-        if choice != nobody
-            create-sexual-partner-with choice
-            
   
   ;; male agent
   ifelse is-male? self
   [
     ;; find female potential partner
-    set potential-partner (min-one-of other females with [not link-neighbor? myself] [distance myself])
-    set potential-partner (one-of other females with [not link-neighbor? myself and group-membership = groupID])
+    
+    ;; preferably find a female that is already a friend / look at existing female friends
+    set potential-partner (one-of females with [friend-neighbor? myself and not coupled?])
+    ;;set potential-partner one-of female friend-neighbors with [not coupled?]
+    
+    ;; then, try to find a female that is within your friend group, but not a current link
+    if (potential-partner = nobody)
+    [ set potential-partner (one-of females with [not link-neighbor? myself and not coupled? and group-membership = groupID]) ]
+    
+    ;; as a last resort, try looking for the closest non-linked female
+    if (potential-partner = nobody)
+    [ set potential-partner  (min-one-of (females with [not link-neighbor? myself and not coupled?]) [distance myself]) ]
+    
   ]
+  
   ;; female agent
-  [
+  [ 
     ;; find male potential partner
-    ;; first try looking for a close-by male
-    set potential-partner one-of other males with [not link-neighbor? myself] [distance myself])
     
-    ;; then try looking at existing male friends
-    set potential-partner one-of other male friend-neighbors with [not coupled?]
+     ;; preferably find a male that is already a friend / look at existing male friends
+    set potential-partner (one-of males with [friend-neighbor? myself and not coupled?])
+
+    ;; then, try to find a male that is within your friend group, but not a current link
+    if (potential-partner = nobody)
+    [ set potential-partner (one-of males with [not link-neighbor? myself and not coupled? and group-membership = groupID]) ]
     
-    ;; preferably find a male within your social group (hence this one is second, to overwrite the first)
-    set potential-partner (one-of other males with [not link-neighbor? myself and group-membership = groupID])
+    ;; as a last resort, try looking for the closest non-linked male
+    if (potential-partner = nobody)
+    [ set potential-partner  (min-one-of (males with [not link-neighbor? myself and not coupled?]) [distance myself]) ]
+    
+    
+;    ;; first try looking for a close-by male
+;    set potential-partner one-of other males with [not link-neighbor? myself] [distance myself])
+;    
+;    ;; then try looking at existing male friends
+;    set potential-partner one-of other male friend-neighbors with [not coupled?]
+;    
+;    ;; preferably find a male within your social group (hence this one is second, to overwrite the first)
+;    set potential-partner (one-of other males with [not link-neighbor? myself and group-membership = groupID])
   ]
   ;; in case they have no friends, do this... except it might override...
 ;;  set potential-partner (min-one-of other turtles with [not link-neighbor? myself] [distance myself]) ;; distance myself * 2
 
+
+
+ ; uncomment this to require that people be friends first before entering a sexual relationship
+  ;; first try testing for friends
   if potential-partner != nobody
     [ 
       ;;
@@ -825,9 +870,8 @@ to couple  ;; turtle procedure
           ]
           
           ;; CHANGE BREED OF LINK
-          ;; fIX THIS
-          ;if [partner one-of friend-neighbors]
-          ; [ask friend-with partner [die]
+          ;; fIX THIS friend-neighbors? with myself
+          if (friend-neighbor? partner) [ask friend-with partner [die] ] ;;[friend-with partner?] 
           ;]
           create-sexual-partner-with partner [ assign-link-color]
           
@@ -897,6 +941,9 @@ to spread-virus
     ;]
   ]
 end
+
+
+
 
 
 to become-infected  ;; turtle procedure
@@ -1032,9 +1079,9 @@ end
 ;;
 @#$#@#$#@
 GRAPHICS-WINDOW
-350
+410
 10
-729
+789
 410
 15
 15
@@ -1059,10 +1106,10 @@ weeks
 30.0
 
 BUTTON
-270
-80
-345
-113
+325
+130
+400
+163
 setup
 setup
 NIL
@@ -1076,10 +1123,10 @@ NIL
 1
 
 MONITOR
-360
-550
-425
-595
+355
+500
+420
+545
 % infected
 %infected
 2
@@ -1088,24 +1135,24 @@ MONITOR
 
 SLIDER
 5
-235
-185
-268
+105
+180
+138
 average-condom-usage
 average-condom-usage
 0
 100
-80
+60
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-310
-415
-360
-460
+305
+365
+355
+410
 #F
 count females
 17
@@ -1113,10 +1160,10 @@ count females
 11
 
 MONITOR
-360
-415
+355
+365
+405
 410
-460
 #M
 count males
 17
@@ -1124,10 +1171,10 @@ count males
 11
 
 MONITOR
-295
-550
-360
-595
+290
+500
+355
+545
 # infected
 count turtles with [infected?]
 17
@@ -1155,10 +1202,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
 MONITOR
-285
-505
-360
-550
+280
+455
+355
+500
 % F infected
 %F-infected
 2
@@ -1166,10 +1213,10 @@ MONITOR
 11
 
 MONITOR
-360
-505
-435
-550
+355
+455
+430
+500
 % M infected
 %M-infected
 2
@@ -1177,10 +1224,10 @@ MONITOR
 11
 
 BUTTON
-275
-195
-345
-228
+330
+245
+400
+278
 NIL
 select
 T
@@ -1194,20 +1241,20 @@ NIL
 1
 
 TEXTBOX
-245
-165
-350
-193
+300
+215
+405
+243
 Select an individual to have an STD
 11
 0.0
 1
 
 MONITOR
-285
-460
-360
-505
+280
+410
+355
+455
 #F infected
 count females with [infected?]
 17
@@ -1215,10 +1262,10 @@ count females with [infected?]
 11
 
 MONITOR
-360
-460
-435
-505
+355
+410
+430
+455
 #M infected
 count males with [infected?]
 17
@@ -1226,20 +1273,20 @@ count males with [infected?]
 11
 
 TEXTBOX
-125
-310
-215
-340
-(doesn't do anything yet)
+20
+230
+285
+280
+Could include parental influences, religious upbringing/teachings, etc. before person reached college
 11
 0.0
 1
 
 BUTTON
-250
-120
-345
-153
+305
+170
+400
+203
 NIL
 infect-random
 NIL
@@ -1253,48 +1300,22 @@ NIL
 1
 
 CHOOSER
-735
-10
-827
-55
+795
+115
+887
+160
 sex-ed-type
 sex-ed-type
 "full" "abstinence" "none"
 1
 
-SWITCH
-725
-90
-890
-123
-parental-discussion?
-parental-discussion?
-1
-1
--1000
-
-SLIDER
-95
-340
-215
-373
-religiousness
-religiousness
-0
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
 SLIDER
 5
-200
-190
-233
-average-outspokenness
-average-outspokenness
+65
+160
+98
+avg-outspokenness
+avg-outspokenness
 0
 100
 100
@@ -1304,14 +1325,14 @@ NIL
 HORIZONTAL
 
 CHOOSER
-845
-45
-1032
-90
+795
+65
+960
+110
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
-1
+3
 
 SLIDER
 5
@@ -1322,22 +1343,22 @@ num-clusters
 num-clusters
 1
 20
-4
+5
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-5
-50
-165
-83
+245
+10
+405
+43
 average-node-degree
 average-node-degree
 1
 group-size - 1
-4
+5
 1
 1
 NIL
@@ -1382,22 +1403,11 @@ min-init-group-liking
 min-init-group-liking
 0
 100
-50
+65
 1
 1
 NIL
 HORIZONTAL
-
-SWITCH
-900
-120
-1060
-153
-Boss-influence?
-Boss-influence?
-0
-1
--1000
 
 SWITCH
 830
@@ -1406,7 +1416,7 @@ SWITCH
 313
 training?
 training?
-0
+1
 1
 -1000
 
@@ -1475,7 +1485,7 @@ training-effect
 training-effect
 0
 100
-50
+80
 1
 1
 NIL
@@ -1497,10 +1507,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-915
-410
-1060
-443
+895
+465
+1040
+498
 max-init-attitude
 max-init-attitude
 min-init-attitude
@@ -1512,25 +1522,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-765
-410
-910
-443
+895
+390
+1040
+423
 min-init-attitude
 min-init-attitude
 0
 max-init-attitude
-7
+25
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-915
-450
-1060
-483
+895
+505
+1040
+538
 max-init-att
 max-init-att
 min-init-att
@@ -1542,30 +1552,30 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-685
-485
-825
-503
+750
+495
+890
+513
 Initial attitudes of bosses
 11
 0.0
 1
 
 TEXTBOX
-615
-420
-765
-438
+750
+415
+900
+433
 Initial attitudes of workers
 11
 0.0
 1
 
 MONITOR
-735
-280
-815
-325
+775
+440
+855
+485
 NIL
 change-time
 17
@@ -1573,10 +1583,10 @@ change-time
 11
 
 SLIDER
-765
-450
-910
-483
+895
+425
+1040
+458
 min-init-att
 min-init-att
 0
@@ -1588,10 +1598,10 @@ NIL
 HORIZONTAL
 
 PLOT
-440
-455
-640
-605
+435
+410
+635
+560
 Number of relationship links
 NIL
 NIL
@@ -1607,10 +1617,10 @@ PENS
 "pen-1" 1.0 0 -2674135 true "" "plot count sexual-partners"
 
 SLIDER
-835
-10
-995
-43
+795
+20
+960
+53
 infection-chance
 infection-chance
 0
@@ -1622,10 +1632,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-5
-165
-120
-198
+185
+65
+300
+98
 vocality
 vocality
 0
@@ -1637,15 +1647,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-125
-165
-240
-198
+185
+105
+300
+138
 propensity
 propensity
 0
 100
-50
+88
 1
 1
 NIL
@@ -1660,17 +1670,17 @@ group-size
 group-size
 1
 50
-8
+10
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-200
-235
-265
-268
+335
+285
+400
+318
 go-once
 go
 NIL
@@ -1684,10 +1694,10 @@ NIL
 1
 
 BUTTON
-275
-235
-345
-268
+330
+325
+400
+358
 NIL
 go
 T
@@ -1701,26 +1711,71 @@ NIL
 1
 
 MONITOR
-675
-550
-760
-595
-NIL
-count friends
-17
+640
+440
+765
+485
+avg friends per turtle
+mean [count friend-neighbors] of turtles
+4
 1
 11
 
 MONITOR
-770
-550
-905
-595
-NIL
-count sexual-partners
-17
+640
+515
+810
+560
+avg sexual partners of turtles
+mean [count sexual-partner-neighbors] of turtles
+4
 1
 11
+
+SLIDER
+5
+145
+215
+178
+avg-male-condom-intention
+avg-male-condom-intention
+0
+100
+30
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+5
+180
+215
+213
+avg-female-condom-intention
+avg-female-condom-intention
+0
+100
+85
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+10
+275
+285
+308
+avg-mesosystem-condom-encouragement
+avg-mesosystem-condom-encouragement
+0
+100
+78
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT? 
