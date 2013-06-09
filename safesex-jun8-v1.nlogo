@@ -56,6 +56,10 @@ globals
   ;min-init-att (for boss) 50 (set max slider as max-init-att)
   ;max-init-att (for boss) 50 (set min slider as min-init-att)
   
+  ;;will-be-symptomatic? ;; If true, this person will be symptomatic if infected with an STI
+  males-symptomatic
+  females-symptomatic
+  
 ]
 
 
@@ -87,8 +91,9 @@ turtles-own
 
   
   
-  infected?          ;; If true, the person is infected (and infectious)
-  known?             ;; The person is infected and knows it (due to being symptomatic)
+  infected?            ;; If true, the person is infected (and infectious)
+
+  known?               ;; The person is infected and knows it (due to being symptomatic)
   
   ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
   
@@ -138,6 +143,33 @@ to setup
 end
 
 
+;;
+;; Setter functions for the symptomatic? drop down/chooser
+;;
+
+;; global variables have no question mark
+;; so that reporter functions can (easier to read code that way)
+;; or... i guess i could just access the global maybe....????
+
+to set-females-symptomatic?
+  set females-symptomatic true
+  set males-symptomatic false
+end
+
+to set-males-symptomatic?
+  set males-symptomatic true
+  set females-symptomatic false
+end
+
+to set-both-symptomatic?
+  set females-symptomatic true
+  set males-symptomatic true 
+end
+
+to set-neither-symptomatic?
+  set males-symptomatic false
+  set females-symptomatic false
+end
 
 ;;
 ;; ----- setup-globals ----- ;;
@@ -149,6 +181,8 @@ to setup-globals
   set had-training false ; only allows training to happen once
  
   ;;--------------------------------------------------------------------- 
+  
+  run word "set-" symptomatic?
   
   set max-coupling-factor 10.0
   set max-condom-factor 11.0
@@ -198,7 +232,7 @@ to setup-clusters
     
     ;; if only 1 cluster, layout-circle works 14.5
     ;; boss is in the center of the group
-    ;layout-circle workers with [group-membership = counts ] 5 - 0.5 * max( list (num-clusters - 5) (0) )  
+    layout-circle people with [group-membership = groupID ] 5 - 0.5 * max( list (num-clusters - 5) (0) )  
     ask people with [group-membership = groupID ]
     [
       setxy xcor + [xcor] of leader groupID ycor + [ycor] of leader groupID 
@@ -238,7 +272,7 @@ to setup-clusters
 
   ;; if (not Boss-influence?)
   ;[
-  ask leaders [ die ] ;; was only using leaders for spatial setup
+  ;ask leaders [ die ] ;; was only using leaders for spatial setup
   ;]
   
   ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
@@ -264,6 +298,8 @@ to setup-spatially-clustered-network
   ; make the network look a little prettier ;; was 10
   repeat 15 [ update-network-layout ]
 end
+
+
 
 
 to update-network-layout
@@ -293,6 +329,7 @@ to setup-people
     set partner nobody             ;; The person that is our current partner in a couple.
     set infected? false            ;; If true, the person is infected.
     set known? false               ;; The person is infected and knows it (due to being symptomatic)
+    ;; set will-be-symptomatic set by globals
     
     ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...
     
@@ -315,8 +352,6 @@ to setup-people
     assign-turtle-color    ;; color is determined by gender
     assign-shape    ;; shape is determined by gender and sick status
     set size 2.5    ;set size 3; 1.5
-    
-    ;;set virus-check-timer random virus-check-frequency  ;; from virus on a network
   ]  
 end
 
@@ -380,7 +415,7 @@ end
 
 ;;
 ;; Assign population variable values on an approximately "normal" DISTRIBUTION 
-;; (from aids model)
+;; (from AIDS model)
 ;; 
 
 
@@ -468,14 +503,11 @@ to go
 ;  set change-amt 0 ; used to keep track of the amt turtles change their opinions each round
 ;  ask friends
 ;  [
-;    set change-amt 0 ; used to keep track of the amt turtles change their opinions each round
-;    
-;                     ; turtles only update opinions until they have made a decision
+;    ; turtles only update opinions until they have made a decision
 ;    if adopt = false and reject = false
 ;    [
 ;      if Group-liking? [ talk-to-group ]
 ;      if Boss-influence? [ talk-to-boss ]
-;      
 ;      
 ;      ; the friend updates their attitude from the effects of the hypotheses
 ;      set attitude attitude + change-amt
@@ -575,18 +607,6 @@ to go
  
  update-network-layout
  
- 
-
-  
-  
-;  ask turtles
-;  [
-;     set virus-check-timer virus-check-timer + 1
-;     if virus-check-timer >= virus-check-frequency [ set virus-check-timer 0 ]
-;  ]
-;  spread-virus
-;  do-virus-checks
-
   ;; Stop if every single turtle is healthy??? maybe no stop condition?
   ;; reach some sort of stable state?
   ;if all? turtles [not infected?] [ stop ]
@@ -711,12 +731,21 @@ end
 ;; FROM VIRUS ON A NETWORK
 ;;
 
+
 to spread-virus
   ask turtles with [infected?]
   [
     ;; chance to spread infection to sexual partners on every tick
+    ;; (that is, if they have any sexual partners)
     ask sexual-partner-neighbors with [not infected?]
     [
+      
+      ;; Note that for condom use to occur, both people must want to use one.  If
+      ;; either person chooses not to use a condom, infection is possible.  Changing the
+      ;; primitive to AND in the third line will make it such that if either person
+      ;; wants to use a condom, infection will not occur.
+
+
       ;; ADJUST THIS FOR FEMALE AND MALE
       if random-float max-condom-factor > condom-use or
       random-float max-condom-factor > ([condom-use] of partner)
@@ -730,27 +759,47 @@ to spread-virus
 end
 
 
-;; Note that for condom use to occur, both people must want to use one.  If
-;; either person chooses not to use a condom, infection is possible.  Changing the
-;; primitive to AND in the third line will make it such that if either person
-;; wants to use a condom, infection will not occur.
-
-to infect  ;; turtle procedure
-  if coupled? and infected? 
-  [
-    ;; ADJUST THIS FOR FEMALE AND MALE
-    if random-float max-condom-factor > condom-use or
-    random-float max-condom-factor > ([condom-use] of partner)
-    [
-      if (random-float 100 < infection-chance)
-      [ ask partner [ become-infected ] ]  
-    ]  
-  ]
-end
-
 to become-infected  ;; turtle procedure
   set infected? true
   assign-shape
+end
+
+;; Don't want check-infect and become infected to happen on same tick
+;; not realistic, std symptoms dont instantly show up
+to check-infected
+  ;; check if agent is male and symptomatic
+  ifelse is-male? self
+  [
+    ;; if "only females" are symptomatic, that means males are not
+    ;; (because males or both genders symptomatic not selected)
+    if males-symptomatic? ;;ifelse [symptomatic?] 
+    [
+      set known? true 
+      set had-std? true
+    ]
+    ;; otherwise, males are symptomatic of an STI
+    ;[
+    ;  ;; don't change their knowledge state about known? or had-std?
+    ;]
+  ]
+  ;; check if agent is female and symptomatic
+  [
+    
+    
+    
+  ]
+  
+  ifelse infected?
+  [ ifelse is-male? self
+    [set shape "male sick"]
+    [set shape "female sick"]
+  ]
+  [ ifelse is-male? self
+    [set shape "male"]
+    [set shape "female"]
+  ]
+  
+  
 end
 
 ;from become-resistant from virus on a network
@@ -795,6 +844,10 @@ to talk-to-boss ; turtle procedure
   ]
 end
 
+
+;; change this somehow to media fear effect?
+;; thinking of aids/hiv
+
 ;to crit-mass-effect ; worker procedure
   ; to implement this, we assume that even if a worker doesn't have a link with 
   ; all the members of his group, the effect of the technology increases anyway
@@ -806,10 +859,19 @@ end
 
 
 
-
 ;;;
 ;;; REPORTER / MONITOR PROCEDURES
 ;;;
+
+to-report females-symptomatic?
+  ;; global variable has no question mark
+  report females-symptomatic
+end
+
+to-report males-symptomatic?
+  ;; global variable has no question mark
+  report males-symptomatic
+end
 
 to-report %infected
   ifelse any? turtles
@@ -819,7 +881,7 @@ end
 
 to-report %F-infected
   ifelse any? females
-  [ report 100 * count males with [infected?] / count males]
+  [ report 100 * count females with [infected?] / count females]
   [ report 0 ]
 end
 
@@ -886,10 +948,10 @@ NIL
 1
 
 MONITOR
-285
-600
-350
-645
+360
+550
+425
+595
 % infected
 %infected
 2
@@ -934,10 +996,10 @@ count males
 11
 
 MONITOR
-285
-555
-350
-600
+295
+550
+360
+595
 # infected
 count turtles with [infected?]
 17
@@ -1116,12 +1178,12 @@ HORIZONTAL
 CHOOSER
 845
 45
-995
+1032
 90
 symptomatic?
 symptomatic?
-"males-symptomatic" "females-symptomatic" "both-symptomatic"
-1
+"males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
+0
 
 SLIDER
 5
@@ -1162,7 +1224,7 @@ hyp1-degree
 hyp1-degree
 0
 100
-50
+51
 1
 1
 NIL
@@ -1352,10 +1414,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-620
-455
-760
-473
+685
+485
+825
+503
 Initial attitudes of bosses
 11
 0.0
