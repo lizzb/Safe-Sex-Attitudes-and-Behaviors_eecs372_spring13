@@ -32,29 +32,35 @@ globals
   had-training     ; only allows training to happen once
   
   
-  
-
-  ;average-condom-usage     ;; Average frequency that a person uses protection
-                            ;; [set by slider] (default is scale 0 - 100) 
+ 
   
   ;infection-chance          ;; The chance out of 100 that an infected person
                              ;; will transmit infection during one week of couplehood
                              ;; [set by slider] (default is scale 0 - 100) 
-   
-  max-coupling-factor       ;; Maximum coupling tendency value
-                            ;; Used as an upper bound for generating random chance of coupling
-                            ;; (default is scale 0 - 100)
-                            
-  max-friendship-factor     ;; Upper bound for generating random chance of making a friend
-  
-  average-friendship-tendency
-  
-                            
+                             
   max-condom-factor         ;; Maximum condom use value
                             ;; Used as an upper bound for generating random chance of using a condom
+                            ;; (default is scale 0 - 100)    
+                            
+  ;average-condom-usage     ;; Average frequency that a person uses protection
+                            ;; [set by slider] (default is scale 0 - 100)         
+   
+  max-coupling-factor       ;; Maximum coupling tendency value
+                            ;; Used as an upper bound for generating random chance of coupling (that is nearby)
                             ;; (default is scale 0 - 100)
                             
   average-coupling-tendency ;; Average tendency of a person to couple with another person
+                            ;; in order to couple, the pairings must consist of one male and one female agent
+                            
+  max-friendship-factor     ;; Maximum coupling tendency value
+                            ;; Used as an upper bound for generating random chance of making a friend (that is nearby)
+                            ;; (default is scale 0 - 100)
+  
+  average-friendship-tendency ;; Average tendency of a person to make friends with another person
+  
+                            
+
+  
   average-commitment        ;; Number of ticks a sexual parternship/couple will stay together, on average
   
   min-init-sex-ed ;; minimum possible starting level of sex education range (low end if no sex education)
@@ -68,9 +74,9 @@ globals
   ;min-init-att (for boss) 50 (set max slider as max-init-att)
   ;max-init-att (for boss) 50 (set min slider as min-init-att)
   
-  ;;will-be-symptomatic? ;; If true, this person will be symptomatic if infected with an STI
-  males-symptomatic?
-  females-symptomatic?
+  ;; The next two values are determined by the symptomatic? chooser/drop-down
+  males-symptomatic?         ;; If true, males will be symptomatic IF infected with an STI
+  females-symptomatic?       ;; If true, males will be symptomatic IF infected with an STI
   
 ]
 
@@ -101,34 +107,34 @@ turtles-own
   ;;---------------------------------------------------------------------
   
 
-  friendship-tendency ;; How likely this person is to make a new friend
-  
-  
-  
-  infected?            ;; If true, the person is infected (and infectious)
-
-  known?               ;; The person is infected and knows it (due to being symptomatic)
-  
   ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
   
   had-std?            ;; If true, the person once had an STD
                       ;; (that they knew of, assume can't go away by itself unless known...?)
                       ;; perhaps a count instead of a boolean?
-  
+                      
+                      ;; or maybe just never get cured, and use infected instead
+                      
+                      
   peer-had-std-impact ;; the amount of impact a peer having an std has on this person, assume that doesn't fade over time
                       ;; will be updated if more friends get infected, and bigger impact for stronger links
-
   
-  coupling-tendency  ;; How likely the person is to join a couple.
-  commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links??
+  
+  infected?            ;; If true, the person is infected (and infectious)
+  known?               ;; The person is infected and knows it (due to being symptomatic)
+
+  friendship-tendency ;; How likely this person is to make a new friend
+  
+  coupling-tendency   ;; How likely the person is to join a couple.
+  commitment          ;; How long the person will stay in a couple-relationship. --> change to multiple partner links??
                        
-  coupled?           ;; If true, the person is in a sexually active couple.
-  partner            ;; The person that is our current partner in a couple.
-  couple-length      ;; How long the person has been in a couple.
+  coupled?            ;; If true, the person is in a sexually active couple.
+  partner             ;; The person that is our current partner in a couple.
+  couple-length       ;; How long the person has been in a couple.
   
 
-  condom-use         ;; The percent chance a person uses protection while in a couple
-                     ;; (determined by slider & normal distribution)
+  condom-use          ;; The percent chance a person uses protection while in a couple
+                      ;; (determined by slider & normal distribution)
 ]
 
 
@@ -192,7 +198,7 @@ to setup-globals
   
   run word "set-" symptomatic?
   
-  set max-friendship-factor 20.0 ;; .... edit...?
+  set max-friendship-factor 25.0 ;; .... edit...?
   
   set max-coupling-factor 10.0
   set max-condom-factor 11.0
@@ -221,6 +227,7 @@ to setup-clusters
   create-leaders num-clusters [  ]
   
   ;; Default number of links generated if Group-liking enabled....they talk to coworkers
+  ;; i.e. the number of inter-group links created, in addition to a link with the leader
   let num-links ( ( average-node-degree - 1 ) * group-size ) / 2
   
   
@@ -230,7 +237,7 @@ to setup-clusters
   [
     layout-circle leaders 10
     
-    ; assume that all bosses interact, can change this assumption later
+    ; assume that all leaders interact/are social butterflies/charismatic, hence why their entire friend group likes them too
     ;; create links between all "bosses" - the central person of the clique
     ;; CHANGE THIS SO THAT SOME "SOCIAL BUTTERFLIES" are created --- TODO *****
     ask leaders [ create-friends-with other leaders ] 
@@ -249,7 +256,8 @@ to setup-clusters
       setxy xcor + [xcor] of leader groupID ycor + [ycor] of leader groupID 
       create-friend-with leader groupID
     ]
-     
+    
+    ;; Agents make friendship links with people in their friend circle
     let linkcounts 0
     while [linkcounts < num-links ]
     [
@@ -271,8 +279,7 @@ to setup-clusters
     ask people [ set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )]
   
   ;; Boss-influence factors.... not entirely sure on this meaning either...
-;  ifelse (Boss-influence?)
-;  [
+;  ifelse (Boss-influence?) [
 ;    ask friends
 ;    [
 ;      set boss-liking min-init-boss-liking + random ( max-init-boss-liking - min-init-boss-liking ) 
@@ -285,6 +292,7 @@ to setup-clusters
   ;; comment or uncomment this if you want a group "leader" to be in the center of the friend group
   ;; was only using leaders for spatial setup, but they also connect to other leaders,
   ;; but seems odd having a central friend
+  
   ;ask leaders [ die ] ;; was only using leaders for spatial setup
   
   ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]
@@ -307,14 +315,15 @@ to setup-spatially-clustered-network
       if choice != nobody [ create-friend-with choice ]
     ]
   ]
-  ; make the network look a little prettier ;; was 10
-  repeat 15 [ update-network-layout ]
+  ; make the network look a little prettier 
+  repeat 15 [ update-network-layout ] ;; was 10
 end
 
 
 
 
 to update-network-layout
+  ;; put some parameters on this to not group in middle???
   layout-spring turtles links 0.3 (world-width / (sqrt count turtles)) 1
 end
 
@@ -392,12 +401,32 @@ end
 ;; and whether or not infected (includes a red dot)
  
 to assign-shape ;; turtle procedure
+;  ifelse infected?
+;  [ ifelse is-male? self
+;    [set shape "male sick"]
+;    [set shape "female sick"]
+;  ]
+;  [ ifelse is-male? self
+;    [set shape "male"]
+;    [set shape "female"]
+;  ]
   ifelse infected?
-  [ ifelse is-male? self
-    [set shape "male sick"]
-    [set shape "female sick"]
+  [
+    ifelse is-male? self
+    [
+      ifelse known?
+      [ set shape "male sick" ]
+      [ set shape "male sick unknown" ]
+    ]
+    [
+    ifelse known?
+      [ set shape "female sick" ]
+      [ set shape "female sick unknown" ]
+    ]
   ]
-  [ ifelse is-male? self
+  ;; otherwise, the turtle is not infected
+  [
+    ifelse is-male? self
     [set shape "male"]
     [set shape "female"]
   ]
@@ -412,13 +441,13 @@ to assign-turtle-color  ;; turtle procedure
   ifelse is-male? self ;; CHANGE THIS to attitude *****
   [set color green]
   [set color grey]
-  
-
 end
 
 ;; ----- assign-link-color ----- ;;
+
 ;; Color of link indicates whether the relationship between the two agents
 ;; is a friendship or a sexual partnership
+
 to assign-link-color  ;; link procedure
   ifelse is-friend? self
     [ set color blue set thickness .15]
@@ -452,6 +481,10 @@ end
 ;; the helper procedure RANDOM-NEAR so that the turtle variables have an
 ;; approximately "normal" distribution around the average values.
 
+to assign-condom-use  ;; turtle procedure
+  set condom-use random-near average-condom-usage
+end
+
 to assign-commitment  ;; turtle procedure
   set commitment random-near average-commitment
 end
@@ -459,11 +492,6 @@ end
 to assign-coupling-tendency  ;; turtle procedure
   set coupling-tendency random-near average-coupling-tendency
 end
-
-to assign-condom-use  ;; turtle procedure
-  set condom-use random-near average-condom-usage
-end
-
 
 to assign-friendship-tendency  ;; turtle procedure
   set friendship-tendency random-near average-friendship-tendency
@@ -476,7 +504,9 @@ end
 to infect-random
   if (count turtles > 1)
   [
-    ask n-of 1 turtles with [not infected?] [ become-infected ] 
+              ;; because don't want to have to wait for first tick to display appropriate color of dot
+          ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
+    ask n-of 1 turtles with [not infected?] [ become-infected check-infected ] 
   ] 
 end
 
@@ -496,6 +526,9 @@ to select
         ask candidate
         [ 
           become-infected
+          ;; because don't want to have to wait for first tick to display appropriate color of dot
+          ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
+          check-infected 
           display
           set picked? true
         ]
@@ -529,6 +562,8 @@ end
 ;;;                                               ;;;
 
 to go
+  
+
  
  ;; from sophia sullivan starter code for reference
  
@@ -588,11 +623,6 @@ to go
 ;  ]
 ;  
   
-  
-
-  
-  ;update-links
-  
  ; model ends when all the friends have made a decision
  ; (so sometimes the model never ends)
  ;if count friends with [ adopt = true or reject = true ] = count friends [ stop ]
@@ -600,37 +630,57 @@ to go
  
  ;;---------------------------------------------------------------------
  
- 
+  ;; TODO ***
+  ;; everyone should attempt to make friends on each tick as well
+  ;; because otherwise, all the sexual partner links break
+  ;; then it becomes single-sex clusters and nothing cool happens
+  
   ask turtles
   [
+    check-infected
+    
+    ;; if already coupled with a sexual partner, just increase length of relationship (and have chance to infect, later in code)
     ifelse coupled?
     [ set couple-length couple-length + 1 ] ;; this might mean they have to be monogamous....?? ****
-    [ update-links ] ;; update links if not coupled (instead of moving, since now on a network)
+    
+   ;; could potentially just use this function entirely for incrementing couple-length, strengthening bonds, etc....
+   ;[ update-links ] ;; update links if not coupled (instead of moving, since now on a network)
+
+   ;; Any turtle can initiate mating if they are not coupled
+   ;; (and random chance permits)
+
+   ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
+
+   ;; turtle is not coupled, give them a chance to couple/want to couple
+    [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
   ]
   
-  ;; Any turtle can initiate mating if they are not coupled
-  ;; (and random chance permits)
+  ;; give everyone (coupled or not) a chance to make a friend
   ask turtles
-  [ 
-    ;; TODO ***
-    ;; everyone should attempt to make friends on each tick as well
-    ;; because otherwise, all the sexual partner links break
-    ;; then it becomes single-sex clusters
-    ;; and nothing cool happens
-    
-    if not coupled? and (random-float max-coupling-factor < coupling-tendency)
-    [ couple ]
+  [
+    if (random-float max-friendship-factor < friendship-tendency)
+    [ make-friends ]
   ]
+  
+  ;; possibly move uncouple here??
   ask turtles [ uncouple ]
+  
+  ;; then give chance to spread virus
   ask turtles [ spread-virus ]
- 
- update-network-layout
- 
-  ;; Stop if every single turtle is healthy??? maybe no stop condition?
+  
+  
+  ;; keep slightly adjusting the layout of the model to be easier to view/understand
+  update-network-layout
+  
+  ;; Stop if every single turtle is healthy???
+   ;if all? turtles [not infected?] [ stop ]
+   
+   
+  ;;maybe no stop condition? based on attitude??
   ;; reach some sort of stable state?
-  ;if all? turtles [not infected?] [ stop ]
  
- tick
+  
+  tick
 end
 
 
@@ -821,8 +871,6 @@ to check-infected
   [
     set known? true 
     set had-std? true
-    
-    
   ]
   
   ;  ;; don't change their knowledge state about known? or had-std? otherwise
@@ -1209,7 +1257,7 @@ CHOOSER
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
-0
+1
 
 SLIDER
 5
@@ -1220,7 +1268,7 @@ num-clusters
 num-clusters
 1
 20
-5
+6
 1
 1
 NIL
@@ -1235,7 +1283,7 @@ average-node-degree
 average-node-degree
 1
 group-size - 1
-7
+3
 1
 1
 NIL
@@ -1418,7 +1466,7 @@ min-init-attitude
 min-init-attitude
 0
 max-init-attitude
-9
+7
 1
 1
 NIL
@@ -1558,7 +1606,7 @@ group-size
 group-size
 1
 50
-10
+5
 1
 1
 NIL
@@ -1597,6 +1645,28 @@ NIL
 NIL
 NIL
 1
+
+MONITOR
+675
+550
+760
+595
+NIL
+count friends
+17
+1
+11
+
+MONITOR
+770
+550
+905
+595
+NIL
+count sexual-partners
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT? 
@@ -1825,7 +1895,7 @@ Polygon -7500403 true true 105 90 60 150 75 180 135 105
 Polygon -7500403 true true 90 195 75 255 225 255 180 105 120 105 135 180 135 165 120 105
 Circle -2674135 true false 113 98 72
 
-female1
+female sick unknown
 false
 0
 Circle -7500403 true true 110 5 80
@@ -1833,7 +1903,8 @@ Polygon -7500403 true true 105 90 120 195 105 285 105 300 135 300 150 225 165 30
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
-Polygon -7500403 true true 120 195 75 255 225 255 180 195 120 195
+Polygon -7500403 true true 90 195 75 255 225 255 180 105 120 105 135 180 135 165 120 105
+Circle -1184463 true false 113 98 72
 
 fish
 false
@@ -1912,6 +1983,16 @@ Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 Circle -2674135 true false 120 105 60
 
+male sick unknown
+false
+0
+Circle -7500403 true true 110 5 80
+Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Rectangle -7500403 true true 127 79 172 94
+Polygon -7500403 true true 195 90 240 150 225 180 165 105
+Polygon -7500403 true true 105 90 60 150 75 180 135 105
+Circle -1184463 true false 120 105 60
+
 pentagon
 false
 0
@@ -1925,24 +2006,6 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
-
-person lefty
-false
-0
-Circle -7500403 true true 170 5 80
-Polygon -7500403 true true 165 90 180 195 150 285 165 300 195 300 210 225 225 300 255 300 270 285 240 195 255 90
-Rectangle -7500403 true true 187 79 232 94
-Polygon -7500403 true true 255 90 300 150 285 180 225 105
-Polygon -7500403 true true 165 90 120 150 135 180 195 105
-
-person righty
-false
-0
-Circle -7500403 true true 50 5 80
-Polygon -7500403 true true 45 90 60 195 30 285 45 300 75 300 90 225 105 300 135 300 150 285 120 195 135 90
-Rectangle -7500403 true true 67 79 112 94
-Polygon -7500403 true true 135 90 180 150 165 180 105 105
-Polygon -7500403 true true 45 90 0 150 15 180 75 105
 
 plant
 false
