@@ -18,21 +18,17 @@ Starting with removing comments from safesex-june8-v1\
 \
 v2\
 - got rid of training and training-time\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0  - got rid of reduction potential (influence decreases over time)\
+ - got rid of reduction potential (influence decreases over time)\
 \
 - from virus on a network: remove ability to be resistant\
 ;resistant?          ;; if true, the turtle can't be infected\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 from become-infected\
+\
+from become-infected\
   ;; set resistant? false\
 \
 ;from become-resistant from virus on a network\
 ;  ask my-links [ set color gray - 2 ]\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 \
+\
 replace expertise with sex-education\
   ;expertise ;the level of technical expertise that the agent has with the technology\
   \
@@ -82,16 +78,13 @@ changed "counts" to "groupID" in setting up clusters\
 \
 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 set potential-victim one-of exual-partner-neighbors with [not infected?]\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 \
+set potential-victim one-of exual-partner-neighbors with [not infected?]\
+\
 \
   ; the dissenter is a technological expert who is completely against the technology\
 not even sure where that comes in?\
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 \
+\
 Assume:\
 Only 1 type of STD\
 If they are symptomatic, they will know they have an std, and will want to practice safe sex from there forward (assuming that people are kind and not malicious)\
@@ -245,4 +238,62 @@ sexual social tendency?\
 red = unsafe sex\
 green = safe sex\
 yellow\
-black and white}
+black and white\
+\
+\
+\
+\
+\
+----------------\
+\
+440 am\
+removing strength of bonds and update-links\
+\
+\
+   ;; could potentially just use this function entirely for incrementing couple-length, strengthening bonds, etc....\
+   ;[ update-links ] ;; update links if not coupled (instead of moving, since now on a network)\
+\
+;; ---> instead of moving, perhaps call relink? probabilty of relink?\
+;; creating/destroying links\
+\
+to update-links ;; turtle procedure\
+  ;make-friends\
+    ;; Create, strengthen, weaken, or break links with friends or sexual partners\
+\
+  ; Strengthen links with friends or sexual partners\
+  ;; if no link exists, create a weak one\
+  ;; if a weak link exists, create a stronger one\
+  \
+  ; Weaken links with friends or sexual partners\
+  ;; if a strong link exists, create a weaker one\
+  ;; if a weak link exists, destroy the link\
+\
+  ;; not sure if i should add any more complexity to these rules....\
+  \
+  ;; different strengths and types (breeds) of links have different levels of impact\
+  ;; on safe sex attitudes/behaviors\
+end\
+\
+\
+\
+\
+---\
+    ;; If already coupled with a sexual partner, just increase length of relationship\
+    ;; (turtles are monogamous in this simulation)\
+    ;; (and have chance to infect, called later in code)\
+    ifelse coupled?\
+    [ set couple-length couple-length + 1 ]\
+---\
+\
+ ;; Only turtles with sexual partners can spread an STI\
+  ask turtles with [infected? and coupled?]\
+  [\
+    ;; chance to spread infection to sexual partners on every tick\
+    ;; (that is, if they have any sexual partners)\
+    ;ask sexual-partner-neighbors with [not infected?]\
+    ;ask partner?\
+    ;[\
+\
+\
+\
+probs get rid of sex ed???}
