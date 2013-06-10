@@ -32,6 +32,19 @@ undirected-link-breed [friends friend]
 
 globals
 [  
+  
+  ;; The next two values are determined by the symptomatic? chooser/drop-down
+  males-symptomatic?         ;; If true, males will be symptomatic IF infected with an STI
+  females-symptomatic?       ;; If true, females will be symptomatic IF infected with an STI
+  
+  
+  ;; The following 2 variables indicate the % effectiveness in preventing the spread
+  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
+  ;; against sexually transmitted infections varies based on disease/virus type
+  perfect-use-effectiveness  ;; The chance of preventing STI spread if condom is used perfectly
+  typical-use-effectiveness  ;; The chance of preventing STI spread if condom is used typically
+  
+  
   ;infection-chance          ;; The chance out of 100 that an infected person
                              ;; will transmit infection during one week of couplehood
                              ;; [set by slider] (default is scale 0 - 100) 
@@ -64,26 +77,17 @@ globals
   max-init-sex-ed ;; maximum possible starting level of sex education range (if full sex education??)
   
   ;; amount people interact with their same and opposite gender friends
-  same-gender-interaction-degree
-  opposite-gender-interaction-degree
+  ;same-gender-interaction-degree
+  ;opposite-gender-interaction-degree
   
-  min-init-group-liking
-  max-init-group-liking
+  ;min-init-group-liking
+  ;max-init-group-liking
   
   ;min-init-attitude 9 (set max slider as max-init-attitude) 25 ;; boss was 50, then 31
   ;max-init-attitude 50 (set min slider as min-init-attitude) ;; boss was 50
 
   
-  ;; The next two values are determined by the symptomatic? chooser/drop-down
-  males-symptomatic?         ;; If true, males will be symptomatic IF infected with an STI
-  females-symptomatic?       ;; If true, females will be symptomatic IF infected with an STI
-  
-  
-  ;; The following 2 variables indicate the % effectiveness in preventing the spread
-  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
-  ;; against sexually transmitted infections varies based on disease/virus type
-  perfect-use-effectiveness    ;; The chance of preventing STI spread if condom is used perfectly
-  typical-use-effectiveness    ;; The chance of preventing STI spread if condom is used typically
+
 
 ]
 
@@ -96,11 +100,22 @@ turtles-own
   ; but this still applies to some social butterflies - assume they have a core friend group 
   ; in addition to more out-of-group links than others
   
-  sex-education ; the level of accurate education this agent has about safe sex
   
-  attitude  ; feelings about new technology
   
-  safe-sex-likelihood ;; attitude? used for color *********
+  
+  
+  safe-sex-likelihood ;; attitude? used for color ********* ;; probability of a BEHAVIOR
+  
+  attitude  ; feelings about condoms / desire/intention to use condoms
+  safe-sex-attitude          ;; The percent chance a person uses protection while in a couple
+                      ;; (determined by gender, slider, & normal distribution)
+                      
+  ;; how much their upbringing (parents' beliefs, life experiences, religious attitudes) encouraged safe sex    
+  certainty           ;;mesosystem-condom-encouragement 
+  
+  ;; JUSTIFICATION
+  justification ;sex-education ; the level of accurate education this agent has about safe sex
+  
   
   
   group-liking ; how the worker feels about his workgroup
@@ -117,7 +132,7 @@ turtles-own
   known?               ;; The person is infected and knows it (due to being symptomatic)
 
   
-  had-std?            ;; If true, the person once had an STD
+  ;had-std?            ;; If true, the person once had an STD
                       ;; (that they knew of, assume can't go away by itself unless known...?)
                       ;; perhaps a count instead of a boolean?
                       
@@ -131,20 +146,13 @@ turtles-own
   
 
   friendship-tendency ;; How likely this person is to make a new friend
-  
   coupling-tendency   ;; How likely the person is to join a couple.
-  commitment          ;; How long the person will stay in a couple-relationship. --> change to multiple partner links??
+  commitment          ;; How long the person will stay in a couple-relationship.
                        
   coupled?            ;; If true, the person is in a sexually active couple.
   partner             ;; The person that is our current partner in a couple.
   couple-length       ;; How long the person has been in a couple.
-  
 
-  condom-use          ;; The percent chance a person uses protection while in a couple
-                      ;; (determined by gender, slider, & normal distribution)
-                      
-  ;; how much their upbringing (parents' beliefs, life experiences, religious attitudes) encouraged safe sex                    
-  mesosystem-condom-encouragement 
 ]
 
 
@@ -179,10 +187,10 @@ end
 ;;
 to setup-globals
   
-  set min-init-group-liking 50 ;65
-  set max-init-group-liking 82
-  set same-gender-interaction-degree 85 ;hyp1-degree 51
-  set opposite-gender-interaction-degree 70 ;hyp2-degree 50
+  ;set min-init-group-liking 50 ;65
+  ;set max-init-group-liking 82
+  ;set same-gender-interaction-degree 85 ;hyp1-degree 51
+  ;set opposite-gender-interaction-degree 70 ;hyp2-degree 50
   
 
   
@@ -230,14 +238,16 @@ end
 ;;
 to setup-clusters
   
-  create-leaders num-clusters [  ]
+  create-leaders num-cliques [  ]
   
-  ;; The number of inter-group links between members
-  ;; (in addition to each member having a link with the leader, hence -1)
-  let num-links ( ( average-node-degree - 1 ) * group-size ) / 2
+  ;; The number of total inter-group links between members
+  ;; the - 1 accounts for each member linking to the leader
+  ;; multiplying by clique-size ensures there are enough for all group members
+  ;; then divide by 2, since you only need 1 link to connect 2 people
+  let num-links ( ( avg-num-links - 1 ) * clique-size ) / 2
   
   ;; if only 1 cluster, leader setxy 0 0 by default
-  if (num-clusters > 1) ;; if more than 1 cluster
+  if (num-cliques > 1) ;; if more than 1 cluster
   [
     layout-circle leaders 10
     
@@ -248,13 +258,13 @@ to setup-clusters
   ]
   
   let groupID 0
-  while [ groupID < num-clusters ]
+  while [ groupID < num-cliques ]
   [
-    create-people group-size [ set group-membership groupID ]
+    create-people clique-size [ set group-membership groupID ]
     
     ;; if only 1 cluster, layout-circle works 14.5
     ;; boss is in the center of the group
-    layout-circle people with [group-membership = groupID ] 5 - 0.5 * max( list (num-clusters - 5) (0) )  
+    layout-circle people with [group-membership = groupID ] 5 - 0.5 * max( list (num-cliques - 5) (0) )  
     ask people with [group-membership = groupID ]
     [
       setxy xcor + [xcor] of leader groupID ycor + [ycor] of leader groupID 
@@ -291,11 +301,7 @@ to setup-clusters
 end
 
 
-;; if you want your linked turtles to move spatially closer to each other, call this sometimes
-;; but i like seeing them stay in place and watching changes
-to update-network-layout
-  layout-spring turtles links 0.3 (world-width / (sqrt count turtles)) 1
-end
+
 
 
 
@@ -320,7 +326,7 @@ to setup-people
   ask turtles ;; don't actually create turtles here, generated by setup-clusters
   [ 
     
-    set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )
+    ;set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )
     set initial-number-friends (count friend-neighbors)
     set max-number-friends initial-number-friends + 2 ;; arbitrary number to give some flexibility ;(average-node-degree / 2)
 
@@ -333,14 +339,28 @@ to setup-people
     
     ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...
     
-    set had-std? false         ;; assumption made is that having only 1 std will deter the person from further unprotected sex
+    ;set had-std? false         ;; assumption made is that having only 1 std will deter the person from further unprotected sex
     ;set peer-had-std-impact 0  ;; good starting value...?
     
     ;; The below variables may be different in each turtle, and the values
     ;; follow an approximately normal distribution
-    assign-commitment         ;; How long the person will stay in a couple-relationship. --> change to multiple partner links ?? nah
-    assign-coupling-tendency  ;; How likely the person is to join a couple.
-    assign-friendship-tendency
+    
+    
+    ;assign-commitment         ;; How long the person will stay in a couple-relationship.
+    ;; assign commitment (doesn't change)
+    set commitment random-near average-relationship-length 
+    
+    ;assign-coupling-tendency  ;; How likely the person is to join a couple.
+    ;; assign coupling-tendency (doesn't change)
+    set coupling-tendency random-near average-coupling-tendency
+    
+    ;assign-friendship-tendency
+    ;; assign friendship-tendency (doesn't change)
+    set friendship-tendency random-near average-friendship-tendency ;; How likely the person is to make a friend.
+  
+  
+  
+  
   ]
     
   ;; set genders of turtles to be 50% male, 50% female
@@ -348,9 +368,9 @@ to setup-people
   
   ask turtles
   [ 
-    assign-condom-use ;; must do gender first!!!
-    assign-mesosystem-condom-encouragement
-    assign-safe-sex-likelihood ;; must do condom use first!!
+    assign-safe-sex-attitude ;; must do gender first!!!
+    assign-certainty
+    ;;assign-safe-sex-likelihood ;; must do condom use first!!
     set attitude safe-sex-likelihood ;min-init-attitude + random ( max-init-attitude - min-init-attitude )
     set label round attitude
     
@@ -385,33 +405,149 @@ end
 ;; the helper procedure RANDOM-NEAR so that the turtle variables have an
 ;; approximately "normal" distribution around the average values.
 
-to assign-condom-use  ;; turtle procedure
+
+to assign-safe-sex-attitude  ;; turtle procedure
   ifelse (is-female? self)
-  [ set condom-use random-near avg-female-condom-intention ]
-  [ set condom-use random-near avg-male-condom-intention ]
+  [ set safe-sex-attitude random-near avg-female-condom-intention ]
+  [ set safe-sex-attitude random-near avg-male-condom-intention ]
   ;average-condom-usage
 end
 
 to assign-commitment  ;; turtle procedure
+  ;; assign commitment (doesn't change)
   set commitment random-near average-relationship-length 
 end
 
 to assign-coupling-tendency  ;; turtle procedure
+  ;; assign coupling-tendency (doesn't change)
   set coupling-tendency random-near average-coupling-tendency
 end
 
 to assign-friendship-tendency  ;; turtle procedure
+  ;; assign friendship-tendency (doesn't change)
   set friendship-tendency random-near average-friendship-tendency
 end
 
-to assign-mesosystem-condom-encouragement
-  set mesosystem-condom-encouragement random-near avg-mesosystem-condom-encouragement
+to assign-certainty
+  ;; assign initial certainty
+  set certainty random-near avg-mesosystem-condom-encouragement
 end
 
-to assign-safe-sex-likelihood
+to update-safe-sex-attitude ;;assign-safe-sex-likelihood
   ;; mesosystem has 25% impact on attitude, personal desire has 75%
-  set safe-sex-likelihood (condom-use * .75 + mesosystem-condom-encouragement * .25)
+  ;; weighting justification 25 certainty/affect/mesosystem 75 = attitude 
+  ;;set safe-sex-likelihood (condom-use * .75 + certainty * .25)
+  
+  ;; strongly weighted to previous attitude
+  set safe-sex-attitude (safe-sex-attitude * .5 + justification * .25 + certainty * .25)
 end
+
+
+;; (combine certainty + justification) / 2 or weighted
+;; average with current attitude
+
+
+;;---------------------------------------------------------------------
+;; ATTITUDE IS YOUR LIKELIHOOD OF PRACTICING SAFE SEX
+;to-report calculate-safe-sex-attitude ;;safe-sex-likelihood ;; calculate-attitude
+;  report [ ] ;; (justification + certainty)/2 ==> attitude  = likelihood
+  ;; but if infected report 100 set just and certain to 100
+  ;; friend gets std justification to 100
+  ;; but which weighted more?
+;end
+
+
+
+
+;; Called if Group-liking? on
+;; Causes group members to talk to one another in their group
+;to talk-to-group ; turtle procedure
+;  let track 0
+;       ; if a worker has one link, then they only have a link with their boss, and 
+;       ; can't update their opinion due to group opinions
+;   while [ track <  hyp1-degree / 100 * ( count my-links - 1 ) ]
+;   [ 
+;       ; the amount of change is weighted by the degree of the hypothesis, the group-liking,
+;       ; and the difference in attitudes between the friend and one of their link neighbors
+;       set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
+;           ( [ attitude ] of one-of link-neighbors - attitude )
+;       set track track + 1
+;   ]
+;end
+
+
+;; agents talk to their same-gender friends about safe sex attitudes
+;talk-to-same-gender-friends
+
+
+
+to talk-to-friends  ;; turtle procedure
+  
+  ;; increment so that you can talk to more friends the more certain you feel in your attitude
+  let convoCount 0
+   while [ convoCount <  ( certainty / 100 ) * ( count my-friends ) ]  ;;convoCount <  (same-gender-interaction-degree / 100) * ( count my-friends )
+   [ 
+       ; the amount of change is weighted by the same-gender-interaction-degree, the group-liking,
+       ; and the difference in attitudes between the friend and one of their link neighbors
+       
+       let buddy one-of friend-neighbors
+       if (buddy != nobody)
+       [
+         ;; update attitude
+         
+         ;; your own certainty matters for changing your own attitude
+         ;; you dont care about their certainty, just what they have to back it up
+         
+         ;; near each other and one same side (above or below 50) give small boost to certainty
+         let attitudeChange ( (1 - (certainty / 100 )) * ([ attitude ] of buddy) + ([ attitude ] of buddy - attitude) * justification * [ justification ] of buddy)
+       
+         set attitude attitude + attitudeChange
+       ]
+       
+       
+       ;set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
+       ;    ( [ attitude ] of one-of friend-neighbors - attitude )
+       ;; certainty - likelihood/degree to which attitude changes is inversely proportional to certainty
+       ;; 100 - certainty = likelihood/willingness to change attitude
+
+      ;; set attitude attitude + ( same-gender-interaction-degree / 100 ) * ( group-liking / 100 ) * 
+      ;;     ( [ attitude ] of one-of friend-neighbors - attitude )
+       
+       set convoCount convoCount + 1
+   ]
+  
+end
+
+
+;to talk-to-boss 
+;  ; the degree of the hypothesis is used to limit how often the worker talks to his boss,
+;  ; since workers will most likely talk to their coworkers more often than they do with their boss
+;  if random 100 <= hyp2-degree
+;  [
+;  ; the worker updates his change-amt by his amount of expertise, liking of his boss, 
+;  ; degree of the hypothesis, and the difference in attitude of his boss 
+;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * 
+;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )
+
+
+
+;; change this somehow to media fear effect?
+;; thinking of aids/hiv
+
+;to crit-mass-effect ; worker procedure
+  ; to implement this, we assume that even if a worker doesn't have a link with 
+  ; all the members of his group, the effect of the technology increases anyway
+;  if count workers with [ group-membership = [ group-membership ] of myself and adopt = true ] > 
+;     threshold / 100 * (count workers with [ group-membership = [ group-membership ] of myself ] ) 
+;     [ set change-amt change-amt + value-of-threshold ]
+;end
+
+
+
+
+
+
+
 
 
 
@@ -477,18 +613,18 @@ to assign-turtle-color  ;; turtle procedure
 ;  if(safe-sex-likelihood > 90) [set color 68]  
 ;  if(safe-sex-likelihood > 95) [set color 69]  
   
-  if(attitude > 0) [set color 14]  ;; fix for 5??
-  if(attitude > 10) [set color 15]   
-  if(attitude > 20) [set color 16] 
-  if(attitude > 30) [set color 17] 
-  if(attitude > 40) [set color 18] 
-  if(attitude > 47) [set color 19] 
-  if(attitude > 53) [set color 69] 
-  if(attitude > 60) [set color 68]
-  if(attitude > 70) [set color 67]  
-  if(attitude > 80) [set color 66]  
-  if(attitude > 90) [set color 65]  
-  if(attitude > 95) [set color 64]  
+  if(safe-sex-attitude > 0) [set color 14]  ;; fix for 5??
+  if(safe-sex-attitude > 10) [set color 15]   
+  if(safe-sex-attitude > 20) [set color 16] 
+  if(safe-sex-attitude > 30) [set color 17] 
+  if(safe-sex-attitude > 40) [set color 18] 
+  if(safe-sex-attitude > 47) [set color 19] 
+  if(safe-sex-attitude > 53) [set color 69] 
+  if(safe-sex-attitude > 60) [set color 68]
+  if(safe-sex-attitude > 70) [set color 67]  
+  if(safe-sex-attitude > 80) [set color 66]  
+  if(safe-sex-attitude > 90) [set color 65]  
+  if(safe-sex-attitude > 95) [set color 64]  
 ;  green64-69…white....19-14 red
 
 end
@@ -530,13 +666,15 @@ to go
 ask turtles ;; possibly add a condition here...
 ;; like if you're on either end of the spectrum, nothing will change your mind
 [
+  talk-to-friends
+  
       ;if Group-liking? [ talk-to-group ]
       ;if Boss-influence? [ talk-to-boss ]
          
       ; the turtle updates their attitude from the effects of the hypotheses
       ;set attitude attitude + change-amt
       
-      set label round attitude
+      set label round safe-sex-attitude ;; attitude
       assign-turtle-color
 ]
  
@@ -582,6 +720,8 @@ ask turtles ;; possibly add a condition here...
   ; model ends when all the friends have made a decision / have the same attitutde....??
  ; (so sometimes the model never ends)
  ;if count friends with [ adopt = true or reject = true ] = count friends [ stop ]
+  
+      
   
   tick
 end
@@ -745,6 +885,16 @@ end
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;
+;; Setup Procedures ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Runtime Procedures ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Run the simulation
+;to go
 
 ;;
 ;; FROM VIRUS ON A NETWORK
@@ -770,8 +920,8 @@ to spread-virus
     ;; maybe every time they have safe sex theyhave a better attitude about it?
     
     ;; ADJUST THIS FOR FEMALE AND MALE?????
-    if random-float max-condom-factor > condom-use or
-    random-float max-condom-factor > ([condom-use] of partner)
+    if random-float max-condom-factor > safe-sex-attitude or
+    random-float max-condom-factor > ([safe-sex-attitude] of partner)
     [
       ;; TODO: factor in imperfect usage of condoms!!!
       if (random-float 100 < infection-chance)
@@ -793,15 +943,17 @@ to check-infected
   if is-male? self and males-symptomatic? and infected?
   [
     set known? true 
-    set had-std? true
-    set attitude 100 ;; after getting an std, turtles always want to have safe sex
+    ;set had-std? true
+    set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
+    update-safe-sex-attitude
   ]
   
   if is-female? self and females-symptomatic? and infected?
   [
     set known? true 
-    set had-std? true
-    set attitude 100 ;; after getting an std, turtles always want to have safe sex
+    ;set had-std? true
+    set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
+    update-safe-sex-attitude
   ]
   
   assign-shape
@@ -852,67 +1004,14 @@ to select
   if picked? [stop]
 end 
 
-;; Called if Group-liking? on
-;; Causes group members to talk to one another in their group
-;to talk-to-group ; turtle procedure
-;  let track 0
-;       ; if a worker has one link, then they only have a link with their boss, and 
-;       ; can't update their opinion due to group opinions
-;   while [ track <  hyp1-degree / 100 * ( count my-links - 1 ) ]
-;   [ 
-;       ; the amount of change is weighted by the degree of the hypothesis, the group-liking,
-;       ; and the difference in attitudes between the friend and one of their link neighbors
-;       set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
-;           ( [ attitude ] of one-of link-neighbors - attitude )
-;       set track track + 1
-;   ]
-;end
 
-
-;; agents talk to their same-gender friends about safe sex attitudes
-to talk-to-same-gender-friends ; turtle procedure
-  let convoCount 0
- 
-   while [ convoCount <  same-gender-interaction-degree / 100 * ( count my-friends ) ]
-   [ 
-       ; the amount of change is weighted by the degree of the hypothesis, the group-liking,
-       ; and the difference in attitudes between the friend and one of their link neighbors
-       ;set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
-       ;    ( [ attitude ] of one-of friend-neighbors - attitude )
-       set attitude attitude + ( same-gender-interaction-degree / 100 ) * ( group-liking / 100 ) * 
-           ( [ attitude ] of one-of friend-neighbors - attitude )
-       set convoCount convoCount + 1
-   ]
-  
+;; if you want your linked turtles to move spatially closer to each other, call this sometimes
+;; but i like seeing them stay in place and watching changes
+;; so this doesn't get called currently
+to update-network-layout
+  layout-spring turtles links 0.3 (world-width / (sqrt count turtles)) 1
 end
 
-
-;to talk-to-boss 
-;  ; the degree of the hypothesis is used to limit how often the worker talks to his boss,
-;  ; since workers will most likely talk to their coworkers more often than they do with their boss
-;  if random 100 <= hyp2-degree
-;  [
-;  ; the worker updates his change-amt by his amount of expertise, liking of his boss, 
-;  ; degree of the hypothesis, and the difference in attitude of his boss 
-;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * 
-;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )
-
-
-
-;; change this somehow to media fear effect?
-;; thinking of aids/hiv
-
-;to crit-mass-effect ; worker procedure
-  ; to implement this, we assume that even if a worker doesn't have a link with 
-  ; all the members of his group, the effect of the technology increases anyway
-;  if count workers with [ group-membership = [ group-membership ] of myself and adopt = true ] > 
-;     threshold / 100 * (count workers with [ group-membership = [ group-membership ] of myself ] ) 
-;     [ set change-amt change-amt + value-of-threshold ]
-;end
-
-
-
-;;---------------------------------------------------------------------
 
 ;;
 ;; Setter functions for the symptomatic? drop down/chooser
@@ -1009,9 +1108,9 @@ end
 ;;
 @#$#@#$#@
 GRAPHICS-WINDOW
-410
+430
 10
-789
+809
 410
 15
 15
@@ -1036,10 +1135,10 @@ weeks
 30.0
 
 BUTTON
+180
 330
-105
-405
-138
+255
+363
 setup
 setup
 NIL
@@ -1053,10 +1152,10 @@ NIL
 1
 
 MONITOR
-170
-550
-235
-595
+725
+590
+790
+635
 % infected
 %infected
 2
@@ -1064,10 +1163,10 @@ MONITOR
 11
 
 MONITOR
-5
-550
-55
-595
+560
+590
+610
+635
 #F
 count females
 17
@@ -1075,10 +1174,10 @@ count females
 11
 
 MONITOR
-55
-550
-105
-595
+610
+590
+660
+635
 #M
 count males
 17
@@ -1086,10 +1185,10 @@ count males
 11
 
 MONITOR
-105
-550
-170
-595
+660
+590
+725
+635
 # infected
 count turtles with [infected?]
 17
@@ -1097,10 +1196,10 @@ count turtles with [infected?]
 11
 
 PLOT
-0
-325
-250
-495
+555
+415
+805
+585
 % of Population Infected
 weeks
 percentage
@@ -1117,10 +1216,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
 MONITOR
-255
-325
-330
-370
+395
+415
+470
+460
 % F infected
 %F-infected
 2
@@ -1128,10 +1227,10 @@ MONITOR
 11
 
 MONITOR
-330
-325
-405
-370
+470
+415
+545
+460
 % M infected
 %M-infected
 2
@@ -1140,9 +1239,9 @@ MONITOR
 
 BUTTON
 335
-220
+290
 405
-253
+323
 NIL
 select
 T
@@ -1157,19 +1256,19 @@ NIL
 
 TEXTBOX
 305
-190
+260
 410
-218
+288
 Select an individual to have an STD
 11
 0.0
 1
 
 MONITOR
-255
-370
-330
-415
+395
+460
+470
+505
 #F infected
 count females with [infected?]
 17
@@ -1177,10 +1276,10 @@ count females with [infected?]
 11
 
 MONITOR
-330
-370
-405
-415
+470
+460
+545
+505
 #M infected
 count males with [infected?]
 17
@@ -1189,19 +1288,19 @@ count males with [infected?]
 
 TEXTBOX
 10
-60
+205
 325
-95
+240
 Could include parental influences, religious upbringing/teachings, etc. before person reached college
 11
 0.0
 1
 
 BUTTON
-310
-145
-405
-178
+235
+290
+330
+323
 NIL
 infect-random
 NIL
@@ -1215,20 +1314,20 @@ NIL
 1
 
 CHOOSER
-840
-295
-932
-340
+15
+320
+107
+365
 sex-ed-type
 sex-ed-type
 "full" "abstinence" "none"
 1
 
 CHOOSER
-800
-180
-965
-225
+855
+185
+1020
+230
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
@@ -1236,38 +1335,38 @@ symptomatic?
 
 SLIDER
 5
-10
+45
 120
-43
-num-clusters
-num-clusters
+78
+num-cliques
+num-cliques
 1
 20
-5
+7
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-245
-10
-405
-43
-average-node-degree
-average-node-degree
-1
-group-size - 1
-5
+285
+45
+430
+78
+avg-num-links
+avg-num-links
+2
+clique-size - 1
+4
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-800
+855
 145
-965
+1020
 178
 infection-chance
 infection-chance
@@ -1281,24 +1380,24 @@ HORIZONTAL
 
 SLIDER
 125
-10
-240
-43
-group-size
-group-size
+45
+280
+78
+clique-size
+clique-size
+2
+35
+8
 1
-50
-36
 1
-1
-NIL
+people
 HORIZONTAL
 
 BUTTON
-265
 260
-335
-293
+330
+330
+363
 go-once
 go
 NIL
@@ -1313,9 +1412,9 @@ NIL
 
 BUTTON
 335
-260
+330
 405
-293
+363
 NIL
 go
 T
@@ -1329,10 +1428,10 @@ NIL
 1
 
 MONITOR
-520
-515
-645
-560
+835
+510
+960
+555
 avg friends per turtle
 ;;mean [count friend-neighbors] of turtles\navg-friends-per-turtle
 3
@@ -1340,10 +1439,10 @@ avg friends per turtle
 11
 
 MONITOR
-650
-515
-820
-560
+965
+510
+1135
+555
 avg sexual partners of turtles
 ;;mean [count sexual-partner-neighbors] of turtles\navg-partners-per-turtle
 3
@@ -1352,9 +1451,9 @@ avg sexual partners of turtles
 
 SLIDER
 10
-180
+110
 220
-213
+143
 avg-male-condom-intention
 avg-male-condom-intention
 0
@@ -1367,14 +1466,14 @@ HORIZONTAL
 
 SLIDER
 10
-215
+145
 220
-248
+178
 avg-female-condom-intention
 avg-female-condom-intention
 0
 100
-85
+70
 1
 1
 NIL
@@ -1382,9 +1481,9 @@ HORIZONTAL
 
 SLIDER
 10
-95
+240
 285
-128
+273
 avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
@@ -1397,18 +1496,18 @@ HORIZONTAL
 
 TEXTBOX
 10
-160
+90
 290
-178
-Intention/desire to use a condom == attitude
+108
+Attitude:  Intention/desire to use a condom
 11
 0.0
 1
 
 SLIDER
-800
+855
 35
-1000
+1055
 68
 %-imperfect-condom-usage
 %-imperfect-condom-usage
@@ -1421,25 +1520,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-800
+855
 70
-1000
+1055
 103
 media-prevalence
 media-prevalence
 0
 100
-50
+0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-5
-290
-212
-323
+850
+365
+1057
+398
 avg-media-consumption
 avg-media-consumption
 0
@@ -1451,9 +1550,9 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-800
+860
 15
-975
+1035
 33
 Environment/External variables
 11
@@ -1461,9 +1560,9 @@ Environment/External variables
 1
 
 TEXTBOX
-800
+855
 125
-930
+985
 143
 Infection characteristics
 11
@@ -1471,10 +1570,10 @@ Infection characteristics
 1
 
 PLOT
-270
-415
-510
-565
+10
+375
+305
+555
 Average safe sex likelihood
 weeks
 percentages
@@ -1491,10 +1590,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot avg-female-attitude"
 
 MONITOR
-525
-415
-645
-460
+840
+410
+960
+455
 # in-group friends
 num-in-group-friends
 17
@@ -1502,10 +1601,10 @@ num-in-group-friends
 11
 
 MONITOR
-525
-465
-645
-510
+840
+460
+960
+505
 # out-group friends
 num-out-group-friends
 17
@@ -1513,10 +1612,10 @@ num-out-group-friends
 11
 
 MONITOR
-650
-415
-785
-460
+965
+410
+1100
+455
 # in-group partners
 num-in-group-partners
 17
@@ -1524,27 +1623,51 @@ num-in-group-partners
 11
 
 MONITOR
-650
-465
-785
-510
+965
+460
+1100
+505
 # out-group partners
 num-out-group-partners
 17
 1
 11
 
+TEXTBOX
+10
+10
+360
+40
+Variables to set up a mini social network, consisting primarily of discrete groups with limited links between out-group agents.
+11
+0.0
+1
+
+TEXTBOX
+10
+190
+160
+208
+Certainty:  
+11
+0.0
+1
+
+TEXTBOX
+15
+290
+230
+320
+Justification: accurate knowledge about safe sex practices and benefits
+11
+0.0
+1
+
 @#$#@#$#@
 ## WHAT IS IT? 
 
-This model aims to simulate the spread of sexually transmitted infections (STIs) throughout a college-aged population, taking into account attitudes and behaviors towards safe sex. 
+This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults, taking into account how these variables  influence one another and change over time.
 
-
-### Simplifying assumptions
-
-For this model, sexual orientation is not a parameter, and we are only considering heterosexual/heteronormative, college-aged young adults. 
- 
-Although STIs may be transmitted through avenues other than sexual behavior, as in drug needles, childbirth, or breastfeeding, this model focuses on the sexual interactions, as they are most common form of transmission - especially in the age demographic in question. 
 
 ## Guiding questions to consider / goals of the model
 
@@ -1558,10 +1681,10 @@ Are the two above questions interdependent? What implications could this have fo
 
 ## Next steps
 
- -- Adjusting from randomly moving agents to networks using the NW extension.
- -- Establishing networks consisting of "friendship" links and "sexual partner" links
+Creating custom attitudes for each agent, rather than blanket assumptions about actions
+Establishing networks consisting of "friendship" links and "sexual partner" links
+
  -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]
- -- Creating custom attitudes for each agent, rather than blanket assumptions about actions
  -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission
  -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex
  -- Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors
@@ -1570,36 +1693,63 @@ I will do further research in order to determine and more accurately base some o
 
 ## HOW IT WORKS 
 
-Agents in this model are either male or female - the difference between these agents is distinguished by color (blue for males, pink for females), as well as by shape. 
-An infected person is denoted with the addition of a red dot on their body.
+Agents in this model are either male or female - the difference between these agents is distinguishable by their shape. Their color indicates their likelihood of engaging in safe sex (red = least likely --> green = most likely). 
 
-If an agent is not in a relationship, they move around semi-randomly within a certain area. As the individuals move around randomly, they may come across a potential sexual partner.
- -- If both partners are attracted to the gender of the other partner, there is a chance these two will have a sexual relationship; it is not guaranteed.
- -- If a couple is formed, they stay next to each other (stationary) for a pre-determined length of time and their respective patches turn gray in order to more easily identify them.
- -- If one partner in the couple is infected, the other partner is at risk for infection if both partners do not use condoms for each week of their relationship. 
- -- The sexual relationship lasts for a limited time, and the two individuals move randomly about once again until they find another potential partner. 
+An agent's likelihood of engaging in safe sex is a probability that depends on his or her:
+-- Attitude:  their personal desire/intention to have safe sex (CONDOM-USAGE) is originally set by sliders dependent on gender.
+-- Certainty:  their conviction with which they hold their attitude. The influence of an individual's upbringing, such as parental beliefs and religious attitudes (symbolized by the MESOSYSTEM-CONDOM-ENCOURAGEMENT variable), represents their initial certainty.
+-- Justification:  the strength of the logical explanations to back up their attitude. Initially, this will be set to a variable representing a level of sex ed. Experiences such as contracting an STD, or a friend contracting an STD, would increase this parameter.
 
-The model stops when the desired percentage of the population is infected (indicated with a slider). 
+Each time step (tick), if an agent is coupled, they increment the length of their relationship. The sexual relationship lasts for a limited period of time (based on the commitment levels of each partner), soif their relationship length has gotten too long, the two will break all links to one another when the sexual relationship ends. 
+
+If an agent is does not have a sexual partner on a tick, they attempt to find a mate that is single and of the opposite gender. First they examine their friends, if that is unsuccessful, they try finding a agent within the same social circle that they are not linked to, and as a last resort, they try to find the closest potential mate.
+
+Every agent, regardless of coupled status, has a chance to make a new friend each tick, if their friend count has not already reached a maximum. (A maximum friend count is required so that the clusters remain somewhat discrete and do not form one large clump in the middle of the screen.)
+
+On every tick while the two agents are coupled, if one partner is infected, the other partner is at risk for infection based on a probability of having sex and using protection. If an agent becomes infected through this interaction (and is of a symptomatic gender), they do not realize they are infected until the next tick.
+
+
+
+
+
+
+
+
+
+
+
+### Simplifying assumptions
+
+This model only simulates heterosexual/heteronormative, college-aged young adults - both male and female. Agents in the simulation can only have a maximum of one partner at a time. The complexities of different types of sexual behaviors (abstinence, long-term monogamy, or strictly hook-ups) are not included in the model.
+ 
+Although STIs may be transmitted through avenues other than sexual behavior, as in drug needles, childbirth, or breastfeeding, this model focuses on the sexual interactions, as they are most common form of transmission - especially in the age demographic in question. Additionally, although there are forms of protection against STIs/STDs other than condoms, it is the form of sexual protection that is most prevalent and accessible for the demographic of interest.
+
+Although some members of the cliques have or develop links to agents in other groups, the social groups are generated at the beginning of the simulation and remain fairly static. Agents cannot change group affiliation over time, and are not able to be part of more than one social group at a time. 
 
 ## HOW TO USE IT 
 
-Using sliders, determine the initial population, including percentages of representations of different sexual orientations. Users also determine the likelihood of an individual using a condom and the point at which the model should stop. Indicating a stop percentage allows the user to see who has (or has not) been infected after the determined percentage has been reached. 
 
-The SETUP button will generate a population based on the user’s determined values. Once the population is initialized, the user presses the SELECT button and clicks on an individual in the simulation to infect with a sexually transmitted infection. This allows the user to observe any patterns that may arise from an initial “patient zero”. 
+Using the sliders, choose the number of social groups (NUM-CLIQUES) to create and how many people should make up each social group (CLIQUE-SIZE). The agents within the clique are only connected to others within their social group, and will have about AVG-NUM-LINKS "friends", that they are connected to via a blue link. One of these links will be to the central "leader" of the clique. This "leader" is identical to other agents, except it additionally has links to all other clique "leaders", which helps set up a visual layout and generates a very loosely connected social network containing mostly discrete clusters. 
+
+The SETUP button generates this network and assigns unique values to each individual, based on a normal distribution centered around the average values indicated by the sliders AVG-MESOSYSTEM-CONDOM-ENCOURAGEMENT and AVG-MALE-CONDOM-INTENTION/AVG-FEMALE-CONDOM-INTENTION (depends on agent's gender),as well as setting other variables that are not visible to the user in the same fashion (e.g. tendency to make a friend or sexual partner, maximum length of time willing to spend coupled with a sexual partner).
+
+SETUP will infect one person in the population by default. If the user wants to infect another agent, they can do so through pressing the SELECT button and clicking on an agent, or pressing INFECT-RANDOM. This can also be done while the model is running. 
+
+An infected person is denoted with the addition of a dot on their body, and they will have a INFECTION-CHANCE chance of infecting a partner during unprotected sex. If they are of a gender that is symptomatic of the STI (set by the SYMPTOMATIC? chooser), they are aware of their infected status, the dot will be white, and the agent will automatically practice safe sex to protect his or her partners. However, if the agent is not a gender that is symptomatic, the dot will appear black, they will be oblivious to their infected state, and continue their normal probability of practicing safe sex.
+
+
+Users also determine the likelihood of an individual using a condom and the point at 
 
 To start the simulation, the user should press the GO button. The simulation will run until the GO button is pressed again or the determined stop-percentage has been met, whichever happens first. 
 
 Monitors indicate the percentage of the total population that has been infected, as well as counts and percentages for some demographics. The graph shows the percentage of each gender that is infected.
 
-Once the simulation has reached a stopping point, whether by pressing GO a second time or the stop-percentage has been met, the user can press the HIDE INFECTED button. This will only display the remaining members of the population who have yet to be infected. This information could be used when noticing any possible patterns. To return to the entire population, select the SHOW INFECTED button. 
 
 The user can affect the likelihood of safe sex being practiced, i.e. how likely an individual is to use a condom. If both partners use a condom, there is an additional probability that the condom/protection is used correctly, and consequently different likelihoods of the infection being transmitted. However, if one partner chooses to use a condom while the other does not, the model simulates no use of a condom, and both parties are potentially at risk of infection. This could be explored and altered in possible extensions of this model. 
 
 
 
 ## THINGS TO NOTICE 
-
-If the INITIAL PEOPLE slider is set relatively high (300-500), you can easily notice that couples start forming on top of each other. It appears as though there are 3 or more individuals in a given sexual relationship, but in actuality, some individuals may be occupying the same patch and only one is visible. 
 
 
 ## THINGS TO TRY 
@@ -1608,29 +1758,27 @@ TBA
 
 ## EXTENDING THE MODEL 
 
-***(These were suggestions from the STI model that Landon and I created for DTTTL Winter 2013 - I plan to incorporate some of these elements into the model.)***
-
 Symptoms of sexually transmitted infections aren’t always visible or known, and some STIs display symptoms differently in different genders. These factors impact how often a particular gender might choose to get tested or use protection in sexual encounters. To better simulate real-life behaviors, implement the chance that females have a high likelihood of experiencing symptoms, while males do not. If a person experiences symptoms, they can become treated and cured of the infection in some defined amount of time. You can also implement the condition that if a person thinks they are infected, they will definitely use protection. See how these changes impact the outcome of the model.
 
 In different relationships, condom use may vary. Additionally, condoms are not always effective or properly used. To more accurately account for likelihood of condom use and consequent transmission of infections, create different condom-use tendencies for each sexual orientation and create a probability that a condom is ineffective. 
 
-The culture and sexual behavior habits might alter likelihood of transmission for couples depending on their sexual orientation, i.e. heterosexual vs. bisexual vs. homosexual. Choose different probabilities of transmission for couples of different sexual orientations. Notice if higher transmission rates and lower population percentages alters the outcomes. 
+
 
 ## NETLOGO FEATURES 
-n-of is used to divide the turtle population into genders and sexual orientations.
+n-of is used to split the turtle population into two genders evenly.
 
 Breeds are used for the genders of turtles, as well as for distinguishing friend links from sexual partner links.
 
-Every time-step (tick), a slider’s value is checked against a global variable that holds the value of what the slider’s value was the time-step before. If the slider’s current value is different than the global variable, NetLogo knows to call procedures that adjust the population’s tendencies. Otherwise, those adjustment procedures are not called. 
+The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values across the population.
 
-The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values. (from aids model....)
 
 ## RELATED MODELS, CREDITS AND REFERENCES 
 Virus
 AIDS
 Disease Solo
 Virus on a Network
-STI model, created with Landon Basham for LS 426, Winter 2013.
+STI model (Lizz Bartos & Landon Basham for LS 426, Winter 2013)
+Sophia Sullivan Final Project (EECS372 Spring 11): http://modelingcommons.org/browse/one_model/3023
 @#$#@#$#@
 default
 true
