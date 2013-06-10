@@ -463,4 +463,71 @@ in set globals\
 ;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * \
 ;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )\
 ;  ]\
-;end}
+;end\
+\
+\
+\
+\
+\
+\
+\
+\
+;; agents talk to their same-gender friends about safe sex attitudes\
+;talk-to-same-gender-friends\
+\
+\
+;; amount people interact with their same and opposite gender friends\
+  ;same-gender-interaction-degree\
+  ;opposite-gender-interaction-degree\
+  \
+  ;min-init-group-liking\
+  ;max-init-group-liking\
+  \
+  ;min-init-attitude 9 (set max slider as max-init-attitude) 25 ;; boss was 50, then 31\
+  ;max-init-attitude 50 (set min slider as min-init-attitude) ;; boss was 50\
+\
+\
+  ;had-std?           ;; If true, the person once had an STD\
+                      ;; (that they knew of, assume can't go away by itself unless known...?)\
+                      ;; perhaps a count instead of a boolean?\
+                      \
+                      ;; or maybe just never get cured, and use infected instead\
+   \
+                      \
+  ;; dont need this as its own variable\
+  ;; just update and check when talking to peers                   \
+  ;peer-had-std-impact ;; the amount of impact a peer having an std has on this person, assume that doesn't fade over time\
+                      ;; will be updated if more friends get infected, and bigger impact for stronger links\
+\
+\
+  \
+  ;set min-init-group-liking 50 ;65\
+  ;set max-init-group-liking 82\
+  ;set same-gender-interaction-degree 85 ;hyp1-degree 51\
+  ;set opposite-gender-interaction-degree 70 ;hyp2-degree 50\
+\
+\
+  ;set had-training false ; only allows training to happen once\
+\
+  ;; Default number of links generated if Group-liking enabled....they talk to coworkers\
+  ;; i.e. the number of inter-group links created, in addition to a link with the leader\
+  ;let num-links ( ( average-node-degree - 1 ) * group-size ) / 2\
+\
+\
+\
+  \
+  ;; Boss-influence factors.... not entirely sure on this meaning either...\
+;  ifelse (Boss-influence?) [\
+;    ask friends\
+;    [\
+;      set boss-liking min-init-boss-liking + random ( max-init-boss-liking - min-init-boss-liking ) \
+;      set sex-education min-init-sex-ed + random ( max-init-sex-ed - min-init-sex-ed )\
+;    ]\
+;    ask leaders [ set attitude min-init-att + random ( max-init-att - min-init-att ) ]\
+;  ]\
+\
+\
+    ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...\
+    \
+    ;set had-std? false         ;; assumption made is that having only 1 std will deter the person from further unprotected sex\
+    ;set peer-had-std-impact 0  ;; good starting value...?}

@@ -1,34 +1,37 @@
 ;; TODO
 ;; friendships die??.... assume no
 ;; turtles monogamous
-  ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
+;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
 ;; "socialite"? has more connections to a bunch of random groups rather than one specific friend group
 ;breed [social-butterflies social-butterfly]
 ;; assume talk to friends of both genders about safe sex habits?
 ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
-        ;; TODO?????
-    ;; if their attitudes towards safe sex are different by a large margin,
-    ;; instantly break up
+;; TODO?????
+;; if their attitudes towards safe sex are different by a large margin,
+;; instantly break up
+
+;; set female ranges - avg safe sex desire, avg attitude, avg education
+;; set male ranges???    
+
 
 
 ;; Temporary breeds for setting up social groups/cliques
 breed [ people person ] ;; default turtle type, will later be changed to male or female
 breed [ leaders leader ] ;; "clique leader" in a way - exists to help with creating layout and link between groups
 
-;; Breeds (agentsets) for gender (once social groups/networks established)
+                         ;; Breeds (agentsets) for gender (once social groups/networks established)
 breed [males male]
 breed [females female]
 
 links-own [ group ] ; a way to access the links in each group
 
-; turtles can only have one sexual partner at a time in this model
+                    ; turtles can only have one sexual partner at a time in this model
 undirected-link-breed [sexual-partners sexual-partner] 
 undirected-link-breed [friends friend]
 
 
 
-;; set female ranges - avg safe sex desire, avg attitude, avg education
-;; set male ranges???    
+
 
 globals
 [  
@@ -38,31 +41,31 @@ globals
   females-symptomatic?       ;; If true, females will be symptomatic IF infected with an STI
   
   
-  ;; The following 2 variables indicate the % effectiveness in preventing the spread
-  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
-  ;; against sexually transmitted infections varies based on disease/virus type
+                             ;; The following 2 variables indicate the % effectiveness in preventing the spread
+                             ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
+                             ;; against sexually transmitted infections varies based on disease/virus type
   perfect-use-effectiveness  ;; The chance of preventing STI spread if condom is used perfectly
   typical-use-effectiveness  ;; The chance of preventing STI spread if condom is used typically
   
   
-  ;infection-chance          ;; The chance out of 100 that an infected person
+                             ;infection-chance          ;; The chance out of 100 that an infected person
                              ;; will transmit infection during one week of couplehood
                              ;; [set by slider] (default is scale 0 - 100) 
-                             
+  
   max-condom-factor         ;; Maximum condom use value
                             ;; Used as an upper bound for generating random chance of using a condom
                             ;; (default is scale 0 - 100)    
-                            
-  ;average-condom-usage     ;; Average frequency that a person uses protection
+  
+                            ;average-condom-usage     ;; Average frequency that a person uses protection
                             ;; [set by slider] (default is scale 0 - 100)         
-   
+  
   max-coupling-factor       ;; Maximum coupling tendency value
                             ;; Used as an upper bound for generating random chance of coupling (that is nearby)
                             ;; (default is scale 0 - 100)
-                            
+  
   average-coupling-tendency ;; Average tendency of a person to couple with another person
                             ;; in order to couple, the pairings must consist of one male and one female agent
-                            
+  
   max-friendship-factor     ;; Maximum coupling tendency value
                             ;; Used as an upper bound for generating random chance of making a friend (that is nearby)
                             ;; (default is scale 0 - 100)
@@ -76,19 +79,6 @@ globals
   min-init-sex-ed ;; minimum possible starting level of sex education range (low end if no sex education)
   max-init-sex-ed ;; maximum possible starting level of sex education range (if full sex education??)
   
-  ;; amount people interact with their same and opposite gender friends
-  ;same-gender-interaction-degree
-  ;opposite-gender-interaction-degree
-  
-  ;min-init-group-liking
-  ;max-init-group-liking
-  
-  ;min-init-attitude 9 (set max slider as max-init-attitude) 25 ;; boss was 50, then 31
-  ;max-init-attitude 50 (set min slider as min-init-attitude) ;; boss was 50
-
-  
-
-
 ]
 
 
@@ -96,68 +86,57 @@ globals
 turtles-own
 [ 
   
-  group-membership ; which cluster/friend group the friends and leaders are mainly part of
-  ; but this still applies to some social butterflies - assume they have a core friend group 
-  ; in addition to more out-of-group links than others
   
   
+  safe-sex-attitude   ;; The percent chance a person uses protection while in a couple
+                      ;; (determined by gender, slider, & normal distribution)
   
-  
-  
-  safe-sex-likelihood ;; attitude? used for color ********* ;; probability of a BEHAVIOR
+                      ;safe-sex-likelihood ;; attitude? used for color ********* ;; probability of a BEHAVIOR
   
   attitude  ; feelings about condoms / desire/intention to use condoms
-  safe-sex-attitude          ;; The percent chance a person uses protection while in a couple
-                      ;; (determined by gender, slider, & normal distribution)
-                      
-  ;; how much their upbringing (parents' beliefs, life experiences, religious attitudes) encouraged safe sex    
+  
+  
+            ;; how much their upbringing (parents' beliefs, life experiences, religious attitudes) encouraged safe sex    
   certainty           ;;mesosystem-condom-encouragement 
   
-  ;; JUSTIFICATION
+                      ;; JUSTIFICATION
   justification ;sex-education ; the level of accurate education this agent has about safe sex
   
   
   
-  group-liking ; how the worker feels about his workgroup
-  ;boss-liking  ; how the worker feels about his boss
+                ;group-liking ; how the worker feels about his workgroup
+                ;boss-liking  ; how the worker feels about his boss
+  
+  group-membership ; which cluster/friend group the friends and leaders are mainly part of
+                   ; but this still applies to some social butterflies - assume they have a core friend group 
+                   ; in addition to more out-of-group links than others
   
   
   initial-number-friends
   max-number-friends  ;; Set a maximum on the number of friends a person can have
                       ;; because otherwise will keep making friends, moving closer,
                       ;; and all cluster in middle of screen
-   
+  
   
   infected?            ;; If true, the person is infected (and infectious)
   known?               ;; The person is infected and knows it (due to being symptomatic)
-
   
-  ;had-std?            ;; If true, the person once had an STD
-                      ;; (that they knew of, assume can't go away by itself unless known...?)
-                      ;; perhaps a count instead of a boolean?
-                      
-                      ;; or maybe just never get cured, and use infected instead
-   
-                      
-  ;; dont need this as its own variable
-  ;; just update and check when talking to peers                   
-  ;peer-had-std-impact ;; the amount of impact a peer having an std has on this person, assume that doesn't fade over time
-                      ;; will be updated if more friends get infected, and bigger impact for stronger links
-  
-
   friendship-tendency ;; How likely this person is to make a new friend
   coupling-tendency   ;; How likely the person is to join a couple.
   commitment          ;; How long the person will stay in a couple-relationship.
-                       
+  
   coupled?            ;; If true, the person is in a sexually active couple.
   partner             ;; The person that is our current partner in a couple.
   couple-length       ;; How long the person has been in a couple.
-
+  
 ]
 
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;
+;; Setup Procedures ;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;
 ;;; SETUP PROCEDURES
@@ -169,30 +148,25 @@ to setup
   setup-clusters ;; set up social groups/cliques
   setup-people   ;; change breeds to male, female, set individual turtle attributes
   infect-random  ;; infect one random person (user can choose more, if they want)
-
   
-  ; make the network look a little prettier 
-  ;; actually... just rearranges it a bit. better to not move it at all?
-  ;repeat 15 [ update-network-layout ] ;; was 10
   
-  setup-links
+                 ; make the network look a little prettier 
+                 ;; actually... just rearranges it a bit. better to not move it at all?
+                 ;repeat 15 [ update-network-layout ] ;; was 10
+  
+                 ;setup-links
+                 ;; don't really need to create any initial relationships, they'll form on their own
+                 ;ask n-of 1 friends [set breed sexual-partners]
+  ask links [assign-link-color]
+  
   reset-ticks
 end
-
-
 
 
 ;;
 ;; ----- setup-globals ----- ;;
 ;;
 to setup-globals
-  
-  ;set min-init-group-liking 50 ;65
-  ;set max-init-group-liking 82
-  ;set same-gender-interaction-degree 85 ;hyp1-degree 51
-  ;set opposite-gender-interaction-degree 70 ;hyp2-degree 50
-  
-
   
   
   ;; arbitrary #'s....... TODO *****
@@ -205,32 +179,21 @@ to setup-globals
   set perfect-use-effectiveness 98 ;; The chance of preventing STI spread if condom is used perfectly
   set typical-use-effectiveness 85 ;; The chance of preventing STI spread if condom is used typically
   
-  
-  ;set had-training false ; only allows training to happen once
-
-  
-  ;; Default number of links generated if Group-liking enabled....they talk to coworkers
-  ;; i.e. the number of inter-group links created, in addition to a link with the leader
-  ;let num-links ( ( average-node-degree - 1 ) * group-size ) / 2
-  
   run word "set-" symptomatic?
   
   set max-friendship-factor 10.0 ;; .... edit...?
   
-  set max-coupling-factor 10
-  set max-condom-factor 11.0
+  set max-coupling-factor 10 ;; .... edit...?
+  set max-condom-factor 11.0 ;; .... edit...?
   
-  ;; In the AIDS model, these variables are set with sliders
-  ;; For simplicity, we set them to predetermined values
-  ;; Individual values in each turtle are still set using 
-  ;; a random value following a normal distribution
+                             ;; AIDS model sets these variables with sliders, but for simplicity, use predetermined values
+                             ;; Individual values per turtle are still set using a random value following a normal distribution
   
-  set average-coupling-tendency max-coupling-factor / 2 ;should be less than max-coupling-factor ; 5
+  set average-coupling-tendency max-coupling-factor / 2     ;should be less than max-coupling-factor ; 5
   set average-relationship-length 20
   set average-friendship-tendency max-friendship-factor / 2 ;should be less than max-coupling-factor ; 5
   
   
-
 end
 
 ;;
@@ -288,7 +251,7 @@ to setup-clusters
     
     set groupID groupID + 1
   ]
-
+  
   ;; comment or uncomment this if you want a group "leader" to be in the center of the friend group
   ;; and also make all the friend groups discrete to begin
   ;; (might form a couple friendships or sexual relationships)
@@ -297,7 +260,7 @@ to setup-clusters
   
   ;;ask leaders [ die ] ;; was only using leaders for spatial setup
   ;; ask n-of num-clusters people to link with not link-neighbor? myself and group-membership != ...my group id
-
+  
 end
 
 
@@ -309,74 +272,60 @@ end
 ;;---------------------------------------------------------------------
 ;;
 ;; ----- setup-people -----
-;; Turn into males and females
+;; Turn into males and females, set personalized member vars
 ;;
 to setup-people
-  
-  ;; Boss-influence factors.... not entirely sure on this meaning either...
-;  ifelse (Boss-influence?) [
-;    ask friends
-;    [
-;      set boss-liking min-init-boss-liking + random ( max-init-boss-liking - min-init-boss-liking ) 
-;      set sex-education min-init-sex-ed + random ( max-init-sex-ed - min-init-sex-ed )
-;    ]
-;    ask leaders [ set attitude min-init-att + random ( max-init-att - min-init-att ) ]
-;  ]
   
   ask turtles ;; don't actually create turtles here, generated by setup-clusters
   [ 
     
-    ;set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )
     set initial-number-friends (count friend-neighbors)
-    set max-number-friends initial-number-friends + 2 ;; arbitrary number to give some flexibility ;(average-node-degree / 2)
-
+    set max-number-friends initial-number-friends + 2 ;; arbitrary number to give some flexibility ;(average-node-degree / 2) was too big
+    
     set breed males                ;; default breed male, change half to female later
     set coupled? false             ;; If true, the person is in a sexually active couple.
     set partner nobody             ;; The person that is our current partner in a couple.
+    
     set infected? false            ;; If true, the person is infected.
     set known? false               ;; The person is infected and knows it (due to being symptomatic)
-   
-    
-    ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...
-    
-    ;set had-std? false         ;; assumption made is that having only 1 std will deter the person from further unprotected sex
-    ;set peer-had-std-impact 0  ;; good starting value...?
-    
-    ;; The below variables may be different in each turtle, and the values
-    ;; follow an approximately normal distribution
+                                   ;; don't need a had-std? variable or need to get treated, because
+                                   ;; assumption made is that having just 1 std will deter the person from having unsafe sex
     
     
-    ;assign-commitment         ;; How long the person will stay in a couple-relationship.
-    ;; assign commitment (doesn't change)
+                                   ;;
+                                   ;; The below variables vary/may be different in each turtle, and the values
+                                   ;; follow an approximately normal distribution
+                                   ;; 
+    
+                                   ;; How long the person will stay in a couple-relationship.
+                                   ;; assign commitment (doesn't change)
     set commitment random-near average-relationship-length 
     
     ;assign-coupling-tendency  ;; How likely the person is to join a couple.
     ;; assign coupling-tendency (doesn't change)
     set coupling-tendency random-near average-coupling-tendency
     
-    ;assign-friendship-tendency
+    ;assign-friendship-tendency ;; How likely the person is to make a friend.
     ;; assign friendship-tendency (doesn't change)
-    set friendship-tendency random-near average-friendship-tendency ;; How likely the person is to make a friend.
-  
-  
-  
-  
-  ]
+    set friendship-tendency random-near average-friendship-tendency 
     
+  ]
+  
   ;; set genders of turtles to be 50% male, 50% female
   ask n-of (count turtles / 2) turtles [set breed females ]
   
   ask turtles
   [ 
-    assign-safe-sex-attitude ;; must do gender first!!!
-    assign-certainty
-    ;;assign-safe-sex-likelihood ;; must do condom use first!!
-    set attitude safe-sex-likelihood ;min-init-attitude + random ( max-init-attitude - min-init-attitude )
-    set label round attitude
+    ;; must set gender before calling this! safe-sex-attitude depends on it
+    assign-safe-sex-attitude
     
-    assign-turtle-color    ;; color is determined by likelihood of practicing safe sex
-    assign-shape    ;; shape is determined by gender and sick status 
-    set size 2.5    ;set size 3; 1.5
+    ;; assign initial certainty
+    set certainty random-near avg-mesosystem-condom-encouragement
+    
+    assign-turtle-color  ;; color is determined by likelihood of practicing safe sex
+    assign-shape         ;; shape is determined by gender and sick status 
+    set size 2.5         ;set size 3; 1.5
+    set label round attitude
   ]  
 end
 
@@ -413,32 +362,13 @@ to assign-safe-sex-attitude  ;; turtle procedure
   ;average-condom-usage
 end
 
-to assign-commitment  ;; turtle procedure
-  ;; assign commitment (doesn't change)
-  set commitment random-near average-relationship-length 
-end
-
-to assign-coupling-tendency  ;; turtle procedure
-  ;; assign coupling-tendency (doesn't change)
-  set coupling-tendency random-near average-coupling-tendency
-end
-
-to assign-friendship-tendency  ;; turtle procedure
-  ;; assign friendship-tendency (doesn't change)
-  set friendship-tendency random-near average-friendship-tendency
-end
-
-to assign-certainty
-  ;; assign initial certainty
-  set certainty random-near avg-mesosystem-condom-encouragement
-end
 
 to update-safe-sex-attitude ;;assign-safe-sex-likelihood
-  ;; mesosystem has 25% impact on attitude, personal desire has 75%
-  ;; weighting justification 25 certainty/affect/mesosystem 75 = attitude 
-  ;;set safe-sex-likelihood (condom-use * .75 + certainty * .25)
+                            ;; mesosystem has 25% impact on attitude, personal desire has 75%
+                            ;; weighting justification 25 certainty/affect/mesosystem 75 = attitude 
+                            ;;set safe-sex-likelihood (condom-use * .75 + certainty * .25)
   
-  ;; strongly weighted to previous attitude
+                            ;; strongly weighted to previous attitude
   set safe-sex-attitude (safe-sex-attitude * .5 + justification * .25 + certainty * .25)
 end
 
@@ -451,9 +381,9 @@ end
 ;; ATTITUDE IS YOUR LIKELIHOOD OF PRACTICING SAFE SEX
 ;to-report calculate-safe-sex-attitude ;;safe-sex-likelihood ;; calculate-attitude
 ;  report [ ] ;; (justification + certainty)/2 ==> attitude  = likelihood
-  ;; but if infected report 100 set just and certain to 100
-  ;; friend gets std justification to 100
-  ;; but which weighted more?
+;; but if infected report 100 set just and certain to 100
+;; friend gets std justification to 100
+;; but which weighted more?
 ;end
 
 
@@ -476,45 +406,43 @@ end
 ;end
 
 
-;; agents talk to their same-gender friends about safe sex attitudes
-;talk-to-same-gender-friends
 
 
 
 to talk-to-friends  ;; turtle procedure
   
-  ;; increment so that you can talk to more friends the more certain you feel in your attitude
+                    ;; increment so that you can talk to more friends the more certain you feel in your attitude
   let convoCount 0
-   while [ convoCount <  ( certainty / 100 ) * ( count my-friends ) ]  ;;convoCount <  (same-gender-interaction-degree / 100) * ( count my-friends )
-   [ 
-       ; the amount of change is weighted by the same-gender-interaction-degree, the group-liking,
-       ; and the difference in attitudes between the friend and one of their link neighbors
-       
-       let buddy one-of friend-neighbors
-       if (buddy != nobody)
-       [
-         ;; update attitude
-         
-         ;; your own certainty matters for changing your own attitude
-         ;; you dont care about their certainty, just what they have to back it up
-         
-         ;; near each other and one same side (above or below 50) give small boost to certainty
-         let attitudeChange ( (1 - (certainty / 100 )) * ([ attitude ] of buddy) + ([ attitude ] of buddy - attitude) * justification * [ justification ] of buddy)
-       
-         set attitude attitude + attitudeChange
-       ]
-       
-       
-       ;set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
-       ;    ( [ attitude ] of one-of friend-neighbors - attitude )
-       ;; certainty - likelihood/degree to which attitude changes is inversely proportional to certainty
-       ;; 100 - certainty = likelihood/willingness to change attitude
-
+  while [ convoCount <  ( certainty / 100 ) * ( count my-friends ) ]  ;;convoCount <  (same-gender-interaction-degree / 100) * ( count my-friends )
+    [ 
+      ; the amount of change is weighted by the same-gender-interaction-degree, the group-liking,
+      ; and the difference in attitudes between the friend and one of their link neighbors
+      
+      let buddy one-of friend-neighbors
+      if (buddy != nobody)
+        [
+          ;; update attitude
+          
+          ;; your own certainty matters for changing your own attitude
+          ;; you dont care about their certainty, just what they have to back it up
+          
+          ;; near each other and one same side (above or below 50) give small boost to certainty
+          let attitudeChange ( (1 - (certainty / 100 )) * ([ attitude ] of buddy) + ([ attitude ] of buddy - attitude) * justification * [ justification ] of buddy)
+          
+          set attitude attitude + attitudeChange
+        ]
+      
+      
+      ;set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
+      ;    ( [ attitude ] of one-of friend-neighbors - attitude )
+      ;; certainty - likelihood/degree to which attitude changes is inversely proportional to certainty
+      ;; 100 - certainty = likelihood/willingness to change attitude
+      
       ;; set attitude attitude + ( same-gender-interaction-degree / 100 ) * ( group-liking / 100 ) * 
       ;;     ( [ attitude ] of one-of friend-neighbors - attitude )
-       
-       set convoCount convoCount + 1
-   ]
+      
+      set convoCount convoCount + 1
+    ]
   
 end
 
@@ -535,8 +463,8 @@ end
 ;; thinking of aids/hiv
 
 ;to crit-mass-effect ; worker procedure
-  ; to implement this, we assume that even if a worker doesn't have a link with 
-  ; all the members of his group, the effect of the technology increases anyway
+; to implement this, we assume that even if a worker doesn't have a link with 
+; all the members of his group, the effect of the technology increases anyway
 ;  if count workers with [ group-membership = [ group-membership ] of myself and adopt = true ] > 
 ;     threshold / 100 * (count workers with [ group-membership = [ group-membership ] of myself ] ) 
 ;     [ set change-amt change-amt + value-of-threshold ]
@@ -553,12 +481,7 @@ end
 
 
 
-to setup-links
-  ;; don't really need to create any initial relationships, they'll form on their own
-  ;ask n-of 1 friends [set breed sexual-partners]
 
-  ask links [assign-link-color]
-end
 
 
 
@@ -566,7 +489,7 @@ end
 ;; ----- assign-shape ----- ;;
 ;; Set shape based on gender (male or female)
 ;; and whether or not infected (includes a red dot)
- 
+
 to assign-shape ;; turtle procedure
   ifelse infected?
   [
@@ -577,7 +500,7 @@ to assign-shape ;; turtle procedure
       [ set shape "male sick unknown" ]
     ]
     [
-    ifelse known?
+      ifelse known?
       [ set shape "female sick" ]
       [ set shape "female sick unknown" ]
     ]
@@ -597,22 +520,9 @@ end
 
 to assign-turtle-color  ;; turtle procedure 
   
-;; MAKE GRADIENT......
-
-;; if there was a switch statement for netlogo, this could be where you'd use it
-;  if(safe-sex-likelihood > 0) [set color 14]  ;; fix for 5??
-;  if(safe-sex-likelihood > 10) [set color 15]   
-;  if(safe-sex-likelihood > 20) [set color 16] 
-;  if(safe-sex-likelihood > 30) [set color 17] 
-;  if(safe-sex-likelihood > 40) [set color 18] 
-;  if(safe-sex-likelihood > 47) [set color 19] 
-;  if(safe-sex-likelihood > 53) [set color 64] 
-;  if(safe-sex-likelihood > 60) [set color 65]
-;  if(safe-sex-likelihood > 70) [set color 66]  
-;  if(safe-sex-likelihood > 80) [set color 67]  
-;  if(safe-sex-likelihood > 90) [set color 68]  
-;  if(safe-sex-likelihood > 95) [set color 69]  
+                        ;; MAKE GRADIENT......
   
+                        ;; if there was a switch statement for netlogo, this could be where you'd use it
   if(safe-sex-attitude > 0) [set color 14]  ;; fix for 5??
   if(safe-sex-attitude > 10) [set color 15]   
   if(safe-sex-attitude > 20) [set color 16] 
@@ -625,8 +535,8 @@ to assign-turtle-color  ;; turtle procedure
   if(safe-sex-attitude > 80) [set color 66]  
   if(safe-sex-attitude > 90) [set color 65]  
   if(safe-sex-attitude > 95) [set color 64]  
-;  green64-69…white....19-14 red
-
+  ;  green64-69…white....19-14 red
+  
 end
 
 ;; ----- assign-link-color ----- ;;
@@ -639,45 +549,43 @@ to assign-link-color  ;; link procedure
   ifelse is-friend? self
     [ set color blue]
     [ set color magenta]
-    
+  
   set thickness .15 ; make the link a bit easier to see
 end
 
 
 
 
-
-
-
-
-
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Runtime Procedures ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;                                               ;;;
 ;;; --------------- GO PROCEDURES --------------- ;;;
 ;;;                                               ;;;
 
+;; Run the simulation
 to go
-
-;; on each tick, turtles talk to each other
-;; and may have their opinions/attitudes updated
-
-ask turtles ;; possibly add a condition here...
-;; like if you're on either end of the spectrum, nothing will change your mind
-[
-  talk-to-friends
   
-      ;if Group-liking? [ talk-to-group ]
-      ;if Boss-influence? [ talk-to-boss ]
-         
-      ; the turtle updates their attitude from the effects of the hypotheses
-      ;set attitude attitude + change-amt
-      
-      set label round safe-sex-attitude ;; attitude
-      assign-turtle-color
-]
- 
+  ;; on each tick, turtles talk to each other
+  ;; and may have their opinions/attitudes updated
+  
+  ask turtles ;; possibly add a condition here...
+              ;; like if you're on either end of the spectrum, nothing will change your mind
+  [
+    talk-to-friends ;if Group-liking? [ talk-to-group ]
+    
+    
+                    ;if Boss-influence? [ talk-to-boss ]
+    
+                    ; the turtle updates their attitude from the effects of the hypotheses
+                    ;set attitude attitude + change-amt
+    
+    set label round safe-sex-attitude ;; attitude
+    
+    assign-turtle-color
+  ]
+  
   
   ask turtles
   [
@@ -689,7 +597,7 @@ ask turtles ;; possibly add a condition here...
     [ set couple-length couple-length + 1 ]
     
     ;; If they are not coupled, a turtle tries to find a mate
-
+    
     ;; Any turtle can initiate mating if they are not coupled
     ;; (and random chance permits)
     [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
@@ -708,20 +616,15 @@ ask turtles ;; possibly add a condition here...
   
   ;; then give chance to spread virus
   ask turtles [ spread-virus ]
- 
+  
   ;; Stop if every single turtle is infected
   if all? turtles [infected?] [ stop ]
-   
-   
+  
+  ; model ends when all the friends have made a decision / have the same attitutde....??
+  ; (so sometimes the model never ends)
+  
   ;;maybe no stop condition? based on attitude??
   ;; reach some sort of stable state?
- 
- 
-  ; model ends when all the friends have made a decision / have the same attitutde....??
- ; (so sometimes the model never ends)
- ;if count friends with [ adopt = true or reject = true ] = count friends [ stop ]
-  
-      
   
   tick
 end
@@ -735,27 +638,26 @@ end
 
 
 ;;;
-;;; COUPLING/UNCOUPLING/INFECTING PROCEDURES
+;;; COUPLING/UNCOUPLING PROCEDURES/ INFECTING PROCEDURES
 ;;;
 
 
 to make-friends ;; turtle procedure 
-
-;; FIX THIS TO BE MORE LIKE COUPLING....take itno account friend groups and shit
-
+  
+                ;; FIX THIS TO BE MORE LIKE COUPLING....take itno account friend groups and shit
+  
   let choice (min-one-of other turtles with [not link-neighbor? myself] [distance myself])
-   
+  
   if (choice != nobody and (count friend-neighbors <= max-number-friends) and
     [count friend-neighbors] of choice <= [max-number-friends] of choice )
-    [ 
-      ;; no need to check for gender compatibility,
-      ;; everyone can be friends with each other, yay!
-        
-        if random-float max-friendship-factor < [friendship-tendency] of choice
-        [
-          create-friend-with choice [ assign-link-color]
-        ]
-    ]
+  [ 
+    ;; no need to check for gender compatibility,
+    ;; everyone can be friends with each other, yay!
+    if random-float max-friendship-factor < [friendship-tendency] of choice
+      [
+        create-friend-with choice [ assign-link-color]
+      ]
+  ]
 end
 
 
@@ -764,19 +666,19 @@ end
 ;; their tendency to couple, and if they ..... are friends already, in same work group, or nearby
 
 to couple  ;; turtle procedure 
-
-  ;; ----- Try to find a valid partner -----
-  ;; first try existing friend link of opposite sex
-  ;; then try opposite sex within friend group, but not a current link
-  ;; then try a nearby opposite sex person as a last resort
-  ;; (probability of successful coupling decreases for last 2 options)
-
+  
+           ;; ----- Try to find a valid partner -----
+           ;; first try existing friend link of opposite sex
+           ;; then try opposite sex within friend group, but not a current link
+           ;; then try a nearby opposite sex person as a last resort
+           ;; (probability of successful coupling decreases for last 2 options)
+  
   let coupling-probability 1.0 ; arbitrary number
-
-  ;; this agent's social/friend group id
+  
+                               ;; this agent's social/friend group id
   let groupID group-membership
-
-
+  
+  
   ;; create variable that we will overwrite
   let potential-partner one-of friend-neighbors 
   
@@ -808,15 +710,15 @@ to couple  ;; turtle procedure
     [
       set potential-partner  (min-one-of (females with [not link-neighbor? myself and not coupled?]) [distance myself])
       set coupling-probability 0.3 ; arbitrary number
-     ]
+    ]
     
   ]
   
   ;; female agent - wants to find a male potential partner
   [ 
-     ;; preferably find a male that is already a friend / look at existing male friends
+    ;; preferably find a male that is already a friend / look at existing male friends
     set potential-partner (one-of males with [friend-neighbor? myself and not coupled?])
-
+    
     ;; then, try to find a male that is within your friend group, but not a current link
     if (potential-partner = nobody)
     [
@@ -833,11 +735,11 @@ to couple  ;; turtle procedure
       set coupling-probability 0.2 ; arbitrary number  
     ] 
   ]
-
-
+  
+  
   if potential-partner != nobody
     [   
-        if ((random-float max-coupling-factor) * coupling-probability) < ([coupling-tendency] of potential-partner) 
+      if ((random-float max-coupling-factor) * coupling-probability) < ([coupling-tendency] of potential-partner) 
         [
           set partner potential-partner
           set coupled? true
@@ -850,7 +752,7 @@ to couple  ;; turtle procedure
           ;; Change breed of link if friends, and create link for sexual relationship regardless
           if (friend-neighbor? partner) [ask friend-with partner [die] ]
           create-sexual-partner-with partner [ assign-link-color]
-      ]
+        ]
     ]
 end
 
@@ -885,23 +787,14 @@ end
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; Setup Procedures ;;
-;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;
-;; Runtime Procedures ;;
-;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Run the simulation
-;to go
-
-;;
-;; FROM VIRUS ON A NETWORK
-;;
 
 
-to spread-virus
+;;;
+;;; INFECTING PROCEDURES
+;;;
+
+;; from virus on a network
+to spread-virus  ;; turtle procedure
   ;; Only turtles with sexual partners (coupled) can spread an STI
   ask turtles with [infected? and coupled?]
   [
@@ -958,7 +851,7 @@ to check-infected
   
   assign-shape
   
-  ;; Otherwise, don't change their knowledge about known? or had-std?  
+  ;; Otherwise, don't change their knowledge about known?
 end
 
 ;;
@@ -981,14 +874,15 @@ end
 ;;;
 ;;; SELECT PROCEDURE
 ;;;
+
 ;; User chooses an patient to infect
 
 to select
   let picked? false
   if mouse-down?
   [
-      let candidate min-one-of turtles [distancexy mouse-xcor mouse-ycor]
-      if [distancexy mouse-xcor mouse-ycor] of candidate < 1
+    let candidate min-one-of turtles [distancexy mouse-xcor mouse-ycor]
+    if [distancexy mouse-xcor mouse-ycor] of candidate < 1
       [
         ask candidate
         [ 
@@ -1042,15 +936,15 @@ end
 
 
 to-report avg-attitude
-  report mean [safe-sex-likelihood] of turtles
+  report mean [safe-sex-attitude] of turtles
 end
 
 to-report avg-male-attitude
-  report mean [safe-sex-likelihood] of males
+  report mean [safe-sex-attitude] of males
 end
 
 to-report avg-female-attitude
-  report mean [safe-sex-likelihood] of females
+  report mean [safe-sex-attitude] of females
 end
 
 to-report avg-friends-per-turtle
