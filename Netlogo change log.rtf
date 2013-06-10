@@ -274,7 +274,8 @@ to update-links ;; turtle procedure\
   ;; on safe sex attitudes/behaviors\
 end\
 \
-\
+links-own\
+  ;strength ; is there a better way to do this???.... how about strenght increases likelihood of talking to linkmates\
 \
 \
 ---\
@@ -296,4 +297,85 @@ end\
 \
 \
 \
-probs get rid of sex ed???}
+probs get rid of sex ed???\
+\
+\
+no social butterflies\
+\
+    \
+    ; assume that all leaders interact/are social butterflies/charismatic,\
+    ; hence why their entire friend group likes them too\
+    ;; create links between all "leaders" - the central person of the clique/social group\
+    ;; CHANGE THIS SO THAT SOME "SOCIAL BUTTERFLIES" are created --- TODO *****\
+    ask leaders [ create-friends-with other leaders ] \
+\
+\
+breed [ leaders leader ] ;; "clique leader" in a way - mostly exists to help with creating layout and temporarily link between groups\
+; (until social butterflies implemented)\
+; (until social butterflies implemented)\
+\
+;; "socialite"? has more connections to a bunch of random groups rather than one specific friend group\
+;breed [social-butterflies social-butterfly]\
+\
+\
+this was wrong because imitated code tath created links meant for a whole group\
+\
+  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle\
+  ;;set max-number-friends  ( ( average-node-degree - 1 ) * group-size ) / 2 \
+\
+\
+  ;; don't need to create any initial relationships, they'll form on their own\
+  ;ask n-of (count friends / 4) friends [set breed sexual-partners]\
+\
+\
+get rid of spatially clustered\
+  ;setup-spatially-clustered-network ;; comment out this line to get more discrete cliques\
+\
+\
+;;\
+;; from virus on a network ;;\
+;;\
+\
+to setup-spatially-clustered-network\
+  let num-links (average-node-degree * count turtles) / 2\
+  while [count links < num-links ]\
+  [\
+    ask one-of turtles\
+    [\
+      let choice (min-one-of (other turtles with [not link-neighbor? myself])\
+                   [distance myself])\
+      if choice != nobody [ create-friend-with choice ]\
+    ]\
+  ]\
+  ; make the network look a little prettier \
+  repeat 15 [ update-network-layout ] ;; was 10\
+end\
+\
+\
+----\
+\
+\
+  ;; Boss-influence factors.... not entirely sure on this meaning either...\
+;  ifelse (Boss-influence?) [\
+;    ask friends\
+;    [\
+;      set boss-liking min-init-boss-liking + random ( max-init-boss-liking - min-init-boss-liking ) \
+;      set sex-education min-init-sex-ed + random ( max-init-sex-ed - min-init-sex-ed )\
+;    ]\
+;    ask leaders [ set attitude min-init-att + random ( max-init-att - min-init-att ) ]\
+;  ]\
+\
+\
+  ;; comment or uncomment this if you want a group "leader" to be in the center of the friend group\
+  ;; was only using leaders for spatial setup, but they also connect to other leaders,\
+  ;; but seems odd having a central friend\
+  \
+  ;;ask leaders [ die ] ;; was only using leaders for spatial setup\
+  \
+  \
+  ;;\
+  ;; THESE WERE REMOVED - replace with condom usage?\
+  ;;\
+  ;;\
+  ;;ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]\
+  }

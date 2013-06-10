@@ -1,27 +1,23 @@
 ;; TODO
 ;; friendships die??.... assume no
 ;; turtles monogamous
-
-
-breed [ people person ] ;; default turtle type, will later be changed to male or female
-breed [ leaders leader ] ;; "clique leader" in a way - mostly exists to help with creating layout and temporarily link between groups
-; (until social butterflies implemented)
-
+  ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
 ;; "socialite"? has more connections to a bunch of random groups rather than one specific friend group
-breed [social-butterflies social-butterfly]
+;breed [social-butterflies social-butterfly]
 
-;; Breeds (agentsets) for gender
+;; Temporary breeds for setting up social groups/cliques
+breed [ people person ] ;; default turtle type, will later be changed to male or female
+breed [ leaders leader ] ;; "clique leader" in a way - exists to help with creating layout and link between groups
+
+;; Breeds (agentsets) for gender (once social groups/networks established)
 breed [males male]
 breed [females female]
 
-undirected-link-breed [sexual-partners sexual-partner] ;; can have multiple???
-undirected-link-breed [friends friend]
+links-own [ group ] ; a way to access the links in each group
 
-links-own
-[
-  group    ; a way to access the links in each group 
-  ;strength ; is there a better way to do this???.... how about strenght increases likelihood of talking to linkmates
-]
+; turtles can only have one sexual partner at a time in this model
+undirected-link-breed [sexual-partners sexual-partner] 
+undirected-link-breed [friends friend]
 
 
 
@@ -30,6 +26,9 @@ links-own
 
 globals
 [
+  
+  
+  
   change-amt       ; used to keep track of the amt turtles change their opinions each round
   change-counts    ; keeps track of how many adopt/ reject decisions have been made
   change-time      ; keeps track of the time since the last adopt/reject decisions were made
@@ -62,10 +61,9 @@ globals
   
   average-friendship-tendency ;; Average tendency of a person to make friends with another person
   
-                            
-
   
-  average-commitment        ;; Number of ticks a sexual parternship/couple will stay together, on average
+  average-relationship-length ;; Average number of ticks a sexual parternship/couple will stay together
+                              ;; (average-commitment)        
   
   min-init-sex-ed ;; minimum possible starting level of sex education range (low end if no sex education)
   max-init-sex-ed ;; maximum possible starting level of sex education range (if full sex education??)
@@ -85,9 +83,14 @@ globals
   
   ;; The next two values are determined by the symptomatic? chooser/drop-down
   males-symptomatic?         ;; If true, males will be symptomatic IF infected with an STI
-  females-symptomatic?       ;; If true, males will be symptomatic IF infected with an STI
+  females-symptomatic?       ;; If true, females will be symptomatic IF infected with an STI
   
   
+  ;; The following 2 variables indicate the % effectiveness in preventing the spread
+  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
+  ;; against sexually transmitted infections varies based on disease/virus type
+  perfect-use-effectiveness    ;; The chance of preventing STI spread if condom is used perfectly
+  typical-use-effectiveness    ;; The chance of preventing STI spread if condom is used typically
 
 ]
 
@@ -95,16 +98,21 @@ globals
 
 turtles-own
 [ 
-  ;; ---------- Old starter code ---------- ;;
+  
+  group-membership ; which cluster/friend group the friends and leaders are mainly part of
+  ; but this still applies to some social butterflies - assume they have a core friend group 
+  ; in addition to more out-of-group links than others
   
   sex-education ; the level of accurate education this agent has about safe sex
   
   attitude  ; feelings about new technology
   
-
+  safe-sex-likelihood ;; attitude? used for color *********
+  
+  
   
   group-liking ; how the worker feels about his workgroup
-  boss-liking  ; how the worker feels about his boss
+  ;boss-liking  ; how the worker feels about his boss
   
   ;; how much the turtle takes into consideration the attitude of their sexual partner?
   peer-influence
@@ -115,19 +123,14 @@ turtles-own
   reject ; records true when a person makes a decision to reject technology
   
   initial-number-friends
-  max-number-friends  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
+  max-number-friends  ;; Set a maximum on the number of friends a person can have
+                      ;; because otherwise will keep making friends, moving closer,
+                      ;; and all cluster in middle of screen
    
   
-  ;;---------------------------------------------------------------------
-  
-  safe-sex-likelihood ;; attitude? used for color *********
-  
-  group-membership ; which cluster/friend group the friends and leaders are mainly part of
-  ; but this still applies to some social butterflies - assume they have a core friend group 
-  ; in addition to more out-of-group links than others
+  infected?            ;; If true, the person is infected (and infectious)
+  known?               ;; The person is infected and knows it (due to being symptomatic)
 
-
-  ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***
   
   had-std?            ;; If true, the person once had an STD
                       ;; (that they knew of, assume can't go away by itself unless known...?)
@@ -140,8 +143,7 @@ turtles-own
                       ;; will be updated if more friends get infected, and bigger impact for stronger links
   
   
-  infected?            ;; If true, the person is infected (and infectious)
-  known?               ;; The person is infected and knows it (due to being symptomatic)
+
 
   friendship-tendency ;; How likely this person is to make a new friend
   
@@ -170,42 +172,21 @@ turtles-own
 to setup
   clear-all
   setup-globals
-  setup-clusters ;; setup nodes
-  setup-people   ;; setup nodes
-  infect-random  ;; ask n-of initial-outbreak-size turtles [become-infected]
-  ;setup-spatially-clustered-network ;; comment out this line to get more discrete cliques
+  setup-clusters ;; set up social groups/cliques
+  setup-people   ;; change breeds to male, female, set individual turtle attributes
+  infect-random  ;; infect one random person (user can choose more, if they want)
+
+  
+  ; make the network look a little prettier 
+  ;; actually... just rearranges it a bit. better to not move it at all?
+  ;repeat 15 [ update-network-layout ] ;; was 10
+  
   setup-links
   reset-ticks
 end
 
 
-;;
-;; Setter functions for the symptomatic? drop down/chooser
-;;
 
-;; global variables have no question mark
-;; so that reporter functions can (easier to read code that way)
-;; or... i guess i could just access the global maybe....????
-
-to set-females-symptomatic?
-  set females-symptomatic? true
-  set males-symptomatic? false
-end
-
-to set-males-symptomatic?
-  set males-symptomatic? true
-  set females-symptomatic? false
-end
-
-to set-both-symptomatic?
-  set females-symptomatic? true
-  set males-symptomatic? true 
-end
-
-to set-neither-symptomatic?
-  set males-symptomatic? false
-  set females-symptomatic? false
-end
 
 ;;
 ;; ----- setup-globals ----- ;;
@@ -219,12 +200,20 @@ to setup-globals
   
   set change-counts 0    ; keeps track of how many adopt/ reject decisions have been made
   
-  ;set had-training false ; only allows training to happen once
- 
-  ;;--------------------------------------------------------------------- 
   
-  ;; Set a maximum on the number of friends a person can have because otherwise all cluster in middle
-  ;;set max-number-friends  ( ( average-node-degree - 1 ) * group-size ) / 2 
+  ;; arbitrary #'s....... TODO *****
+  set min-init-sex-ed 29
+  set max-init-sex-ed 62
+  
+  ;; The following 2 variables indicate the % effectiveness in preventing the spread
+  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection
+  ;; against sexually transmitted infections varies based on disease/virus type
+  set perfect-use-effectiveness 98 ;; The chance of preventing STI spread if condom is used perfectly
+  set typical-use-effectiveness 85 ;; The chance of preventing STI spread if condom is used typically
+  
+  
+  ;set had-training false ; only allows training to happen once
+
   
   ;; Default number of links generated if Group-liking enabled....they talk to coworkers
   ;; i.e. the number of inter-group links created, in addition to a link with the leader
@@ -243,37 +232,33 @@ to setup-globals
   ;; a random value following a normal distribution
   
   set average-coupling-tendency max-coupling-factor / 2 ;should be less than max-coupling-factor ; 5
-  set average-commitment 20
+  set average-relationship-length 20
   ;set infection-chance 50 ;; %50 chance of being infected by having unprotected sex with infected partner
   set average-friendship-tendency max-friendship-factor / 2 ;should be less than max-coupling-factor ; 5
   
   
-  ;; arbitrary #'s....... TODO *****
-  set min-init-sex-ed 29
-  set max-init-sex-ed 62
+
 end
 
 ;;
-;; ----- setup-clusters ----- ;;
+;; ----- setup-clusters ----- 
 ;;
 to setup-clusters
   
   create-leaders num-clusters [  ]
   
-  ;; Default number of links generated if Group-liking enabled....they talk to coworkers
-  ;; i.e. the number of inter-group links created, in addition to a link with the leader
+  ;; The number of inter-group links between members
+  ;; (in addition to each member having a link with the leader, hence -1)
   let num-links ( ( average-node-degree - 1 ) * group-size ) / 2
   
-  
-  ;; if only 1 cluster, boss setxy 0 0 by default
-  ;; if more than 1 cluster
-  if (num-clusters > 1)
+  ;; if only 1 cluster, leader setxy 0 0 by default
+  if (num-clusters > 1) ;; if more than 1 cluster
   [
     layout-circle leaders 10
     
-    ; assume that all leaders interact/are social butterflies/charismatic, hence why their entire friend group likes them too
-    ;; create links between all "bosses" - the central person of the clique
-    ;; CHANGE THIS SO THAT SOME "SOCIAL BUTTERFLIES" are created --- TODO *****
+    ; assume that all leaders interact/are social butterflies/charismatic,
+    ; hence why their entire friend group likes them too
+    ;; create links between all "leaders" - the central person of the clique/social group
     ask leaders [ create-friends-with other leaders ] 
   ]
   
@@ -309,7 +294,6 @@ to setup-clusters
     set groupID groupID + 1
   ]
   
-  ;; group liking will always be enabled for my simulation
   ask people
   [
     set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )
@@ -345,23 +329,7 @@ to setup-clusters
 end
 
 
-;;
-;; from virus on a network ;;
-;;
-to setup-spatially-clustered-network
-  let num-links (average-node-degree * count turtles) / 2
-  while [count links < num-links ]
-  [
-    ask one-of turtles
-    [
-      let choice (min-one-of (other turtles with [not link-neighbor? myself])
-                   [distance myself])
-      if choice != nobody [ create-friend-with choice ]
-    ]
-  ]
-  ; make the network look a little prettier 
-  repeat 15 [ update-network-layout ] ;; was 10
-end
+
 
 
 
@@ -408,7 +376,6 @@ to setup-people
     assign-friendship-tendency
   ]
     
-  ;; initial-people / count turtles
   ;; set genders of turtles to be 50% male, 50% female
   ask n-of (count turtles / 2) turtles [set breed females ]
   
@@ -417,7 +384,7 @@ to setup-people
     assign-condom-use ;; must do gender first!!!
     assign-safe-sex-likelihood ;; must do condom use first!!
     
-    assign-turtle-color    ;; color is determined by gender
+    assign-turtle-color    ;; color is determined by likelihood of practicing safe sex
     assign-shape    ;; shape is determined by gender and sick status
     set size 2.5    ;set size 3; 1.5
   ]  
@@ -433,9 +400,8 @@ end
 
 
 to setup-links
-   
-  ;; don't need to create any initial relationships, they'll form on their own
-  ;ask n-of (count friends / 4) friends [set breed sexual-partners]
+  ;; don't really need to create any initial relationships, they'll form on their own
+  ;ask n-of 1 friends [set breed sexual-partners]
 
   ask links [assign-link-color]
 end
@@ -522,8 +488,7 @@ end
 
 
 ;;
-;; Assign population variable values on an approximately "normal" DISTRIBUTION 
-;; (from AIDS model)
+;; Assign population variable values on an approximately "normal" distribution
 ;; 
 
 
@@ -555,7 +520,7 @@ to assign-condom-use  ;; turtle procedure
 end
 
 to assign-commitment  ;; turtle procedure
-  set commitment random-near average-commitment
+  set commitment random-near average-relationship-length 
 end
 
 to assign-coupling-tendency  ;; turtle procedure
@@ -721,9 +686,9 @@ to go
     [ set couple-length couple-length + 1 ]
     
     ;; If they are not coupled, a turtle tries to find a mate
-
-   ;; Any turtle can initiate mating if they are not coupled
-   ;; (and random chance permits)
+    
+    ;; Any turtle can initiate mating if they are not coupled
+    ;; (and random chance permits)
 
    ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
 
@@ -1063,6 +1028,28 @@ end
 
 
 
+;;
+;; Setter functions for the symptomatic? drop down/chooser
+;;
+to set-females-symptomatic?
+  set females-symptomatic? true
+  set males-symptomatic? false
+end
+
+to set-males-symptomatic?
+  set males-symptomatic? true
+  set females-symptomatic? false
+end
+
+to set-both-symptomatic?
+  set females-symptomatic? true
+  set males-symptomatic? true 
+end
+
+to set-neither-symptomatic?
+  set males-symptomatic? false
+  set females-symptomatic? false
+end
 
 ;;;
 ;;; REPORTER / MONITOR PROCEDURES
@@ -1693,7 +1680,7 @@ Breeds are used for the genders of turtles, as well as for distinguishing friend
 
 Every time-step (tick), a slider’s value is checked against a global variable that holds the value of what the slider’s value was the time-step before. If the slider’s current value is different than the global variable, NetLogo knows to call procedures that adjust the population’s tendencies. Otherwise, those adjustment procedures are not called. 
 
-The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values.
+The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values. (from aids model....)
 
 ## RELATED MODELS, CREDITS AND REFERENCES 
 Virus
