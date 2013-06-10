@@ -378,4 +378,24 @@ end\
   ;;\
   ;;\
   ;;ask people [ set attitude min-init-attitude + random ( max-init-attitude - min-init-attitude ) ]\
-  }
+  \
+\
+\
+\
+\
+to check-for-decision\
+  ; the turtles check again to see if they are ready to make a decision\
+      if attitude > 99\
+      [\
+        set adopt true \
+        set color green\
+        set attitude 100\
+      ]\
+      \
+      if attitude < 1\
+      [\
+        set reject true\
+        set color red \
+        set attitude 0\
+      ]\
+end}
