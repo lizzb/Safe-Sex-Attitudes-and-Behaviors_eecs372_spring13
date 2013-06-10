@@ -1,0 +1,248 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid201\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid202\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 Netlogo Changes over time\
+\
+\
+Starting with removing comments from safesex-june8-v1\
+\
+\
+(originally started from copying sophia sullvan's model)\
+\
+v2\
+- got rid of training and training-time\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0  - got rid of reduction potential (influence decreases over time)\
+\
+- from virus on a network: remove ability to be resistant\
+;resistant?          ;; if true, the turtle can't be infected\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 from become-infected\
+  ;; set resistant? false\
+\
+;from become-resistant from virus on a network\
+;  ask my-links [ set color gray - 2 ]\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+replace expertise with sex-education\
+  ;expertise ;the level of technical expertise that the agent has with the technology\
+  \
+  sex-education ; the level of accurate education this agent has about safe sex\
+\
+\
+june 8\
+infection-chance instead of infectivity for value name\
+breeds were workers and bosses\
+breed [ friends friend ]\
+breed [ leaders leader ] ;; was bosses, but there's not really an equivalent to boss... so "clique leader" in a way, also social butterfly?\
+;; helps with layout\
+\
+remove for simplicity, could add back later:\
+\
+from turtles-own\
+  ;; from virus on a network\
+  ;virus-check-timer   ;; number of ticks since this turtle's last virus-check\
+\
+from setup people\
+    ;;set virus-check-timer random virus-check-frequency  ;; from virus on a network\
+\
+from go?\
+;  ask turtles\
+;  [\
+;     set virus-check-timer virus-check-timer + 1\
+;     if virus-check-timer >= virus-check-frequency [ set virus-check-timer 0 ]\
+;  ]\
+;  spread-virus\
+;  do-virus-checks\
+\
+\
+;; virus on a network\
+;to do-virus-checks\
+;  ask turtles with [infected? and virus-check-timer = 0]\
+;  [\
+;    if random 100 < recovery-chance\
+;    [\
+;      ifelse random 100 < gain-resistance-chance\
+;        [ become-resistant ]\
+;        [ become-susceptible ]\
+;    ]\
+;  ]\
+;end\
+\
+changed "counts" to "groupID" in setting up clusters\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 set potential-victim one-of exual-partner-neighbors with [not infected?]\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+  ; the dissenter is a technological expert who is completely against the technology\
+not even sure where that comes in?\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+Assume:\
+Only 1 type of STD\
+If they are symptomatic, they will know they have an std, and will want to practice safe sex from there forward (assuming that people are kind and not malicious)\
+Assume no testing/curing takes place? just whether they get an std??? not susre\'85\'85***\
+\
+Need to:\
+Clarify condom use as mode of safe sex protection form\
+\
+\
+Uncertainties:\
+- no equivalent to bosses in my model, so removed... i guess could potentially be sexual partner, but not really\'85 but still using for generating spatially separated clusters\
+- assume always talk to sexual partners and friends??? but maybe have probability based on how vocal?\
+\
+\
+Questions I need to answer still:\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls1\ilvl0\cf0 {\listtext	\'95	}Should agents be able to have multiple sexual partners?\
+{\listtext	\'95	}Instead of only getting an STD once (boolean had-std), perhaps do had-std as a count, and increased counts (if known) increase individual's desire to participate in safe sex\
+{\listtext	\'95	}How to incorporate media fear? e.g. want to simulate everyone freaking out about aids, despite its low infection rate\
+{\listtext	\'95	}Instead of reduction potential (influence decreases over time), implement something to do with confidence/unwillingness to change attitude? or maybe that is automatic, depending on how far from the median (0, or 50, or whatever the scale is) their opinion is?\
+{\listtext	\'95	}Training was removed\'85. but maybe should look back into that, as a way of increasing STD awareness? Thinking of applications to campaigns targeted at this demographic\
+{\listtext	\'95	}Do both partners need to want to use a condom for safe sex to occur?\
+{\listtext	\'95	}should I have 2 breeds of sexual links? or just one with a type and color\'85.?\
+{\listtext	\'95	}Should people get treated and cured\'85??\
+{\listtext	\'95	}female and male ranges for safe sex education, desire, attitude, vocality?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\
+Need stats:\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls2\ilvl0\cf0 {\listtext	\'95	}
+\b percentages of types of sexual education throughout america/ levels of knowledge of safe sex when entering college
+\b0 \
+{\listtext	\'95	}percentages of prevalence of STIs in target demographic, to start out simulation (rather than having person choose to infect people)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+How do people approach/think about/decide about safe sex?\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0\cf0 {\listtext	\'95	}Most external levels:\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls3\ilvl1\cf0 {\listtext	\uc0\u8259 	}media influence, how much they hear/learn about it through not necessarily accurate resources\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0\cf0 {\listtext	\'95	}Less external level\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls3\ilvl1\cf0 {\listtext	\uc0\u8259 	}- certain level of education about safe sex, which may influence\'85\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0\cf0 {\listtext	\'95	}More internal level\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls3\ilvl1\cf0 {\listtext	\uc0\u8259 	}parents and/or religious background\
+{\listtext	\uc0\u8259 	}friends\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0\cf0 {\listtext	\'95	}Most internal level\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls3\ilvl1\cf0 {\listtext	\uc0\u8259 	}desire to have safe sex/ability to see benefits --> desire to have sex at all?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+Shape choices\
+Males - male shape\
+Females - female shape\
+Infected - extra dot on shape, M or F\
+Colors:\
+Infected and not known: ?? dot\
+Infected and known: ?? dot\
+Want to have safe sex: ???\
+Neutralish on attitude towards safe sex: ???\
+Don't want to have safe sex: ???\
+\
+not safe --> neutral --> safe\
+reddish orange --> yellow --> pleasant green\
+(255, 102, 0) --> (255, 255, 0) or just white, grey looks yucky--> (55 or 102, 255, 0)\
+\
+\
+---------\
+to do next\
+if they know they are infected, want to use safe sex\
+\
+agree - same type of sex\
+disagree - dont have sex --> break friend group\
+\
+attitude - whether they want to have safe sex or not\
+certainty  - emotional attachment to attitude\
+justification - backup reasons for justification\
+\
+certainty = conviction\
+\
+probability of sharing attitude with friends (dont worry about memroies or experience) based on certainty\
+certainty based on experience (got an std), number of times defended attittude (no), duration for which youve had that attitude\
+mesosystem - initial certainty\
+\
+justification - sex ed type\
+direct benefits as it relates to you\
+invisible to user\
+\
+media -influence attitude, prsents fear not justification\
+\
+behavior attitude tendency - combo of desire/intention + attitude\
+certainty and justification influence attitude\
+attitude combined with desire gives behavior\
+\
+fix friend making\
+\
+justification as a control?\
+call it static - model has no implications on further education or knwoledge\
+\
+i want how attitudes and behaviors effect each other and how this relates to a campaign targeted to this demographic\'85 how could it inform social policies?\
+\
+get rid of vocality\
+get rid of strength of relationships - use certainty to proxy those\
+\
+\
+\
+\
+Instead of min init attitude and max init attitude and min init att and max init att just ahve slider or average\
+\
+literature says that amount attitude change is inversely proportional to certainty\
+the more certain, the less likely to change their attitude\
+\
+\
+\
+\
+TODO\
+gender balance workgroups??\
+\
+\
+simplification: everyone has same inclination to have sex. sorry cant work in monogamny and abstinence and everything too.\
+\
+\
+64-69\'85.19-14\
+69\
+68\
+67\
+66\
+65\
+;;64\
+;;19\
+18\
+17\
+16\
+15\
+14\
+\
+\
+sexual social tendency?\
+\
+\
+red = unsafe sex\
+green = safe sex\
+yellow\
+black and white}

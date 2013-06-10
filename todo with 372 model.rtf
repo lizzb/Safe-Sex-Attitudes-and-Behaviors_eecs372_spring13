@@ -1,0 +1,112 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Calibri;\f2\froman\fcharset0 Times-Roman;
+}
+{\colortbl;\red255\green255\blue255;\red0\green81\blue9;\red0\green62\blue204;\red153\green0\blue204;
+\red146\green55\blue31;\red45\green163\blue58;}
+\margl1440\margr1440\vieww11580\viewh10780\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 safe sex with focus on heterosexual couples and condoms\
+what about male-freale friends\
+what determines probabaility of mating?\
+\
+incorporate male dislike of using condom during sex due to decreased pleasure\
+\
+\
+jason/willie attitudes\
+\
+person\
+attitude\
+certainty\
+justification\
+peer links \
+\
+attitude = 
+\f1\fs22 Prev_Att+Sum_over_peers(((1-Certainty)*peer_att)+(att_diff*just_product))\
+\
+certainty\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22\fsmilli11040 \cf0 =MIN(MAX\cf2 (\cf3 D17\cf0 +\cf4 (\cf2 C18\cf0 -\cf4 C17)\cf0 *0.1*SIGN\cf4 (C17)\cf0 ,0\cf2 )\cf0 ,1)\
+
+\fs22 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 just\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\fs22\fsmilli11040 \cf0 =MIN(\cf3 E17\cf0 +\cf2 (C18\cf0 -\cf4 C17\cf2 )\cf0 *\cf2 (\cf3 E17\cf0 *\cf5 I17\cf2 )\cf0 *SIGN\cf2 (\cf4 C17\cf2 )\cf0 ,1)\
+\
+attitude\
+=MAX(MIN\cf2 (\cf3 C17\cf0 +\cf4 (\cf5 (\cf0 1-\cf2 D17\cf5 )\cf0 *\cf4 G17)\cf0 +\cf4 (\cf5 (\cf4 G17\cf0 -\cf3 C17\cf5 )\cf0 *\cf5 (E17\cf0 *\cf6 I17\cf5 )\cf4 )\cf0 ,1\cf2 )\cf0 ,-1)\
+\
+\
+\
+\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 sophia's code\
+\
+number-workers [num-workers] and density used as global variables when hypothesis 1 is not in effect (not group-liking)\
+\
+how is num-workers diff from group-size??\
+\
+in place with hypothesis 1 is not in effect:\
+number-workers\
+density \
+\
+\
+  ;; if group-liking not enabled .... not quite sure what this means right now\
+if (not Group-liking?)\
+  [\
+    set num-links round ( ( density / 100 ) * ( (num-workers) * (num-workers - 1) / 2 ) )\
+  ]\
+\
+\
+\
+otherwise: (hypothesis 1 active group liking on)\
+avg node degree\
+workgroup-size\
+number-workgroups [ num-clusters]\
+\
+let num-links ( ( average-node-degree - 1 ) * workgroup-size ) / 2\
+\
+create-workers workgroup-size [  \
+        set color blue \
+        set group-liking min-init-group-liking + random ( max-init-group-liking - min-init-group-liking )]\
+\
+\
+\pard\pardeftab720\sa240
+
+\f2 \cf0 When the critical mass hypothesis is in effect, once the number of coworkers in an employee\'92s workgroup is above a certain threshold, the value of the technology drastically increases by a specified amount each time period.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+\pard\pardeftab720\sa240
+
+\f2 \cf0 Each hypothesis has a switch that can be turned on or off to indicate that the hypothesis is in effect. A few of the hypotheses also have sub-hypotheses that affect the overall amount that each agent changes their attitude towards the technology.\
+At each tick, every worker updates his attitude by a change-amount. This change amount is the result of the affects from each hypothesis in the following ways:\uc0\u8232 1. Workgroup influence: the worker talks to some or all of the workers he is linked to, and updates the change amount by the differences between his and everyone else\'92s attitudes, weighted by how much the worker likes his group and the degree to which the overall workgroup influences each worker.\u8232 2. Boss influence: the worker talks to their boss either every tick or every few ticks, and updates his change amount by the difference between his opinion and his boss\'92s opinion, weighted by the worker\'92s expertise, liking of his boss, and degree that he is influenced by his boss. There is also an option to have training, scheduled at a specifice time period, or scheduled when noone has made a new adopt or reject decision for 50 time units. When either of these training hypotheses are in effect, a training is held once, and all workers who haven\'92t made an adopt/reject decision update their attitudes by the value of the training.\u8232 3. When the critical mass hypothesis is in effect, once the number of coworkers in an employee\'92s workgroup is above a certain threshold, the value of the technology drastically increases by a specified amount each time period.\u8232 4. When the reduction of influence hypothesis is in effect, the overall change amount that each worker has kept track of is reduced by a reduction amount that decreases each time period.\
+At the end of each tick each worker again checks his/her attitude and if it is 100 or greater, decides to adopt the technology, and if it is 0 or below, decides to reject the technology.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+\
+\
+dfasdf\
+\
+\
+\
+\
+\
+\pard\pardeftab720\sa240
+
+\f2 \cf0 1. People are influenced by the opinions of others in their workgroups ---> opinions of friends/connections individually, not just group as a whole\
+\uc0\u8232 2. People are influenced by the opinions of their bosses (and information passed down to them as a function of training) --> super influential friend? parent? education?\
+\uc0\u8232 3. Technology is more valuable to people once it reaches a critical mass ---> if fear / public awareness reaches a certain level, more impactful on attitudes\
+\uc0\u8232 4. The influence of the opinions of others are reduced over time ---> you have a level of confidence in your attitude??\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+}
