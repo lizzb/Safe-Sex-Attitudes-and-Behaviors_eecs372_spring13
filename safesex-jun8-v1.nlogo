@@ -5,6 +5,7 @@
 ;; "socialite"? has more connections to a bunch of random groups rather than one specific friend group
 ;breed [social-butterflies social-butterfly]
 ;; assume talk to friends of both genders about safe sex habits?
+;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
 
 ;; Temporary breeds for setting up social groups/cliques
 breed [ people person ] ;; default turtle type, will later be changed to male or female
@@ -26,15 +27,7 @@ undirected-link-breed [friends friend]
 ;; set male ranges???    
 
 globals
-[
-  ;change-amt       ; used to keep track of the amt turtles change their opinions each round
-  ;change-counts    ; keeps track of how many adopt/ reject decisions have been made
-  ;change-time      ; keeps track of the time since the last adopt/reject decisions were made
-  ;had-training     ; only allows training to happen once
-  
-  
- 
-  
+[  
   ;infection-chance          ;; The chance out of 100 that an infected person
                              ;; will transmit infection during one week of couplehood
                              ;; [set by slider] (default is scale 0 - 100) 
@@ -106,17 +99,9 @@ turtles-own
   safe-sex-likelihood ;; attitude? used for color *********
   
   
-  
   group-liking ; how the worker feels about his workgroup
   ;boss-liking  ; how the worker feels about his boss
   
-  ;; how much the turtle takes into consideration the attitude of their sexual partner?
-  peer-influence
-  sexual-partner-influence
-  close-peer-influence
-  
-  adopt  ; records when a person makes decision to adopt the technology
-  reject ; records true when a person makes a decision to reject technology
   
   initial-number-friends
   max-number-friends  ;; Set a maximum on the number of friends a person can have
@@ -133,13 +118,13 @@ turtles-own
                       ;; perhaps a count instead of a boolean?
                       
                       ;; or maybe just never get cured, and use infected instead
+   
                       
-                      
-  peer-had-std-impact ;; the amount of impact a peer having an std has on this person, assume that doesn't fade over time
+  ;; dont need this as its own variable
+  ;; just update and check when talking to peers                   
+  ;peer-had-std-impact ;; the amount of impact a peer having an std has on this person, assume that doesn't fade over time
                       ;; will be updated if more friends get infected, and bigger impact for stronger links
   
-  
-
 
   friendship-tendency ;; How likely this person is to make a new friend
   
@@ -152,9 +137,10 @@ turtles-own
   
 
   condom-use          ;; The percent chance a person uses protection while in a couple
-                      ;; (determined by slider & normal distribution)
+                      ;; (determined by gender, slider, & normal distribution)
                       
-  mesosystem-condom-encouragement ;; how much their upbringing (parents beliefs, life experiences, religious attitudes) encouraged safe sex
+  ;; how much their upbringing (parents' beliefs, life experiences, religious attitudes) encouraged safe sex                    
+  mesosystem-condom-encouragement 
 ]
 
 
@@ -194,7 +180,7 @@ to setup-globals
   set hyp1-degree 51
   set hyp2-degree 50
   
-  ;set change-counts 0    ; keeps track of how many adopt/ reject decisions have been made
+
   
   
   ;; arbitrary #'s....... TODO *****
@@ -229,7 +215,6 @@ to setup-globals
   
   set average-coupling-tendency max-coupling-factor / 2 ;should be less than max-coupling-factor ; 5
   set average-relationship-length 20
-  ;set infection-chance 50 ;; %50 chance of being infected by having unprotected sex with infected partner
   set average-friendship-tendency max-friendship-factor / 2 ;should be less than max-coupling-factor ; 5
   
   
@@ -297,6 +282,7 @@ to setup-clusters
   ;; but seems odd having a central friend
   
   ;;ask leaders [ die ] ;; was only using leaders for spatial setup
+  ;; ask n-of num-clusters people to link with not link-neighbor? myself and group-membership != ...my group id
 
 end
 
@@ -344,7 +330,7 @@ to setup-people
     ;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet...
     
     set had-std? false         ;; assumption made is that having only 1 std will deter the person from further unprotected sex
-    set peer-had-std-impact 0  ;; good starting value...?
+    ;set peer-had-std-impact 0  ;; good starting value...?
     
     ;; The below variables may be different in each turtle, and the values
     ;; follow an approximately normal distribution
@@ -521,7 +507,9 @@ end
 
 to go
 
-;; on each tick, turtles talk to each other and may have their opinions/attitudes updated
+;; on each tick, turtles talk to each other
+;; and may have their opinions/attitudes updated
+
 ask turtles ;; possibly add a condition here...
 ;; like if you're on either end of the spectrum, nothing will change your mind
 [
@@ -535,9 +523,7 @@ ask turtles ;; possibly add a condition here...
 ]
  
   
- ; model ends when all the friends have made a decision / have the same attitutde....??
- ; (so sometimes the model never ends)
- ;if count friends with [ adopt = true or reject = true ] = count friends [ stop ]
+
  
  
 
@@ -561,7 +547,7 @@ ask turtles ;; possibly add a condition here...
     ;; Any turtle can initiate mating if they are not coupled
     ;; (and random chance permits)
 
-   ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
+   
 
    ;; turtle is not coupled, give them a chance to couple/want to couple
    ;; maybe do if else and give them a chance to make a friend??
@@ -582,8 +568,10 @@ ask turtles ;; possibly add a condition here...
   
   
   ;; keep slightly adjusting the layout of the model to be easier to view/understand
-  ;update-network-layout
+  update-network-layout
   ; if this is uncommented, they tend to get closer, increasing tendency to infect everyone fast and disrupt teh whole social clique thing
+  
+  
   
   ;; Stop if every single turtle is infected
   if all? turtles [infected?] [ stop ]
@@ -592,6 +580,10 @@ ask turtles ;; possibly add a condition here...
   ;;maybe no stop condition? based on attitude??
   ;; reach some sort of stable state?
  
+ 
+  ; model ends when all the friends have made a decision / have the same attitutde....??
+ ; (so sometimes the model never ends)
+ ;if count friends with [ adopt = true or reject = true ] = count friends [ stop ]
   
   tick
 end
@@ -780,21 +772,24 @@ to spread-virus
     
     ;; if their attitudes towards safe sex are different by a large margin,
     ;; instantly break up
-      
-      ;; Note that for condom use to occur, both people must want to use one.  If
-      ;; either person chooses not to use a condom, infection is possible.  Changing the
-      ;; primitive to AND in the third line will make it such that if either person
-      ;; wants to use a condom, infection will not occur.
-
     
-
-      ;; ADJUST THIS FOR FEMALE AND MALE?????
-      if random-float max-condom-factor > condom-use or
-      random-float max-condom-factor > ([condom-use] of partner)
-      [
-        if (random-float 100 < infection-chance)
+    ;; Note that for condom use to occur, both people must want to use one.  If
+    ;; either person chooses not to use a condom, infection is possible.  Changing the
+    ;; primitive to AND in the third line will make it such that if either person
+    ;; wants to use a condom, infection will not occur.
+    
+    
+    ;; FIX THIS.........
+    
+    
+    
+    ;; ADJUST THIS FOR FEMALE AND MALE?????
+    if random-float max-condom-factor > condom-use or
+    random-float max-condom-factor > ([condom-use] of partner)
+    [
+      if (random-float 100 < infection-chance)
         [ ask partner [ become-infected ] ]  
-      ]  
+    ]  
   ]
 end
 
@@ -1008,8 +1003,7 @@ end
 
 
 ;;
-;; Reporters for percentages of all possible infected demographics
-;; Not currently on display in the model (to avoid information overload),
+;; Not all reporters need be displayed in the model (to avoid information overload),
 ;; but readily available if the user wishes to add monitors
 ;; to view additional demographic information
 ;;

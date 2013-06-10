@@ -398,4 +398,26 @@ to check-for-decision\
         set color red \
         set attitude 0\
       ]\
-end}
+end\
+\
+\
+\
+  ;change-amt       ; used to keep track of the amt turtles change their opinions each round\
+  ;change-counts    ; keeps track of how many adopt/ reject decisions have been made\
+  ;change-time      ; keeps track of the time since the last adopt/reject decisions were made\
+  ;had-training     ; only allows training to happen once\
+\
+\
+;set infection-chance 50 ;; %50 chance of being infected by having unprotected sex with infected partner\
+\
+\
+  ;; how much the turtle takes into consideration the attitude of their sexual partner?\
+  peer-influence\
+  sexual-partner-influence\
+  close-peer-influence\
+  \
+  adopt  ; records when a person makes decision to adopt the technology\
+  reject ; records true when a person makes a decision to reject technology\
+\
+in set globals\
+  ;set change-counts 0    ; keeps track of how many adopt/ reject decisions have been made}
