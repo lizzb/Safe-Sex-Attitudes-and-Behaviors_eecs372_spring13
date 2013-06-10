@@ -6,6 +6,10 @@
 ;breed [social-butterflies social-butterfly]
 ;; assume talk to friends of both genders about safe sex habits?
 ;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other
+        ;; TODO?????
+    ;; if their attitudes towards safe sex are different by a large margin,
+    ;; instantly break up
+
 
 ;; Temporary breeds for setting up social groups/cliques
 breed [ people person ] ;; default turtle type, will later be changed to male or female
@@ -59,12 +63,12 @@ globals
   min-init-sex-ed ;; minimum possible starting level of sex education range (low end if no sex education)
   max-init-sex-ed ;; maximum possible starting level of sex education range (if full sex education??)
   
+  ;; amount people interact with their same and opposite gender friends
+  same-gender-interaction-degree
+  opposite-gender-interaction-degree
   
-  hyp1-degree
   min-init-group-liking
   max-init-group-liking
-  
-  hyp2-degree
   
   ;min-init-attitude 9 (set max slider as max-init-attitude) 25 ;; boss was 50, then 31
   ;max-init-attitude 50 (set min slider as min-init-attitude) ;; boss was 50
@@ -177,8 +181,8 @@ to setup-globals
   
   set min-init-group-liking 50 ;65
   set max-init-group-liking 82
-  set hyp1-degree 51
-  set hyp2-degree 50
+  set same-gender-interaction-degree 85 ;hyp1-degree 51
+  set opposite-gender-interaction-degree 70 ;hyp2-degree 50
   
 
   
@@ -460,18 +464,31 @@ to assign-turtle-color  ;; turtle procedure
 ;; MAKE GRADIENT......
 
 ;; if there was a switch statement for netlogo, this could be where you'd use it
-  if(safe-sex-likelihood > 0) [set color 14]  ;; fix for 5??
-  if(safe-sex-likelihood > 10) [set color 15]   
-  if(safe-sex-likelihood > 20) [set color 16] 
-  if(safe-sex-likelihood > 30) [set color 17] 
-  if(safe-sex-likelihood > 40) [set color 18] 
-  if(safe-sex-likelihood > 47) [set color 19] 
-  if(safe-sex-likelihood > 53) [set color 64] 
-  if(safe-sex-likelihood > 60) [set color 65]
-  if(safe-sex-likelihood > 70) [set color 66]  
-  if(safe-sex-likelihood > 80) [set color 67]  
-  if(safe-sex-likelihood > 90) [set color 68]  
-  if(safe-sex-likelihood > 95) [set color 69]  
+;  if(safe-sex-likelihood > 0) [set color 14]  ;; fix for 5??
+;  if(safe-sex-likelihood > 10) [set color 15]   
+;  if(safe-sex-likelihood > 20) [set color 16] 
+;  if(safe-sex-likelihood > 30) [set color 17] 
+;  if(safe-sex-likelihood > 40) [set color 18] 
+;  if(safe-sex-likelihood > 47) [set color 19] 
+;  if(safe-sex-likelihood > 53) [set color 64] 
+;  if(safe-sex-likelihood > 60) [set color 65]
+;  if(safe-sex-likelihood > 70) [set color 66]  
+;  if(safe-sex-likelihood > 80) [set color 67]  
+;  if(safe-sex-likelihood > 90) [set color 68]  
+;  if(safe-sex-likelihood > 95) [set color 69]  
+  
+  if(attitude > 0) [set color 14]  ;; fix for 5??
+  if(attitude > 10) [set color 15]   
+  if(attitude > 20) [set color 16] 
+  if(attitude > 30) [set color 17] 
+  if(attitude > 40) [set color 18] 
+  if(attitude > 47) [set color 19] 
+  if(attitude > 53) [set color 69] 
+  if(attitude > 60) [set color 68]
+  if(attitude > 70) [set color 67]  
+  if(attitude > 80) [set color 66]  
+  if(attitude > 90) [set color 65]  
+  if(attitude > 95) [set color 64]  
 ;  green64-69…white....19-14 red
 
 end
@@ -520,18 +537,9 @@ ask turtles ;; possibly add a condition here...
       ;set attitude attitude + change-amt
       
       set label round attitude
+      assign-turtle-color
 ]
  
-  
-
- 
- 
-
- 
-  ;; TODO ***
-  ;; everyone should attempt to make friends on each tick as well
-  ;; because otherwise, all the sexual partner links break
-  ;; then it becomes single-sex clusters and nothing cool happens
   
   ask turtles
   [
@@ -543,36 +551,26 @@ ask turtles ;; possibly add a condition here...
     [ set couple-length couple-length + 1 ]
     
     ;; If they are not coupled, a turtle tries to find a mate
-    
+
     ;; Any turtle can initiate mating if they are not coupled
     ;; (and random chance permits)
-
-   
-
-   ;; turtle is not coupled, give them a chance to couple/want to couple
-   ;; maybe do if else and give them a chance to make a friend??
     [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
   ]
   
   ;; give everyone (coupled or not) a chance to make a friend
   ask turtles
   [
+    ;; everyone should attempt to make friends on each tick as well
+    ;; because otherwise, all the sexual partner links break
+    ;; then it becomes single-sex clusters and nothing cool happens
     if (random-float max-friendship-factor < friendship-tendency) [ make-friends ]
   ]
   
-  ;; possibly move uncouple here??
   ask turtles [ uncouple ]
   
   ;; then give chance to spread virus
   ask turtles [ spread-virus ]
-  
-  
-  ;; keep slightly adjusting the layout of the model to be easier to view/understand
-  update-network-layout
-  ; if this is uncommented, they tend to get closer, increasing tendency to infect everyone fast and disrupt teh whole social clique thing
-  
-  
-  
+ 
   ;; Stop if every single turtle is infected
   if all? turtles [infected?] [ stop ]
    
@@ -602,17 +600,13 @@ end
 
 
 to make-friends ;; turtle procedure 
-  
-;  let choice (min-one-of (other turtles with [not link-neighbor? myself])
-;                   [distance myself])
-;  if choice != nobody [ create-friend-with choice ]
-;  
 
 ;; FIX THIS TO BE MORE LIKE COUPLING....take itno account friend groups and shit
 
   let choice (min-one-of other turtles with [not link-neighbor? myself] [distance myself])
    
-  if (choice != nobody and (count friend-neighbors <= max-number-friends))
+  if (choice != nobody and (count friend-neighbors <= max-number-friends) and
+    [count friend-neighbors] of choice <= [max-number-friends] of choice )
     [ 
       ;; no need to check for gender compatibility,
       ;; everyone can be friends with each other, yay!
@@ -621,7 +615,6 @@ to make-friends ;; turtle procedure
         [
           create-friend-with choice [ assign-link-color]
         ]
- 
     ]
 end
 
@@ -704,7 +697,7 @@ to couple  ;; turtle procedure
 
   if potential-partner != nobody
     [   
-        if (random-float max-coupling-factor * coupling-probability) < ([coupling-tendency] of potential-partner) 
+        if ((random-float max-coupling-factor) * coupling-probability) < ([coupling-tendency] of potential-partner) 
         [
           set partner potential-partner
           set coupled? true
@@ -714,13 +707,9 @@ to couple  ;; turtle procedure
             set coupled? true
           ]
           
-          ;; CHANGE BREED OF LINK
-          ;; fIX THIS friend-neighbors? with myself
-          if (friend-neighbor? partner) [ask friend-with partner [die] ] ;;[friend-with partner?] 
-          ;]
+          ;; Change breed of link if friends, and create link for sexual relationship regardless
+          if (friend-neighbor? partner) [ask friend-with partner [die] ]
           create-sexual-partner-with partner [ assign-link-color]
-          
-        ;]
       ]
     ]
 end
@@ -734,10 +723,11 @@ to uncouple  ;; turtle procedure
     if (couple-length > commitment) or
       ([couple-length] of partner) > ([commitment] of partner)
       [ 
-        ;; BREAK THE LINK HERE --- BETTER WAY TO DO THIS???? *****
+        ;; Break the link between these two turtles
+        ;; assume they don't go back to being friends
         ask sexual-partner-with partner [die]
         
-        ;; or turn back into friends?
+        ;; but if you wanted them to "just be friends"... uncomment below
         ;create-friend-with partner [ assign-link-color]
         
         set coupled? false
@@ -769,32 +759,26 @@ to spread-virus
     ;; only one of the partner's desire to use a condom must be strong enough
     ;; to make sure the couple has safe sex
     
-    
-    ;; if their attitudes towards safe sex are different by a large margin,
-    ;; instantly break up
-    
     ;; Note that for condom use to occur, both people must want to use one.  If
     ;; either person chooses not to use a condom, infection is possible.  Changing the
-    ;; primitive to AND in the third line will make it such that if either person
+    ;; primitive to AND (from or) in the third line will make it such that if either person
     ;; wants to use a condom, infection will not occur.
     
     
-    ;; FIX THIS.........
+    ;; FIX THIS......... TODO ADD CONDOM EFFICACY/EFFECTIVENESS
     
-    
+    ;; maybe every time they have safe sex theyhave a better attitude about it?
     
     ;; ADJUST THIS FOR FEMALE AND MALE?????
     if random-float max-condom-factor > condom-use or
     random-float max-condom-factor > ([condom-use] of partner)
     [
+      ;; TODO: factor in imperfect usage of condoms!!!
       if (random-float 100 < infection-chance)
         [ ask partner [ become-infected ] ]  
     ]  
   ]
 end
-
-
-
 
 
 to become-infected  ;; turtle procedure
@@ -806,16 +790,18 @@ end
 ;; not realistic, std symptoms dont instantly show up
 to check-infected
   ;; check if agent is male and symptomatic
-  if is-male? self and males-symptomatic?
+  if is-male? self and males-symptomatic? and infected?
   [
     set known? true 
     set had-std? true
+    set attitude 100 ;; after getting an std, turtles always want to have safe sex
   ]
   
-  if is-female? self and females-symptomatic?
+  if is-female? self and females-symptomatic? and infected?
   [
     set known? true 
     set had-std? true
+    set attitude 100 ;; after getting an std, turtles always want to have safe sex
   ]
   
   assign-shape
@@ -882,11 +868,26 @@ end
 ;   ]
 ;end
 
-;; perhaps equivalent is choosing to tell sexual partner you ahve std?
 
-;; Called if Boss-influence? on
-;; Causes group members to talk to their group boss
-;to talk-to-boss ; turtle procedure
+;; agents talk to their same-gender friends about safe sex attitudes
+to talk-to-same-gender-friends ; turtle procedure
+  let convoCount 0
+ 
+   while [ convoCount <  same-gender-interaction-degree / 100 * ( count my-friends ) ]
+   [ 
+       ; the amount of change is weighted by the degree of the hypothesis, the group-liking,
+       ; and the difference in attitudes between the friend and one of their link neighbors
+       ;set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
+       ;    ( [ attitude ] of one-of friend-neighbors - attitude )
+       set attitude attitude + ( same-gender-interaction-degree / 100 ) * ( group-liking / 100 ) * 
+           ( [ attitude ] of one-of friend-neighbors - attitude )
+       set convoCount convoCount + 1
+   ]
+  
+end
+
+
+;to talk-to-boss 
 ;  ; the degree of the hypothesis is used to limit how often the worker talks to his boss,
 ;  ; since workers will most likely talk to their coworkers more often than they do with their boss
 ;  if random 100 <= hyp2-degree
@@ -895,8 +896,7 @@ end
 ;  ; degree of the hypothesis, and the difference in attitude of his boss 
 ;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * 
 ;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )
-;  ]
-;end
+
 
 
 ;; change this somehow to media fear effect?
@@ -1273,7 +1273,7 @@ infection-chance
 infection-chance
 0
 100
-50
+100
 1
 1
 NIL
@@ -1288,7 +1288,7 @@ group-size
 group-size
 1
 50
-8
+36
 1
 1
 NIL
@@ -1389,7 +1389,7 @@ avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-52
+38
 1
 1
 NIL

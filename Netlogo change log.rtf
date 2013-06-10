@@ -420,4 +420,47 @@ end\
   reject ; records true when a person makes a decision to reject technology\
 \
 in set globals\
-  ;set change-counts 0    ; keeps track of how many adopt/ reject decisions have been made}
+  ;set change-counts 0    ; keeps track of how many adopt/ reject decisions have been made\
+\
+\
+\
+ \
+  ;; keep slightly adjusting the layout of the model to be easier to view/understand\
+  update-network-layout\
+  ; if this is uncommented, they tend to get closer, increasing tendency to infect everyone fast and disrupt teh whole social clique thing\
+\
+\
+   ;; turtle is not coupled, give them a chance to couple/want to couple\
+   ;; maybe do if else and give them a chance to make a friend??\
+    [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]\
+\
+\
+;; CHANGE BREED OF LINK\
+          ;; fIX THIS friend-neighbors? with myself\
+          if (friend-neighbor? partner) [ask friend-with partner [die] ] ;;[friend-with partner?] \
+\
+\
+      ;; BREAK THE LINK HERE --- BETTER WAY TO DO THIS???? *****\
+        ask sexual-partner-with partner [die]\
+        \
+        ;; or turn back into friends?\
+        ;create-friend-with partner [ assign-link-color]\
+\
+\
+\
+\
+;; perhaps equivalent is choosing to tell sexual partner you ahve std?\
+\
+;; Called if Boss-influence? on\
+;; Causes group members to talk to their group boss\
+;to talk-to-boss ; turtle procedure\
+;  ; the degree of the hypothesis is used to limit how often the worker talks to his boss,\
+;  ; since workers will most likely talk to their coworkers more often than they do with their boss\
+;  if random 100 <= hyp2-degree\
+;  [\
+;  ; the worker updates his change-amt by his amount of expertise, liking of his boss, \
+;  ; degree of the hypothesis, and the difference in attitude of his boss \
+;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * \
+;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )\
+;  ]\
+;end}
