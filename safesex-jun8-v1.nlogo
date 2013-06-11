@@ -1171,9 +1171,9 @@ weeks
 30.0
 
 BUTTON
-375
+380
 320
-450
+455
 353
 setup
 setup
@@ -1241,9 +1241,9 @@ MONITOR
 11
 
 BUTTON
-380
+300
 270
-450
+370
 303
 NIL
 select
@@ -1258,9 +1258,9 @@ NIL
 1
 
 TEXTBOX
-350
+300
 240
-455
+410
 268
 Select an individual to have an STD
 11
@@ -1268,19 +1268,19 @@ Select an individual to have an STD
 1
 
 TEXTBOX
-85
-225
-210
-280
-Could include parental influences, religious background, etc.
+10
+235
+220
+265
+Certainty: Could include parental influences, religious background, etc.
 11
 0.0
 1
 
 BUTTON
-280
-270
 375
+270
+470
 303
 NIL
 infect-random
@@ -1302,7 +1302,7 @@ CHOOSER
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
-2
+1
 
 SLIDER
 5
@@ -1313,7 +1313,7 @@ num-cliques
 num-cliques
 1
 20
-6
+4
 1
 1
 NIL
@@ -1328,7 +1328,7 @@ avg-num-links
 avg-num-links
 2
 clique-size - 1
-2
+5
 1
 1
 NIL
@@ -1358,16 +1358,16 @@ clique-size
 clique-size
 2
 35
-11
+10
 1
 1
 people
 HORIZONTAL
 
 BUTTON
-285
+310
 360
-355
+380
 393
 go-once
 go
@@ -1382,9 +1382,9 @@ NIL
 1
 
 BUTTON
+385
 360
-360
-430
+455
 393
 NIL
 go
@@ -1398,17 +1398,6 @@ NIL
 NIL
 1
 
-MONITOR
-1025
-95
-1150
-140
-avg friends per turtle
-;;mean [count friend-neighbors] of turtles\navg-friends-per-turtle
-3
-1
-11
-
 SLIDER
 5
 150
@@ -1418,7 +1407,7 @@ avg-male-condom-intention
 avg-male-condom-intention
 0
 100
-10
+30
 1
 1
 NIL
@@ -1433,7 +1422,7 @@ avg-female-condom-intention
 avg-female-condom-intention
 0
 100
-70
+85
 1
 1
 NIL
@@ -1494,66 +1483,12 @@ PENS
 "M" 1.0 0 -13791810 true "" "plot avg-male-attitude"
 "F" 1.0 0 -2064490 true "" "plot avg-female-attitude"
 
-MONITOR
-900
-10
-1020
-55
-# in-group friends
-num-in-group-friends
-17
-1
-11
-
-MONITOR
-900
-50
-1020
-95
-# out-group friends
-num-out-group-friends
-17
-1
-11
-
-MONITOR
-1020
-10
-1155
-55
-# in-group partners
-num-in-group-partners
-17
-1
-11
-
-MONITOR
-1020
-50
-1155
-95
-# out-group partners
-num-out-group-partners
-17
-1
-11
-
 TEXTBOX
 10
 10
 360
 40
 Variables to set up a mini social network, consisting primarily of discrete groups with limited links between out-group agents.
-11
-0.0
-1
-
-TEXTBOX
-10
-230
-160
-248
-Certainty:  
 11
 0.0
 1
@@ -1618,44 +1553,21 @@ NIL
 HORIZONTAL
 
 SWITCH
-345
-85
-470
-118
+250
+320
+375
+353
 show-labels?
 show-labels?
-1
+0
 1
 -1000
 
 @#$#@#$#@
 ## WHAT IS IT? 
 
-This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults, taking into account how these variables influence one another and change over time.
+This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults. It also takes into account how these variables influence one another and change over time using theories of attitude change and certainty.
 
-
-## Guiding questions to consider / goals of the model
-
-What factors seem to be most influential in determining whether or not an individual will contract an STI?
-
-What factors influence the spread of attitudes towards safe sex?
-
-Are the two above questions interdependent? What implications could this have for targeting information campaigns to this age group?
-
-
-
-## Next steps
-
-Creating custom attitudes for each agent, rather than blanket assumptions about actions
-Establishing networks consisting of "friendship" links and "sexual partner" links
-Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors
-
- -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]
- -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission
- -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex
-
-
-I will do further research in order to determine and more accurately base some of the assumptions of this model in scientific literature.
 
 ## HOW IT WORKS 
 
@@ -1675,25 +1587,7 @@ Every agent, regardless of coupled status, has a chance to make a new friend eac
 On every tick while the two agents are coupled, if one partner is infected, the other partner is at risk for infection based on a probability of having sex and using protection. If an agent becomes infected through this interaction (and is of a symptomatic gender), they do not realize they are infected until the next tick.
 
 
-
-
-
-
-
-
-
-
-
-### Simplifying assumptions
-
-This model only simulates heterosexual/heteronormative, college-aged young adults - both male and female. Agents in the simulation can only have a maximum of one partner at a time. The complexities of different types of sexual behaviors (abstinence, long-term monogamy, or strictly hook-ups) are not included in the model.
- 
-Although STIs may be transmitted through avenues other than sexual behavior, as in drug needles, childbirth, or breastfeeding, this model focuses on the sexual interactions, as they are most common form of transmission - especially in the age demographic in question. Additionally, although there are forms of protection against STIs/STDs other than condoms, it is the form of sexual protection that is most prevalent and accessible for the demographic of interest.
-
-Although some members of the cliques have or develop links to agents in other groups, the social groups are generated at the beginning of the simulation and remain fairly static. Agents cannot change group affiliation over time, and are not able to be part of more than one social group at a time. 
-
 ## HOW TO USE IT 
-
 
 Using the sliders, choose the number of social groups (NUM-CLIQUES) to create and how many people should make up each social group (CLIQUE-SIZE). The agents within the clique are only connected to others within their social group, and will have about AVG-NUM-LINKS "friends", that they are connected to via a blue link. One of these links will be to the central "leader" of the clique. This "leader" is identical to other agents, except it additionally has links to all other clique "leaders", which helps set up a visual layout and generates a very loosely connected social network containing mostly discrete clusters. 
 
@@ -1725,6 +1619,15 @@ The user can affect the likelihood of safe sex being practiced, i.e. how likely 
 
 
 The model stops when the entire population is infected, or if all agents have reached a single, unchanging safe-sex-attitude... 
+
+
+### Simplifying assumptions
+
+This model only simulates heterosexual/heteronormative, college-aged young adults - both male and female. Agents in the simulation can only have a maximum of one partner at a time. The complexities of different types of sexual behaviors (abstinence, long-term monogamy, or strictly hook-ups) are not included in the model.
+ 
+Although STIs may be transmitted through avenues other than sexual behavior, as in drug needles, childbirth, or breastfeeding, this model focuses on the sexual interactions, as they are most common form of transmission - especially in the age demographic in question. Additionally, although there are forms of protection against STIs/STDs other than condoms, it is the form of sexual protection that is most prevalent and accessible for the demographic of interest.
+
+Although some members of the cliques have or develop links to agents in other groups, the social groups are generated at the beginning of the simulation and remain fairly static. Agents cannot change group affiliation over time, and are not able to be part of more than one social group at a time. 
 
 
 ## THINGS TO NOTICE 
