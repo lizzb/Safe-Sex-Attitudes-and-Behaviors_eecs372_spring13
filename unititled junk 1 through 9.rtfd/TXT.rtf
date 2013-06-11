@@ -1,0 +1,977 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Cambria;\f2\froman\fcharset0 TimesNewRomanPSMT;
+\f3\froman\fcharset0 Times-Roman;\f4\fswiss\fcharset0 ArialMT;\f5\fnil\fcharset0 Calibri;
+\f6\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red103\green103\blue103;\red0\green0\blue109;\red33\green156\blue194;
+\red102\green177\blue50;\red255\green255\blue51;\red254\green253\blue213;\red255\green252\blue171;\red115\green0\blue3;
+\red0\green0\blue117;\red82\green0\blue83;\red83\green85\blue3;\red11\green84\blue83;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid101\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\vieww11940\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+\pard\pardeftab720\ri720
+
+\f1 \cf0 This is interesting. What determines with what probability people use protection?  What are the parameters and influences of this kind of attitude? Maybe what their friends do make a difference? Or how their friends talk about and frame safe sex? Maybe just habit? What their parents told them? Long-term sexual patners\'92  attitudes?\
+\
+If they mate, there is also a probability that they will use a form of protection. \
+\
+If they use protection, there is also a probability of using it correctly. \
+\
+I think this is interesting. What difference does knowledge make? What about confidence? Or alcohol?\
+\
+\pard\pardeftab720\ri720
+
+\b \cf0 For instance, how would a person\'92s position in a network affect their risk of acquiring infections? How is a person\'92s sexual behavior impacted by their position in their social network? Or \'96 how is a person\'92s position in their social network related to their sexual activity? \
+You mentioned knowledge, and (implicitly) attitudes about safe sex. Those two could make a pretty interesting extra layer on top of an SIR model.
+\f2 \
+\
+\
+\pard\pardeftab720\ri720
+
+\f1\b0 \cf0 . This probability will be influenced by attitudes and behaviors towards safe sex that a given turtle has, and these attitudes/behaviors are influenced by the other turtles (\'93friend group\'94) that the turtle is linked with. If the coupled turtles use protection, there is a probability of using it correctly \'96 if protection is used correctly, it is assumed that the disease will not be passed on. If the protection is used incorrectly or no protection is used, there is a higher probability that the infection will be passed to the partner of the agent. \
+\
+I think this looks. But:\
+\
+\pard\pardeftab720\li720\fi-360\ri720
+\ls1\ilvl0\cf0 -	what parameters does \'93attitude\'94 consist of?\
+-	How do they change over time?\
+-	Do they change when people you know get STIs? \
+\pard\pardeftab720\ri720
+\cf0  \
+ \
+- As an intervention: would this help you plan or target information campaigns? Can using your model tel us something about who we should target? \
+\
+\pard\pardeftab720\ri720
+
+\b \cf0 Arthur\'92s comments:\
+I think this looks really good. I think you need to think about two things in particular: Are you modeling the spread of STIs, or the spread of attitudes about safe sex?  Mayb you are modeling both, and maybe they are related? Probably. But then how? Those could be good research questions of the model, and would guide a small, informal lit review on attitudes and attitude changes on safe sex.
+\f2 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\b0 \cf0 \
+\
+\
+-- 2 --\
+\
+\
+\
+-- 5---\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+Agents in this model are either male or female - the difference between these agents is distinguished by shape. An infected person is denoted with the addition of a dot on their body. \
+\
+The color of the agent indicates \'85. safe sex attitude\'85.\
+The color of the dot indicates whether or not the individual knows they are infected with an STI - this is determined by whether or not they are symptomatic. \
+\
+\
+\
+\
+## Guiding questions to consider / goals of the model\
+\
+What factors seem to be most influential in determining whether or not an individual will contract an STI?\
+\
+What factors influence the spread of attitudes towards safe sex?\
+\
+Are the two above questions interdependent? What implications could this have for targeting information campaigns to this age group?\
+\
+\
+\
+## Next steps\
+\
+Creating custom attitudes for each agent, rather than blanket assumptions about actions\
+Establishing networks consisting of "friendship" links and "sexual partner" links\
+\
+ -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]\
+\
+ -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission\
+\
+ -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex\
+\
+ -- Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors\
+\
+I will do further research in order to determine and more accurately base some of the assumptions of this model in scientific literature.\
+\
+\
+## HOW TO USE IT \
+\
+Using sliders, determine the initial population, including percentages of representations of different sexual orientations. Users also determine the likelihood of an individual using a condom and the point at which the model should stop. Indicating a stop percentage allows the user to see who has (or has not) been infected after the determined percentage has been reached. \
+\
+The SETUP button will generate a population based on the user\'92s determined values. Once the population is initialized, the user presses the SELECT button and clicks on an individual in the simulation to infect with a sexually transmitted infection. This allows the user to observe any patterns that may arise from an initial \'93patient zero\'94. \
+\
+\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+--- 4 ---\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 \
+\
+If they mate, there is also a probability that they will use a form of protection. \
+\
+What determines with what probability people use protection?\
+What are the parameters and influences of this kind of attitude?\
+Maybe what their friends do make a difference?\
+Or how their friends talk about and frame safe sex?\
+Maybe just habit?\
+What their parents told them?\
+Long-term sexual partners\'92  attitudes?\
+\
+If they use protection, there is also a probability of using it correctly. \
+\
+What difference does knowledge make?\
+What about confidence?\
+Or alcohol?\
+\
+For instance, how would a person\'92s position in a network affect their risk of acquiring infections?\
+How is a person\'92s sexual behavior impacted by their position in their social network?\
+Or \'96 how is a person\'92s position in their social network related to their sexual activity? \
+\
+You mentioned knowledge, and (implicitly) attitudes about safe sex. Those two could make a pretty interesting extra layer on top of an SIR model.\
+\
+\
+This probability will be influenced by attitudes and behaviors towards safe sex that a given turtle has, and these attitudes/behaviors are influenced by the other turtles (\'93friend group\'94) that the turtle is linked with. If the coupled turtles use protection, there is a probability of using it correctly \'96 if protection is used correctly, it is assumed that the disease will not be passed on. If the protection is used incorrectly or no protection is used, there is a higher probability that the infection will be passed to the partner of the agent. \
+\
+-	what parameters does \'93attitude\'94 consist of?\
+-	How do they change over time?\
+-	Do they change when people you know get STIs? \
+ \
+ \
+- As an intervention:\
+would this help you plan or target information campaigns?\
+Can using your model tell us something about who we should target? \
+\
+Think about two things in particular: Are you modeling the spread of STIs, or the spread of attitudes about safe sex? \
+Maybe you are modeling both, and maybe they are related?\
+Probably. But then how?\
+\
+Those could be good research questions of the model, and would guide a small, informal lit review on attitudes and attitude changes on safe sex.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+--- 6 ---\
+\
+\
+\pard\pardeftab720\sa240
+
+\f3 \cf0 \
+\pard\pardeftab720\sa240
+
+\b\fs64 \cf0 Interface tab 
+\fs48 Layout
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Vertically, settings that only affect SETUP should come first, followed by SETUP and GO, followed by settings that are OK to change while the model is running. The idea is to put the controls in the same order the user will use them.\uc0\u8232 \cf2 Try to lay things out in such a way that if the user wants to make the world and/or view bigger, they won't have to rearrange a bunch of stuff. This usually means avoiding putting stuff to the right or bottom of the view. (Not a hard and fast rule.)
+\f3\fs24 \cf0 \
+\
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Slider units & ranges
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Use the "units" slot in sliders if appropriate to indicate what units the slider values are in. For instance, a TEMPERATURE slider might be labeled with the unit \'93degrees C\'94. The slider MIN, MAX, and STEP fields should be set to reasonable choices. Also, make sure the default slider settings are sensible (and match what is described in the info tab, if slider settings are discussed there). Be careful -- it's easy to accidentally change slider settings when you are playing with the model. Don't inadvertently save changes you didn't want saved.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Naming
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Name sliders and switches using hyphens, like 
+\f4 leopard-spot-count
+\f2 , and not like 
+\f4 leopardspotcount 
+\f2 or 
+\f4 leopardSpotCount 
+\f2 or 
+\f4 leopard_spot_count
+\f3\fs24 \
+
+\f2\fs32 Switches should have names ending in question marks, like this: 
+\f4 grow-grass? 
+\f3\b\fs48 Widget sizing
+\b0\fs24 \
+
+\f2\fs32 Don't make widgets just-barely-wide-enough to display the text on them; leave a little extra width, to allow for the different fonts on different operating systems. (You don't need to leave extra space 
+\f3\i between 
+\f2\i0 widgets, only 
+\f3\i inside 
+\f2\i0 widgets.) (If you want to be really sure the text fits, the VM with the
+\f3\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page1image19384.png \width1360 \height9 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0  
+\f0 {{\NeXTGraphic page1image19544.png \width116 \height271 \noorient
+}¬}
+\f3 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 1
+\f3\fs24 \
+
+\f2\fs32 Version as of 5/28/2013\uc0\u8232 largest font seems to be on Macs, so you may want to test your model on that.)
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Monitors
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Set the number of decimal places in monitors appropriately.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Turtle shapes
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f5\fs32 \cf0 All shapes need names. There's no need to end shape names in "-shape", like "circle-shape"; just say "circle"
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Position of 2D view
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f5\fs32 \cf0 Put the 2D view on the top right, so it can easily be made larger without covering other widgets. It's best not to put anything to the right or below the view (although for some models with very crowded interfaces sometimes we throw up our hands and do it anyway). If you must, you can put some interface items above the view, but this is unorthodox and shouldn't be done unless you really feel you need to.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Communicating with the user
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 If the model needs to tell the user that something has gone wrong, use user-message. If you use show or print, the user might not see it because they might have hidden the command center.
+\f3\fs24 \
+
+\f2\fs32 If the model wants to print messages from time to time as it runs, it should use output-print (and/or the other output- commands). Add an Output area to the interface for the output to show up in.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Action keys
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f5\fs32 \cf0 Refrain from assigning such action keys to buttons unless the model will significantly benefit. Most of the time action keys are visual clutter.\uc0\u8232 Games, HubNet clients, and solo versions of HubNet activities are all good examples of where action keys are important.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Patch size
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Make the patch size a whole number (e.g., 10.0 not 10.7). This often makes the view look a little nicer.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 World Wrapping
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Think about whether horizontal and/or vertical world wrapping should be on or off, and set it appropriately in the world settings.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Visual Design
+\b0\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page2image17456.png \width116 \height271 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 2
+\f3\fs24 \
+
+\f2\fs32 Version as of 5/28/2013
+\f3\fs24 \
+
+\f2\fs32 The visualization of your agent-based model is very important, as it allows people to watch the process unfold. Clear and informative visualizations can aid in viewer understanding of both agent rules and aggregate-level behavior. In particular, you may want your visualization to emphasize important trends in your model's behavior. Some model's visualizations are more straightforward than others. Often, making a really good model visualization can be a true challenge, requiring careful (and sometimes creative) use of the agents' shapes, sizes, colors, and orientations. It is also often important to display aggregate-level metrics in the form of line plots or histograms, while your model is running. For more information about how to create good visualizations for agent-based models, please see \cf3 http://ccl.northwestern.edu/~dkor/Tutorial/index.htm \cf0 and/or \cf3 http://jasss.soc.surrey.ac.uk/12/2/1.html\cf0 .
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs64 \cf0 Info tab\uc0\u8232 
+\fs48 First paragraph
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 The first paragraph of WHAT IS IT? should be a concise summary of what the model is about. Like the abstract of an academic paper, this first paragraph should be able to stand on its own as a brief and self- contained description of the model.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Avoid NetLogo jargon
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Make sure the text of the Info Tab (except for the "NetLogo Features" section) does not assume familiarity with NetLogo programming. For example, it shouldn't refer to "turtles" when it could just say rabbits or molecules or people or what have you. Similarly for "patches", "observer", and other NetLogo jargon.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Line breaks
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Avoid manual line breaks from info tabs. NetLogo will do its own line-wrapping based on the width of the window.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Requiring a fixed width font
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 If there are any parts of the info tab that must be in a fixed width font to line up correctly, then put a "|" character at the beginning of each such line. Example:
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\f4\fs26 \cf0 | 1%+-\uc0\u8232 | H-A +HO <========> HO +A |23
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Spelling and grammar
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Proofread the info text for spelling and grammar. (For instance, you might want to paste the text into a word processor and use its spell check feature.)
+\f3\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page3image18544.png \width2494 \height9 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0  
+\f0 {{\NeXTGraphic page3image18704.png \width1876 \height9 \noorient
+}¬}
+\f3  
+\f0 {{\NeXTGraphic page3image18864.png \width867 \height9 \noorient
+}¬}
+\f3  
+\f0 {{\NeXTGraphic page3image19024.png \width116 \height271 \noorient
+}¬}
+\f3 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 3
+\f3\fs24 \
+
+\f2\fs32 Version as of 5/28/2013
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Trailing blank lines
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Remove any extra blank lines from the end of the Info Tab.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Required sections of the Info tab
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Be sure that each of the following sections is found in the Info Tab with the following formatting. There should be two blank lines between sections.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\f4\fs26 \cf0 WHAT IS IT?\uc0\u8232 -----------\u8232 This section should give a general understanding of what the model is trying to explain or show.
+\f3\fs24 \
+
+\f4\fs26 HOW IT WORKS\uc0\u8232 ------------\u8232 This section should explain what rules the agents use to create the overall behavior of the model.
+\f3\fs24 \
+
+\f4\fs26 HOW TO USE IT\uc0\u8232 -------------\u8232 This section should explain how to use the model, including a description of each of the widgets in the Interface T ab.
+\f3\fs24 \
+
+\f4\fs26 THINGS TO NOTICE\uc0\u8232 ----------------\u8232 This section should give some ideas of things for the user to notice while running the model.
+\f3\fs24 \
+
+\f4\fs26 THINGS TO TRY\uc0\u8232 -------------\u8232 This section should give some ideas of things for the user to try to do (move sliders, switches, etc.) with the model.
+\f3\fs24 \
+
+\f4\fs26 EXTENDING THE MODEL\uc0\u8232 -------------------\u8232 This section should give some ideas of things to write in the Procedures Tab to make the model more complicated, detailed, accurate to life, etc.
+\f3\fs24 \
+
+\f4\fs26 NETLOGO FEATURES\uc0\u8232 ----------------\u8232 This section should point out any especially interesting or unusual features of NetLogo that the model makes use of, particularly in the Procedures tab. It might also point out places where workarounds were needed because of missing features.
+\f3\fs24 \
+
+\f4\fs26 RELATED MODELS\uc0\u8232 --------------\u8232 This section should give the names of related models in the Models Library.
+\f3\fs24 \
+
+\f4\fs26 CREDITS AND REFERENCES
+\f3\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page4image16328.png \width116 \height271 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 4
+\f3\fs24 \
+
+\f2\fs32 Version as of 5/28/2013
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\f4\fs26 \cf0 ----------------------\uc0\u8232 This section should contain credits and/or references to source materials.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Content of sections
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 HOW IT WORKS is about how the model works abstractly, not about how the actual concrete code works. It should explain the rules of the model without referring to programming concepts or the contents of the procedures tab.
+\f3\fs24 \
+
+\f2\fs32 If the Interface tab is especially complicated, the HOW TO USE IT section could get quite long. If a lot of the stuff in the Interface tab is optional or obscure, you might want to postpone describing that stuff until THINGS TO TRY, in order not to break the overall readability and flow of the info tab. (If you do this, do put a sentence in HOW TO USE IT saying "Some additional options are described below under THINGS TO TRY.")
+\f3\fs24 \
+
+\f2\fs32 The distinction between THINGS TO NOTICE and THINGS TO TRY isn't always obvious. Usually THINGS TO NOTICE are things you can easily notice on the default settings (or with only easy, minor settings changes). THINGS TO NOTICE gets you hooked, THINGS TO TRY involves digging deeper.
+\f3\fs24 \
+
+\f2\fs32 Nothing in THINGS TO NOTICE or THINGS TO TRY should require any programming. Those kinds of suggestions go in EXTENDING THE MODEL.
+\f3\fs24 \
+
+\f2\fs32 RELATED MODELS should give the names of a few other NetLogo models that are similar to the one you created. For non-Netlogo models that are related, put links or citations in the CREDITS AND REFERENCES section.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Credits and references
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 If the model is based on published sources (or web sites), it's good to include the reference (or URL) information here.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs64 \cf0 Code tab 
+\fs48 Comments
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Make sure your code is adequately commented. Don't assume that users are expert programmers. It's particularly important to comment anything unusual, tricky, or obscure in the code -- much less important to comment every variable or every line of code. Also, remove extraneous or outdated comments that can be found in the code.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Naming of Boolean variables
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Every Boolean (true/false) variable and reporter (and switch) should have a name ending in a question mark, like this: 
+\f4 grow-grass?
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Procedure order
+\b0\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page5image19576.png \width968 \height9 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0  
+\f0 {{\NeXTGraphic page5image19736.png \width116 \height271 \noorient
+}¬}
+\f3 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 5
+\f3\fs24 \
+
+\f2\fs32 Version as of 5/28/2013
+\f3\fs24 \
+
+\f2\fs32 Put the procedures in a reasonably logical order: SETUP, then GO, then supporting procedures, then any plotting procedures at the end (since these are often the least interesting)
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Identify turtle and patch procedures
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Please comment turtle or patch procedure as follows:
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\f4\fs26 \cf0 to go\uc0\u8232 ask turtles [move]
+\f3\fs24 \
+
+\f4\fs26 end
+\f3\fs24 \
+
+\f4\fs26 to move ;; turtle procedure fd 1
+\f3\fs24 \
+
+\f4\fs26 end
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Similarly, appropriately comments should adorn procedures that are specific to breeds in your model (such as particles, hippos, companies, authors, etc).
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Turtle-centricity
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 In general try to write your code in a \'93turtle-centric\'94 manner. For example, \'93RIGHT 10\'94 is preferred over \'93SET HEADING (HEADING + 10)\'94
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Formatting variable names
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Name variables like this: 
+\f4 bird-beak-size
+\f2 , and not like 
+\f4 birdbeaksize 
+\f2 or 
+\f4 BirdBeakSize 
+\f2 or 
+\f4 bird_beak_size 
+\f2 \cf4 .
+\f3\fs24 \cf0 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Indentation and so forth
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 The code should be as easy to read as possible. Look at other models to see what easy to read code looks like. Turning on the \'93indent automatically\'94 option and using the TAB key may help as well.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 Plot the initial state
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 This only applies if you are doing manual plotting in the code tab. Don't forget to do plotting at the end of your SETUP routine, and not just in GO. Otherwise you may never plot the initial state of the system, and only start plotting after GO has already been run once. If you are putting your plotting code in the plot widgets themselves, just make sure to put 
+\f4 reset-ticks 
+\f2 at the end of setup.
+\f3\fs24 \
+\pard\pardeftab720\sa240
+
+\b\fs48 \cf0 BehaviorSpace
+\b0\fs24 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 Remember to check any included BehaviorSpace experiments to make sure they still run. This is important because you may have changed the names of some of your sliders, etc, and the experiments will still have the outdated names.
+\f3\fs24 \
+\pard\pardeftab720
+
+\f0 \cf0 {{\NeXTGraphic page6image17184.png \width16 \height338 \noorient
+}¬}\pard\pardeftab720
+
+\f3 \cf0  
+\f0 {{\NeXTGraphic page6image17344.png \width34 \height8 \noorient
+}¬}
+\f3  
+\f0 {{\NeXTGraphic page6image17504.png \width116 \height271 \noorient
+}¬}
+\f3 \
+\pard\pardeftab720\sa240
+
+\f2\fs32 \cf0 6\
+\
+\
+\
+\
+\
+\
+\
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+
+\f6\fs24 \cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \row
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trcbpat1 \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalt \clshdrawnil \clwWidth10700\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720
+\cf0 \cell \lastrow\row
+\pard\pardeftab720\sa240
+
+\f3 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+--- 8 ---\
+\
+\
+Interface tab Layout\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 Vertically, settings that only affect SETUP should come first, followed by SETUP and GO, followed by settings that are OK to change while the model is running. The idea is to put the controls in the same order the user will use them.\
+\
+Slider units & ranges\
+Use the "units" slot in sliders if appropriate to indicate what units the slider values are in. The slider MIN, MAX, and STEP fields should be set to reasonable choices. Also, make sure the default slider settings are sensible (and match what is described in the info tab, if slider settings are discussed there). \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720
+\ls2\ilvl0
+\f3 \cf0 {\listtext	\cf5 1.	}Adjust the slider parameters (see below), or use the default settings.\
+{\listtext	2.	}Press the SETUP-COMPARISON button.\
+{\listtext	3.	}Press the COMPARE button to begin the simulation.\
+{\listtext	4.	}View the POPULATIONS and AGENT-POPULATIONS plots to watch the populations fluctuate over time\
+\pard\pardeftab720\sa240
+\cf5 Parameters shared between agent and aggregate models:\uc0\u8232 - INITIAL-NUMBER-SHEEP: The initial size of sheep population\u8232 - INITIAL-NUMBER-WOLVES: The initial size of wolf population\u8232 - SHEEP-REPRODUCE: The probability of a sheep reproducing at each time step\
+Parameters for agent model:\uc0\u8232 - SHEEP-MAX-INITIAL-ENERGY: At setup time, sheep are given an energy between 1 and this value\u8232 - WOLF-GAIN-FROM-FOOD: The amount of energy wolves get for every sheep eaten\u8232 - WOLF-REPRODUCE: The probability of a wolf reproducing at each time step\
+Parameters for aggregate model:\uc0\u8232 - WOLVES-DEATH-RATE: The rate at which wolves die.\u8232 - PREDATION-RATE: The rate at which wolves eat sheep.\u8232 - PREDATOR-EFFICIENCY: The efficiency of the wolves in extracting energy to reproduce from the prey they eat.\
+The SETUP button creates individuals with particular behavioral tendencies according to the values of the interface's five sliders (described below).  Once the simulation has been setup, you are now ready to run it, by pushing the GO button.  GO starts the simulation and runs it continuously until GO is pushed again.  During a simulation initiated by GO, adjustments in sliders can affect the behavioral tendencies of the population.\
+\cf0 \
+A monitor shows the percent of the population that is infected by HIV.  In this model each time-step is considered one week; the number of weeks that have passed is shown in the toolbar.\
+\
+\cb6 Here is a summary of the sliders in the model. \cb1  They are explained in more detail below.\
+\
+- INITIAL-PEOPLE: How many people simulation begins with.\
+- AVERAGE-COUPLING-TENDENCY: General likelihood member of population has sex (0--10).\
+- AVERAGE-COMMITMENT: How many weeks sexual relationships typically lasts (0--200).\
+- AVERAGE-CONDOM-USE: General chance member of population uses a condom. (0--10).\
+- AVERAGE-TEST-FREQUENCY: Average frequency member of population will check their HIV status in a 1-year time period (0--2).\
+\
+The total number of individuals in the simulation is controlled by the slider INITIAL-PEOPLE (initialized to vary between 50--500), which must be set before SETUP is pushed.\
+\
+During the model's setup procedures, all individuals are given "tendencies" according to four additional sliders.  These tendencies are generally assigned in a normal distribution, so that, for instance, if a tendency slider is set at 8, the most common value for that tendency in the population will be 8.  Less frequently, individuals will have values 7 or 9 for that tendency, and even less frequently will individuals have values 6 or 10 (and so on).\
+\
+The slider AVERAGE-COUPLING-TENDENCY (0--10) determines the tendency of the individuals to become involved in couples (as stated earlier, all couples are presumed to be sexually active). When the AVERAGE-COUPLING-TENDENCY slider is set at zero, coupling is unlikely, although (because tendencies are assigned in a normal distribution) it is still possible.  Note that when deciding to couple, both individuals involved must be "willing" to do so, so high coupling tendencies in two individuals are actually compounded (i.e. two individuals with a 50% chance of coupling actually only have a 25% of coupling in a given tick).\
+\
+The slider AVERAGE-COMMITMENT (1--200) determines how long individuals are likely to stay in a couple (in weeks).  Again, the tendencies of both individuals in a relationship are considered; the relationship only lasts as long as is allowed by the tendency of the partner with a shorter commitment tendency.\
+\
+The slider AVERAGE-CONDOM-USE (0--10) determines the tendency of individuals in the population to practice safe sex.  If an individual uses a condom, it is assumed in this model that no infection by HIV is possible.  Note that this tendency (like the others) is probabilistic at several levels.  For instance, when AVERAGE-CONDOM-USE is set to 9, most of the individuals have a CONDOM-USE value of 9, although some have CONDOM-USE values of 8 or 10, and fewer yet have CONDOM-USE values of 7 or 11 (11 would be off-scale and the same as 10 for all practical purposes).  Also, an individual with a CONDOM-USE value of 9 will still sometimes not choose to use a condom (10% of the time, roughly). Simulation of condom-use is further complicated by the fact that if one partner "wants" to use a condom while the other partner does not, the couple does not use condoms.  This characteristic of the model is representative of the dynamics of some sexual relations, but not others.  The decision was somewhat arbitrary, and the user is invited to play with this characteristic and others in the "Extending the Model" section of this tab.\
+\
+The slider AVERAGE-TEST-FREQUENCY (0--2) is the final slider of the interface.  It determines the average frequency of an individual to get tested for HIV in a one-year time span.  Set at 1.0, the average person will get tested for HIV about once a year.  Set at 0.2, the average individual will only get tested about every five years.  This tendency has significant impact because the model assumes that individuals who know that they are infected always practice safe sex, even if their tendency as healthy individuals was different.  Again, this characteristic of the model is only represented of the behaviors of some individuals.  The model was designed in this way to highlight the public health effects associated with frequent testing *and* appropriate responses to knowledge of one's HIV status.  To explore the impact of alternative behaviors on public health, the model code can be changed relatively painlessly.  These changes are described in the section, "Extending the Model."\
+\
+The model's plot shows the total number of uninfected individuals (green), infected individuals whose positive status is not known (blue), and infected individuals whose positive status is known (red).\
+\
+\
+Using the sliders, choose the NUMBER-OF-NODES and the AVERAGE-NODE-DEGREE (average number of links coming out of each node).\
+The network that is created is based on proximity (Euclidean distance) between nodes. A node is randomly chosen and connected to the nearest node that it is not already connected to. This process is repeated until the network has the correct number of links to give the specified average node degree.\
+The INITIAL-OUTBREAK-SIZE slider determines how many of the nodes will start the simulation infected with the virus.\
+Then press SETUP to create the network. Press GO to run the model. The model will stop running once the virus has completely died out.\
+The VIRUS-SPREAD-CHANCE, VIRUS-CHECK-FREQUENCY, RECOVERY-CHANCE, and GAIN-RESISTANCE-CHANCE sliders (discussed in \'93How it Works\'94 above) can be adjusted before pressing GO, or while the model is running.\
+The NETWORK STATUS plot shows the number of nodes in each state (S, I, R) over time.\
+\
+\
+resistance to attitude change increases as certainty inceases\
+certainty increases with time\
+earlier influence should be more effective\
+before strong certainty is formed - make sure its the RIGHT kind of certainty
+\f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+----7----\
+\
+\
+\
+Name sliders and switches using hyphens, like leopard-spot-count,\
+\
+leave extra space inside widgets.  to allow for the different fonts on different operating systems\'85.largest font seems to be on Macs,\
+\
+Set the number of decimal places in monitors appropriately.\
+\
+All shapes need names\
+\
+Put the 2D view on the top right, so it can easily be made larger without covering other widgets. It's best not to put anything to the right or below the view \
+\
+model needs to tell the user that something has gone wrong, use user-message. \
+\
+Make the patch size a whole number \
+\
+Think about whether horizontal and/or vertical world wrapping should be on or off, and set it appropriately in the world settings.\
+\
+Visual Design\
+\
+2\
+Version as of 5/28/2013\
+The visualization of your agent-based model is very important, as it allows people to watch the process unfold. Clear and informative visualizations can aid in viewer understanding of both agent rules and aggregate-level behavior. In particular, you may want your visualization to emphasize important trends in your model's behavior. Some model's visualizations are more straightforward than others. Often, making a really good model visualization can be a true challenge, requiring careful (and sometimes creative) use of the agents' shapes, sizes, colors, and orientations. It is also often important to display aggregate-level metrics in the form of line plots or histograms, while your model is running. For more information about how to create good visualizations for agent-based models, please see http://ccl.northwestern.edu/~dkor/Tutorial/index.htm and/or http://jasss.soc.surrey.ac.uk/12/2/1.html.\
+\
+\
+\
+Avoid NetLogo jargon\
+Make sure the text of the Info Tab (except for the "NetLogo Features" section) does not assume familiarity with NetLogo programming. For example, it shouldn't refer to "turtles" when it could just say rabbits or molecules or people or what have you. Similarly for "patches", "observer", and other NetLogo jargon.\
+\
+Proofread the info text for spelling and grammar.\
+\
+\
+Be sure that each of the following sections is found in the Info Tab with the following formatting. There should be two blank lines between sections.\
+WHAT IS IT?\uc0\u8232 -----------\u8232 \cb6 This section should give a general understanding of what the model is trying to explain or show.\
+The first paragraph of WHAT IS IT? should be a concise summary of what the model is about. Like the abstract of an academic paper, this first paragraph should be able to stand on its own as a brief and self- contained description of the model.\cb1 \
+\
+HOW IT WORKS\uc0\u8232 ------------\u8232 This section should explain what rules the agents use to create the overall behavior of the model.\
+\
+HOW IT WORKS is about how the model works abstractly, not about how the actual concrete code works. It should explain the rules of the model without referring to programming concepts or the contents of the procedures tab.\
+HOW TO USE IT\uc0\u8232 -------------\u8232 This section should explain how to use the model, including a description of each of the widgets in the Interface Tab.\
+\
+\cb7 The SETUP button creates groups of individuals/agents/people with unique/individual/particular/specific values. These groups primarily consist of inter-group connections, but one "leader" in each group is linked to "leaders" from all other groups. These leaders have no unique qualities, other than setting up a visual layout and generating a very loosely connected social network of mostly discrete social groups/clusters. \
+\
+num-cliques - the number of social groups/clusters to create\
+clique-size - how many people will be in/make up each clique/cluster/social-group\
+avg-num-links - average number of friends that an agent has (visualized by breed of link) (average-node-degree)\cb1 \
+\cb8 \
+The network is created by generating NUM-CLIQUES clusters, each consisting of CLIQUE-SIZE agents. Agents within a clique are connected to one another, and each agent will end up with/has (on average/about/around) AVG-NUM-LINKS "friends" that they are connected to via a blue link. One of these links will be to the central "leader" of the clique. This "leader" is identical to other agents, except it additionally has links to all other clique "leaders". \
+\cb1 \
+Using the sliders, choose the number of social groups (NUM-CLIQUES) to create, and how many people should make up each social group (CLIQUE-SIZE). \
+\
+\pard\pardeftab720\sa240
+
+\f3 \cf0 Using the sliders, choose the NUMBER-OF-NODES and the AVERAGE-NODE-DEGREE (average number of links coming out of each node).\
+The network that is created is based on proximity (Euclidean distance) between nodes. A node is randomly chosen and connected to the nearest node that it is not already connected to. This process is repeated until the network has the correct number of links to give the specified average node degree.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+
+\f0 \cf0 \
+\
+\
+\
+\
+If the Interface tab is especially complicated, the HOW TO USE IT section could get quite long. If a lot of the stuff in the Interface tab is optional or obscure, you might want to postpone describing that stuff until THINGS TO TRY, in order not to break the overall readability and flow of the info tab. (If you do this, do put a sentence in HOW TO USE IT saying "Some additional options are described below under THINGS TO TRY.")\
+THINGS TO NOTICE\uc0\u8232 ----------------\u8232 This section should give some ideas of things for the user to notice while running the model.\
+The distinction between THINGS TO NOTICE and THINGS TO TRY isn't always obvious. Usually THINGS TO NOTICE are things you can easily notice on the default settings (or with only easy, minor settings changes). THINGS TO NOTICE gets you hooked, THINGS TO TRY involves digging deeper.\
+THINGS TO TRY\uc0\u8232 -------------\u8232 This section should give some ideas of things for the user to try to do (move sliders, switches, etc.) with the model.\
+EXTENDING THE MODEL\uc0\u8232 -------------------\u8232 This section should give some ideas of things to write in the Procedures Tab to make the model more complicated, detailed, accurate to life, etc.\
+Nothing in THINGS TO NOTICE or THINGS TO TRY should require any programming. Those kinds of suggestions go in EXTENDING THE MODEL.\
+NETLOGO FEATURES\uc0\u8232 ----------------\u8232 This section should point out any especially interesting or unusual features of NetLogo that the model makes use of, particularly in the Procedures tab. It might also point out places where workarounds were needed because of missing features.\
+RELATED MODELS\uc0\u8232 --------------\u8232 This section should give the names of related models in the Models Library.\
+RELATED MODELS should give the names of a few other NetLogo models that are similar to the one you created. For non-Netlogo models that are related, put links or citations in the CREDITS AND REFERENCES section.\
+CREDITS AND REFERENCES\
+If the model is based on published sources (or web sites), it's good to include the reference (or URL) information here.\
+\
+\
+Put the procedures in a reasonably logical order, plotting procedures at the end \
+to move ;; turtle procedure fd 1\
+end\
+\
+appropriately comments should adorn procedures that are specific to breeds in your model (such as particles, hippos, companies, authors, etc).\
+\
+Name variables like this: bird-beak-size, \
+\
+The code should be as easy to read as possible.\
+\
+ If you are putting your plotting code in the plot widgets themselves, just make sure to put reset-ticks at the end of setup.\
+\
+\
+\
+\
+\
+\
+\
+--- 9 ---\
+\
+\
+\pard\pardeftab720
+
+\f6 \cf9 /// <summary>\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// Determine the color to draw a need based on its level\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// Green is full, Red is empty, and gradually changes in between\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// Reference: http://www.xtremevbtalk.com/showthread.php?t=319701\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// </summary>\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// <param name="level">the variable (mood or need) that we are determining a color for</param>\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf9 /// <returns>the color to use when drawing the variable level</returns>\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf10 public\cf0  \cf10 static\cf0  \cf11 Color\cf0  determineColor\cf12 (\cf10 float\cf0  level\cf12 )\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf12 \{\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf9 // we only need red and green to get red, yellow, green, and between colors\
+let r 1.0f\
+let g 0.0f\
+\
+;; if safe-sex-attitude (likelihood) is below 50%\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf10 float\cf0  r \cf12 =\cf0  \cf13 1f\cf12 ;\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf10 float\cf0  g \cf12 =\cf0  \cf13 0f\cf12 ;\cf0 \
+\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf10 if\cf0  \cf12 (\cf0 level \cf12 <\cf0  \cf12 .\cf13 5\cf12 )\cf0  \'a0 \'a0 \'a0\cf9 // if the mood is below 50%\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf12 \{\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 r \cf12 =\cf0  \cf13 1f\cf12 ;\cf0  \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\cf9 // Red is at 100% for red and yellow\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 g \cf12 =\cf0  level \cf12 /\cf0  \cf12 .\cf13 5f\cf12 ;\cf0  \'a0 \cf9 // Green should increase from 0 to 100% over mood 0 to 50% \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf12 \}\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf10 else\cf0  \cf9 // Else health is 50% or greater, diminish Red, leaving green\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf12 \{\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 r \cf12 =\cf0  \cf12 (\cf13 1f\cf0  \cf12 -\cf0  level\cf12 )\cf0  \cf12 /\cf0  \cf12 .\cf13 5f\cf12 ;\cf0  \'a0 \'a0\cf9 // from 50% to 100% mood, Red should decrease from 100% to 0%\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 g \cf12 =\cf0  \cf13 1f\cf12 ;\cf0  \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\cf9 // Green stays at 100%\cf0 \
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf12 \}\cf0 \
+\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \cf10 return\cf0  \cf10 new\cf0  \cf11 Color\cf12 (\cf0 r\cf12 ,\cf0  g\cf12 ,\cf0  \cf13 0f\cf12 );\cf0 \
+\'a0 \'a0 \'a0 \'a0 \cf12 \}
+\f0 \cf0 \
+}

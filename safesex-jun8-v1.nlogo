@@ -48,7 +48,7 @@ globals
   females-symptomatic?       ;; If true, females will be symptomatic IF infected with an STI
   
   
-                             ;infection-chance          ;; The chance out of 100 that an infected person
+  ;infection-chance          ;; The chance out of 100 that an infected person
                              ;; will transmit infection during one week of couplehood
                              ;; [set by slider] (default is scale 0 - 100) 
   
@@ -563,15 +563,32 @@ to assign-turtle-color  ;; turtle procedure
   if(safe-sex-attitude > 90) [set color 65]  
   if(safe-sex-attitude > 95) [set color 64]  
   ;  green64-69…white....19-14 red
+;  
+;  let r 1.0
+;  let g 0.0
+;  if (safe-sex-attitude < 50)
+;  [
+;    ;set 
+;    
+;  ]
   
-  let r 1.0
-  let g 0.0
-  if (safe-sex-attitude < 50)
-  [
-   ;set 
-    
-  ]
-  
+;  ; color person gradient range from green-->yellow--> red, like an energy bar 
+;  ; don't need blue at all
+;  let r 255
+;  let g 0
+;  let delta (safe-sex-attitude * .255) ;; /100 *255
+;  ifelse (delta) < .5f
+;  [
+;    set r 255          ;; red = 100% for red and yellow,
+;    set g (delta) / .5f  ;; green should increase from 0 to 100% over 0 to 50
+;  ]
+;  ;; else health is >= .5f, diminish red, leaving green
+;  [
+;    set r (255 - delta) / .5f
+;    set g 255
+;  ]
+;  set color [r g 0]
+;  
 end
 
 
@@ -948,7 +965,10 @@ to select
   if picked? [stop]
 end 
 
-
+;;
+;;
+;;
+;;
 to select-activist
   let picked? false
   if mouse-down?
@@ -1578,7 +1598,7 @@ NIL
 @#$#@#$#@
 ## WHAT IS IT? 
 
-This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults, taking into account how these variables  influence one another and change over time.
+This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults, taking into account how these variables influence one another and change over time.
 
 
 ## Guiding questions to consider / goals of the model
@@ -1595,11 +1615,12 @@ Are the two above questions interdependent? What implications could this have fo
 
 Creating custom attitudes for each agent, rather than blanket assumptions about actions
 Establishing networks consisting of "friendship" links and "sexual partner" links
+Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors
 
  -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]
  -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission
  -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex
- -- Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors
+
 
 I will do further research in order to determine and more accurately base some of the assumptions of this model in scientific literature.
 
@@ -1652,13 +1673,21 @@ An infected person is denoted with the addition of a dot on their body, and they
 
 Users also determine the likelihood of an individual using a condom and the point at 
 
-To start the simulation, the user should press the GO button. The simulation will run until the GO button is pressed again or the determined stop-percentage has been met, whichever happens first. 
+
+
+
+To start the simulation, the user should press the GO button.
+The simulation will run until the GO button is pressed again or the determined stop-percentage has been met, whichever happens first. 
 
 Monitors indicate the percentage of the total population that has been infected, as well as counts and percentages for some demographics. The graph shows the percentage of each gender that is infected.
 
 
 The user can affect the likelihood of safe sex being practiced, i.e. how likely an individual is to use a condom. If both partners use a condom, there is an additional probability that the condom/protection is used correctly, and consequently different likelihoods of the infection being transmitted. However, if one partner chooses to use a condom while the other does not, the model simulates no use of a condom, and both parties are potentially at risk of infection. This could be explored and altered in possible extensions of this model. 
 
+
+
+
+The model stops when the entire population is infected, or if all agents have reached a single, unchanging safe-sex-attitude... 
 
 
 ## THINGS TO NOTICE 
@@ -1668,21 +1697,31 @@ The user can affect the likelihood of safe sex being practiced, i.e. how likely 
 
 TBA
 
+
+
+
 ## EXTENDING THE MODEL 
 
 Symptoms of sexually transmitted infections aren’t always visible or known, and some STIs display symptoms differently in different genders. These factors impact how often a particular gender might choose to get tested or use protection in sexual encounters. To better simulate real-life behaviors, implement the chance that females have a high likelihood of experiencing symptoms, while males do not. If a person experiences symptoms, they can become treated and cured of the infection in some defined amount of time. You can also implement the condition that if a person thinks they are infected, they will definitely use protection. See how these changes impact the outcome of the model.
 
 In different relationships, condom use may vary. Additionally, condoms are not always effective or properly used. To more accurately account for likelihood of condom use and consequent transmission of infections, create different condom-use tendencies for each sexual orientation and create a probability that a condom is ineffective. 
 
+... also different sex acts? **** TODO
+
+The culture and sexual behavior habits might alter likelihood of transmission for couples depending on their sexual orientation, i.e. heterosexual vs. bisexual vs. homosexual. ...
+
+
+Simulate HIV/AIDS epidemic with media influence suggestion *****
 
 
 ## NETLOGO FEATURES 
-n-of is used to split the turtle population into two genders evenly.
+n-of is used to split the agent population into two genders evenly.
 
 Breeds are used for the genders of turtles, as well as for distinguishing friend links from sexual partner links.
 
 The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values across the population.
 
+If you need to display a change mid-tick, use the display command….. select TODO FINISH*****
 
 ## RELATED MODELS, CREDITS AND REFERENCES 
 Virus

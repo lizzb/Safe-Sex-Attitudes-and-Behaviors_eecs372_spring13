@@ -1,0 +1,211 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Calibri;\f2\fnil\fcharset0 LucidaGrande;
+\f3\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid2\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+
+\f0\fs24 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\
+Netlogo Changes over time\
+\
+Creating custom attitudes for each agent, rather than blanket assumptions about actions\
+Establishing networks consisting of "friendship" links and "sexual partner" links\
+\
+simplification: everyone has same inclination to have sex. sorry cant work in monogamny and abstinence and everything too.\
+\
+\
+    ; assume that all leaders interact/are social butterflies/charismatic,\
+    ; hence why their entire friend group likes them too\
+    ;; create links between all "leaders" - the central person of the clique/social group\
+    ;; CHANGE THIS SO THAT SOME "SOCIAL BUTTERFLIES" are created --- TODO *****\
+    ask leaders [ create-friends-with other leaders ] \
+\
+  ;; comment or uncomment this if you want a group "leader" to be in the center of the friend group\
+  ;; was only using leaders for spatial setup, but they also connect to other leaders,\
+  ;; but seems odd having a central friend\
+  \
+  ;;ask leaders [ die ] ;; was only using leaders for spatial setup\
+\
+\
+Decided out of scope:\
+vocality - how much a person is willing ot talk to their friends about private matters like sexual health\
+whether an agent more or less likely to talk to same sex or opposite sex friends about sexual health\
+get rid of vocality\
+get rid of strength of relationships - use certainty to proxy those\
+\
+%-imperfect-condom-usage\
+\
+\
+;; couldn't find reliable enough information to support using these variables as data\
+  ;; The following 2 variables indicate the % effectiveness in preventing the spread\
+  ;; of an STI. These numbers are based on pregnancy effectiveness, since condom protection\
+  ;; against sexually transmitted infections varies based on disease/virus type\
+  ;set perfect-use-effectiveness 98 ;; The chance of preventing STI spread if condom is used perfectly\
+  ;set typical-use-effectiveness 85 ;; The chance of preventing STI spread if condom is used typically\
+\
+\
+  ;; different strengths and types (genders/breeds) of links have different levels of impact\
+  ;; on safe sex attitudes/behaviors\
+\
+;; TODO\
+;; friendships die??.... assume no\
+;; turtles monogamous\
+;; if known, assume get treated and cured within ???? ticks?? immediately? not sure yet... ***\
+;; "socialite"? has more connections to a bunch of random groups rather than one specific friend group\
+;breed [social-butterflies social-butterfly]\
+\
+;; assume talk to friends of both genders about safe sex habits?\
+;; actually... on a turn they have a chance of making a friend and chance of meeting sexual partner (going to party?)...maybe choose one or other\
+\
+\
+;; set female ranges - avg safe sex desire, avg attitude, avg education\
+;; set male ranges???    \
+\
+\
+ ;; TODO: factor in imperfect usage of condoms!!!\
+\
+Sexual orientation\
+strength of relationships\
+different sexual behavior patterns for individuals and couples (long term monogamy, abstinence, polyamory, hook up culture, etc)\'85 as well as sex acts and likelihood of protection use and transmision\
+other forms of protection - most articles i found were about condoms, and stemming from hiv/aids research\
+\
+\
+\
+Instead of min init attitude and max init attitude and min init att and max init att just ahve slider or average\
+\
+curing stis\'85though none go away on their own, do they?\
+ -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex\
+ -- Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors\
+\
+\
+I will do further research in order to determine and more accurately base some of the assumptions of this model in scientific literature.\
+ -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission\
+ -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]\
+\
+different likelihood of talking to same-sex vs. opposite-sex friends about safe sex? --> is it in literature??\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\ls1\ilvl1
+\f1 \cf0 {\listtext	
+\f2 \uc0\u8259 
+\f1 	}150,804,157 no condoms\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\ls1\ilvl1
+\f0 \cf0 {\listtext	\uc0\u8259 	}
+\f1 163,109,883\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls1\ilvl0
+\f0 \cf0 {\listtext	\'95	}total 
+\f1 313,914,040
+\f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+\
+\
+\
+--------- willie stuff ------\
+\
+agree - same type of sex\
+disagree - dont have sex --> break friend group\
+\
+attitude - whether they want to have safe sex or not\
+certainty  - emotional attachment to attitude\
+justification - backup reasons for justification\
+\
+certainty = conviction = (i keep calling it confidence)\
+\
+probability of sharing attitude with friends (dont worry about memroies or experience) based on certainty\
+certainty based on experience (got an std), number of times defended attittude (no), duration for which youve had that attitude\
+mesosystem - initial certainty\'85 brofenbrenner?\
+\
+justification - sex ed type\
+direct benefits as it relates to you  \'85 invisible to user\
+\
+media -influence attitude, presents fear not justification\
+\
+behavior attitude tendency - combo of desire/intention + attitude\
+certainty and justification influence attitude\
+attitude combined with desire gives behavior\
+justification as a control?\
+call it static - model has no implications on further education or knwoledge\
+\
+i want how attitudes and behaviors effect each other and how this relates to a campaign targeted to this demographic\'85 how could it inform social policies?\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 literature says that amount attitude change is inversely proportional to certainty\
+the more certain, the less likely to change their attitude\
+\
+--------- willie stuff ------\
+\
+sexual social tendency?\
+\
+\
+red = unsafe sex\
+green = safe sex\
+yellow\
+black and white\
+\
+\
+\
+Shape choices\
+Males - male shape\
+Females - female shape\
+Infected - extra dot on shape, M or F\
+\
+Colors:\
+Infected and not known: black dot\
+Infected and known: white dot???\
+Want to have safe sex: green\
+Neutralish on attitude towards safe sex: ???yellow? right now white...\
+Don't want to have safe sex: red\
+\
+not safe --> neutral --> safe\
+reddish orange --> yellow --> pleasant green\
+(255, 102, 0) --> (255, 255, 0) or just white, grey looks yucky--> (55 or 102, 255, 0)\
+\
+\
+\
+\pard\pardeftab720\sa240
+\cf0 \
+\pard\pardeftab720\sa240
+
+\f3 \cf0 resistance to attitude change increases as certainty inceases\
+certainty increases with time\
+earlier influence should be more effective\
+before strong certainty is formed - make sure its the RIGHT kind of certainty
+\f0 \
+\
+Parameters for agent model:\
+\
+Parameters for aggregate model:\
+\
+\
+;; color person from green -->yellow--> red, like an energy bar in games\
+;; don't need blue b = 0\
+let r 1.0f\
+let g 0.0g\
+let delta (safe-sex-attitude / 100)\
+ifelse (delta) < .5\
+[\
+let r 1f ;; red = 100% for red and yellow,\
+let g (delta) / .5f  ;; green should increase from 0 to 100% over 0 to 50\
+]\
+;; else health is >= .5f, diminish red, leaving green\
+[\
+r = (1f - delta) / .5f\
+g = 1f\
+]\
+return new color (r, g, 0f)}
