@@ -162,6 +162,13 @@ to setup
                  ; make the network look a little prettier 
                  ;; actually... just rearranges it a bit. better to not move it at all?
                  ;repeat 15 [ update-network-layout ] ;; was 10
+                 
+                 ;; if you want your linked turtles to move spatially closer to each other, call this sometimes
+;; but i like seeing them stay in place and watching changes
+;; so this doesn't get called currently
+;to update-network-layout
+;  layout-spring turtles links 0.3 (world-width / (sqrt count turtles)) 1
+;end
   
                  ;setup-links
                  ;; don't really need to create any initial relationships, they'll form on their own
@@ -187,6 +194,8 @@ to setup-globals
   set no-condom-sex-ed-level 20
   set condom-sex-ed-level 80
   
+  ;; Call functions to set whether females and males show symptoms of the STI
+  ;; based on value of chooser/drop-down in interface
   run word "set-" symptomatic?
   
   set max-friendship-factor 10.0 ;; .... edit...? 90
@@ -437,27 +446,18 @@ end
 ;;
 ;;
 to update-safe-sex-likelihood
-;; mesosystem has 25% impact on attitude, personal desire has 75%
-;; weighting justification 25 certainty/affect/mesosystem 75 = attitude 
-;;set safe-sex-likelihood (condom-use * .75 + certainty * .25)
+
+  ;; strongly weighted to previous attitude (likelihood...??)
   
-                            ;; strongly weighted to previous attitude
-  ;set safe-sex-attitude (safe-sex-attitude * .5 + justification * .25 + certainty * .25)
-  
-  ;; strongly weighted to previous attitude
-  
-  ;; higher certainty has less impact to /// more resistance to change
   set safe-sex-likelihood
       (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
-  assign-turtle-color ;; based on safe-sex-likelihood ;;attitude
+  assign-turtle-color ;; based on safe-sex-likelihood
 end
 
 
-;; (combine certainty + justification) / 2 or weighted
-;; average with current attitude
 
-;to-report calculate-safe-sex-attitude ;;safe-sex-likelihood ;; calculate-attitude
-;  report [ ] ;; (justification + certainty)/2 ==> attitude  = likelihood
+
+
 
 ;;---------------------------------------------------------------------
 
@@ -467,7 +467,7 @@ end
 ;; but which weighted more?
 
 
-
+;;
 ;;
 ;; Make sure the member variables don't exceed 100
 ;;
@@ -485,21 +485,27 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ;;---------------------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Color/shape of agents/links ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; 
+;; Color of link indicates type of relationship between the two agents
+;; blue is a friendship, magenta is a sexual partnership
+;;
+to assign-link-color  ;; link procedure
+  
+  ifelse is-friend? self
+    [ set color blue]
+    [ set color magenta]
+    
+  set thickness .15 ; make the link a bit easier to see
+end
+
+
+
 ;; 
 ;; Set shape based on gender (male or female)
 ;; and whether or not infected (includes a dot)
@@ -538,60 +544,47 @@ to assign-turtle-color  ;; turtle procedure
   
   ;; if there was a switch statement for netlogo, this could be where you'd use it
   
-  if(safe-sex-likelihood > 0) [set color 14]  ;; fix for 5??
-  if(safe-sex-likelihood > 10) [set color 15]   
-  if(safe-sex-likelihood > 20) [set color 16] 
-  if(safe-sex-likelihood > 30) [set color 17] 
-  if(safe-sex-likelihood > 40) [set color 18] 
-  if(safe-sex-likelihood > 47) [set color 19] 
-  if(safe-sex-likelihood > 53) [set color 69] 
-  if(safe-sex-likelihood > 60) [set color 68]
-  if(safe-sex-likelihood > 70) [set color 67]  
-  if(safe-sex-likelihood > 80) [set color 66]  
-  if(safe-sex-likelihood > 90) [set color 65]  
-  if(safe-sex-likelihood > 95) [set color 64]  
-  ;  green64-69…white....19-14 red
-;  
-;  let r 1.0
-;  let g 0.0
-;  if (safe-sex-attitude < 50)
-;  [
-;    ;set 
-;    
-;  ]
+  if(safe-sex-likelihood > 0)  [set color [255 0 0 255] ] ;[set color 14]
+  if(safe-sex-likelihood > 5)  [set color [255 25 0 255] ] ;
+  if(safe-sex-likelihood > 10) [set color [255 51 0 255] ] ;[set color 15]   
+  if(safe-sex-likelihood > 20) [set color [255 102 0 255] ] ;[set color 16]
+  if(safe-sex-likelihood > 25) [set color [255 128 0 255] ] ;
+  if(safe-sex-likelihood > 30) [set color [255 153 0 255] ] ;[set color 17] 
+  if(safe-sex-likelihood > 40) [set color [255 204 0 255] ] ;[set color 18] 
+  if(safe-sex-likelihood > 45) [set color [255 230 0 255] ] ;[set color 19] 
+  if(safe-sex-likelihood > 50) [set color [255 255 0 255] ] ;[set color 69] 
+  if(safe-sex-likelihood > 55) [set color [230 255 0 255] ] ;[set color 69] 
+  if(safe-sex-likelihood > 60) [set color [204 255 0 255] ] ;[set color 68]
+  if(safe-sex-likelihood > 70) [set color [153 255 0 255] ] ;[set color 67]  
+  if(safe-sex-likelihood > 75) [set color [128 255 0 255] ] ;[set color 14]
+  if(safe-sex-likelihood > 80) [set color [102 255 0 255] ] ;[set color 66]  
+  if(safe-sex-likelihood > 90) [set color [51 255 0 255] ] ;[set color 65]  
+  if(safe-sex-likelihood > 95) [set color [25 255 0 255] ] ;[set color 64]  
+  if(safe-sex-likelihood > 99) [set color [0 255 0 255] ] ;[set color 64]  
   
-;  ; color person gradient range from green-->yellow--> red, like an energy bar 
-;  ; don't need blue at all
+  ;  green64-69…white....19-14 red
+  ; >0 ;[set color 14]  ;; fix for 5??
+  
 ;  let r 255
 ;  let g 0
-;  let delta (safe-sex-attitude * .255) ;; /100 *255
-;  ifelse (delta) < .5f
+;  let delta round (safe-sex-likelihood / 100 * 255) ;; /100 *255 2.55
+;  ifelse (delta) < 255 / 2 ;.5f
 ;  [
-;    set r 255          ;; red = 100% for red and yellow,
-;    set g (delta) / .5f  ;; green should increase from 0 to 100% over 0 to 50
+;    set r 255            ;; red = 100%/255 for red and yellow,
+;    set g delta ;/ .5f   ;; green should increase from 0 to 100% over 0 to 50
 ;  ]
-;  ;; else health is >= .5f, diminish red, leaving green
+;  ;; else attitude is >= .5f, diminish red, leaving green
 ;  [
-;    set r (255 - delta) / .5f
+;    set r (255 - delta) ;/ .5f
 ;    set g 255
 ;  ]
-;  set color [r g 0]
 ;  
-end
-
-
-;; 
-;; Color of link indicates type of relationship between the two agents
-;; blue is a friendship, magenta is a sexual partnership
-;;
-to assign-link-color  ;; link procedure
+;  set color [r g 0 255]
   
-  ifelse is-friend? self
-    [ set color blue]
-    [ set color magenta]
-    
-  set thickness .15 ; make the link a bit easier to see
 end
+
+
+
 ;;---------------------------------------------------------------------
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -688,7 +681,10 @@ end
 ;;
 to talk-to-peers  ;; turtle procedure
   
-                    ;; increment so that you can talk to more friends the more certain you feel in your attitude
+  ;; use certainty..less likely to even talk to tohers??? COMMET BETTTER
+  ;; the more confident you are in your opinion, they moe likley you are to share it with peers/links
+  
+  ;; increment so that you can talk to more friends the more certain you feel in your attitude
   let convoCount 0
   while [ convoCount <  ( certainty / 100 ) * ( count my-links ) ]  ;;convoCount <  (same-gender-interaction-degree / 100) * ( count my-friends )
     [ 
@@ -699,11 +695,23 @@ to talk-to-peers  ;; turtle procedure
       if (peer != nobody)
         [
           
-          ;; your own certainty matters for changing your own attitude
-          ;; you dont care about their certainty, just what they have to back it up
-          ;; 100-certainty is how willing you are to change your attitude
           
-          ;; as you get more certain, you are less likey to change yoru opinion
+          
+          ;; your own certainty matters for changing your own attitude
+          ;; you dont care about the other person's certainty, only what they have to back up their opinion (justification)
+          
+          ;; A person doesn't care how strongly their peer feels about their opinion (certainty),
+          ;; only what reasoning they have to back up their opinion (justification)
+          
+          
+          ;; as you get more certain, you are less likey to change your opinion/attitude??
+          ;; higher certainty --> agent is more resistant to changing their attitude
+          ;; (100 - certainty) is how willing/likely you are to change your attitude
+          
+          
+          
+          
+          
           
           ;; near each other and one same side (above or below 50) give small boost to certainty
           ;let attitudeChange ((100 - certainty) / 100 ) * ([safe-sex-attitude] of buddy - safe-sex-attitude)
@@ -718,7 +726,7 @@ to talk-to-peers  ;; turtle procedure
           ;set safe-sex-likelihood (attitude + opinionChange * .1)
           
           set attitude (attitude + opinionChange * .1)
-          ;update-safe-sex-likelihood
+          update-safe-sex-likelihood
         ]     
 
       set convoCount convoCount + 1
@@ -1156,12 +1164,7 @@ end
 
 
 
-;; if you want your linked turtles to move spatially closer to each other, call this sometimes
-;; but i like seeing them stay in place and watching changes
-;; so this doesn't get called currently
-;to update-network-layout
-;  layout-spring turtles links 0.3 (world-width / (sqrt count turtles)) 1
-;end
+
 
 
 
@@ -1495,7 +1498,7 @@ clique-size
 clique-size
 2
 35
-10
+7
 1
 1
 people
