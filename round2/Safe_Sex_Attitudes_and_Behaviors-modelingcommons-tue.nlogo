@@ -42,7 +42,7 @@ globals
   certainty-delta           ;; the amount that certainty increases on every tick for every agent
                             ;; certainty increases over time, which makes it harder to change an agent's opinion
   
-  
+  justification-delta       ;; the amount that justification decreases every time an agent thingks they "got away" with unsafe sex
   
   ;; The next two values are set by the %-receive-condom-sex-ed slider
                             ;; Average level of accurate knowledge if agent received...:
@@ -180,6 +180,7 @@ to setup-globals
   set justification-weight .25    
   
   set certainty-delta .1  
+  set justification-delta 10
   
   set no-condom-sex-ed-level 20
   set condom-sex-ed-level 80
@@ -614,7 +615,7 @@ to go
     
     ;; an agent gets more certain of their opinion over time
     ;; (regardless of what their opinion is)
-    set certainty certainty + certainty-delta
+    ;set certainty certainty + certainty-delta
     
     ;; make sure no variables got set < 0 or > 100
     cap-member-variables
@@ -652,6 +653,10 @@ to go
   
   ask turtles
   [
+    ;; an agent gets more certain of their opinion over time
+    ;; (regardless of what their opinion is)
+    set certainty certainty + certainty-delta
+    
     cap-member-variables
     assign-turtle-color
     if (show-labels?) [ set label (round safe-sex-likelihood) ]
@@ -670,9 +675,6 @@ to go
   ; (so sometimes the model never ends)
   
   ;; maybe no stop condition? based on attitude??      reach some sort of stable state? 
-  
-  
-
   
   tick
 end
@@ -948,6 +950,8 @@ end
 ;; 
 to spread-virus  ;; turtle procedure
                  ;; Only turtles with sexual partners (coupled) can spread an STI
+                 ;; only ask one gender, so that each turtle doesnt call??
+  ;ask turtles with [is-male? self and infected? and coupled?]
   ask turtles with [infected? and coupled?]
   [
     ;; Since this model simulates sexual relations between a male and a female,
@@ -969,6 +973,7 @@ to spread-virus  ;; turtle procedure
     ;ifelse random-float 100 > safe-sex-attitude or 
     ;random-float 100 > ([safe-sex-attitude] of partner) 
     
+    ;; or or and???
     ifelse random-float 100 > safe-sex-likelihood or 
     random-float 100 > ([safe-sex-likelihood] of partner) 
     [
@@ -1010,6 +1015,7 @@ to become-infected  ;; turtle procedure
   assign-shape
 end
 
+;;
 ;; Turtle checks for signs of infection (symptoms)
 ;; Don't want check-infect and become-infected to happen on same tick
 ;; --> not realistic, std symptoms don't instantly show up
@@ -1040,12 +1046,12 @@ to check-infected
   ;; had no consequences (doesn't feel symptoms, regardless of whether actually infected or not)
   if (had-unsafe-sex? and is-male? self and not males-symptomatic?)
   [
-    set justification justification - 10
+    set justification justification - justification-delta ;;10
   ]
   
   if (had-unsafe-sex? and is-female? self and not females-symptomatic?)
   [
-    set justification justification - 10
+    set justification justification - justification-delta ;;10
   ]
 end
 
@@ -1496,7 +1502,7 @@ avg-male-condom-intention
 avg-male-condom-intention
 0
 100
-30
+18
 1
 1
 NIL
@@ -1511,7 +1517,7 @@ avg-female-condom-intention
 avg-female-condom-intention
 0
 100
-85
+70
 1
 1
 NIL
