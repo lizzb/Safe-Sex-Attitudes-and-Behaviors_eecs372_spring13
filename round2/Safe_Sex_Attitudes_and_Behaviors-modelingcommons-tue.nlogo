@@ -649,7 +649,7 @@ to go
   ask turtles [ uncouple ]
   
   ;; then give chance to spread virus
-  ask turtles [ spread-virus ]
+  ask turtles [ have-sex ];spread-virus ]
   
   ask turtles
   [
@@ -725,44 +725,7 @@ to talk-to-peers  ;; turtle procedure
 end
 
 
-;; Called if Group-liking? on
-;; Causes group members to talk to one another in their group
-;to talk-to-group ; turtle procedure
-;  let track 0
-;       ; if a worker has one link, then they only have a link with their boss, and 
-;       ; can't update their opinion due to group opinions
-;   while [ track <  hyp1-degree / 100 * ( count my-links - 1 ) ]
-;   [ 
-;       ; the amount of change is weighted by the degree of the hypothesis, the group-liking,
-;       ; and the difference in attitudes between the friend and one of their link neighbors
-;       set change-amt change-amt + ( hyp1-degree / 100 ) * ( group-liking / 100 ) * 
-;           ( [ attitude ] of one-of link-neighbors - attitude )
-;       set track track + 1
-;   ]
-;end
 
-;to talk-to-boss 
-;  ; the degree of the hypothesis is used to limit how often the worker talks to his boss,
-;  ; since workers will most likely talk to their coworkers more often than they do with their boss
-;  if random 100 <= hyp2-degree
-;  [
-;  ; the worker updates his change-amt by his amount of expertise, liking of his boss, 
-;  ; degree of the hypothesis, and the difference in attitude of his boss 
-;  set change-amt change-amt + ( 100 - sex-education ) / 100 * ( boss-liking / 100 ) * 
-;         ( hyp2-degree / 100 ) * ( [ attitude ] of leader group-membership - attitude )
-
-
-
-;; change this somehow to media fear effect?
-;; thinking of aids/hiv
-
-;to crit-mass-effect ; worker procedure
-; to implement this, we assume that even if a worker doesn't have a link with 
-; all the members of his group, the effect of the technology increases anyway
-;  if count workers with [ group-membership = [ group-membership ] of myself and adopt = true ] > 
-;     threshold / 100 * (count workers with [ group-membership = [ group-membership ] of myself ] ) 
-;     [ set change-amt change-amt + value-of-threshold ]
-;end
 
 
 
@@ -952,6 +915,7 @@ to spread-virus  ;; turtle procedure
                  ;; Only turtles with sexual partners (coupled) can spread an STI
                  ;; only ask one gender, so that each turtle doesnt call??
   ;ask turtles with [is-male? self and infected? and coupled?]
+  ;ask turtles with [infected? and coupled?]
   ask turtles with [infected? and coupled?]
   [
     ;; Since this model simulates sexual relations between a male and a female,
@@ -990,6 +954,65 @@ to spread-virus  ;; turtle procedure
 end
 
 
+;; figured out the the bug if you dont choose an infected person initially 
+;; justification will never change because justifcation only changed within infect function
+;; which only applies to infected people, when should apply to all
+;; so have-sex instead
+
+
+;; Only turtles with sexual partners (coupled) can spread an STI
+
+;;
+to have-sex ;; turtle procedure ;; only for coupled turtles
+
+  ;; only ask one gender, so that each turtle doesnt call twice on each tick...??
+  ;; no, because want each turtle to try mating on each tick incase one is infected and other not
+  ;ask turtles with [is-female? self and coupled?]
+  ask turtles with [coupled?]
+  [
+    ;; Since this model simulates sexual relations between a male and a female,
+    ;; only one of the partner's desire to use a condom must be strong enough
+    ;; to make sure the couple has safe sex
+    
+    ;; Note that for condom use to occur, both people must want to use one.  If
+    ;; either person chooses not to use a condom, infection is possible.  Changing the
+    ;; primitive to AND (from or) in the third line will make it such that if either person
+    ;; wants to use a condom, infection will not occur.
+    
+    ;; ****** 
+    
+   
+    
+    ;; doesnt account for if some people have a all safe sex always policy
+    ;; doesnt account for potential conversation at mating which may influence opinion
+    ;; possibly using portection could improve your attitude towards it?
+    
+    ;; or or and???
+    ifelse random-float 100 > safe-sex-likelihood or random-float 100 > ([safe-sex-likelihood] of partner) 
+    [
+      ;; if got past above conditional, that means the couple had unsafe sex
+      set had-unsafe-sex? true
+      ask partner [ set had-unsafe-sex? true ]
+      ;;if (random-float 100 < infection-chance) [ ask partner [ become-infected ] ]  
+      ;;if (infected? and random-float 100 < infection-chance) [ ask partner [ become-infected ] ]  
+      
+      ;; since the sex only occurs once in a tick, should just have one probability of it being passed in a tick
+      if (random-float 100 < infection-chance)
+      [
+        if (infected?) [ ask partner [ become-infected ] ] 
+        if ([infected?] of partner) [ become-infected ]
+      ]
+    ]  
+    [
+     set had-unsafe-sex? false
+     ask partner [set had-unsafe-sex? false]
+    ]
+  ]
+end
+
+
+
+
 ;; Infection can occur if either person is infected, but the infection is unknown.
 ;; This model assumes that people with known infections will continue to couple,
 ;; but will automatically practice safe sex, regardless of their condom-use tendency.
@@ -1019,6 +1042,7 @@ end
 ;; Turtle checks for signs of infection (symptoms)
 ;; Don't want check-infect and become-infected to happen on same tick
 ;; --> not realistic, std symptoms don't instantly show up
+;;
 to check-infected
   if is-male? self and males-symptomatic? and infected?
   [
@@ -1044,15 +1068,26 @@ to check-infected
   
   ;; Justification goes down if agent believes they had unsafe sex and 
   ;; had no consequences (doesn't feel symptoms, regardless of whether actually infected or not)
-  if (had-unsafe-sex? and is-male? self and not males-symptomatic?)
+  
+  ; check that at least one person is infected
+  ; can also run the simulation without anyone infected, but then the symptomatic checks will interfere
+ ; if (num-infected > 0)
+ ; [
+  ;if (not infected?)
+  ;[
+  ;if (had-unsafe-sex? and is-male? self and (num-infected > 0 and not males-symptomatic?) )
+  ;if (had-unsafe-sex? and is-male? self and not males-symptomatic?)
+  if (had-unsafe-sex? and is-male? self and (not infected? or not males-symptomatic?) )
   [
     set justification justification - justification-delta ;;10
   ]
   
-  if (had-unsafe-sex? and is-female? self and not females-symptomatic?)
+  if (had-unsafe-sex? and is-female? self and (not infected? or not females-symptomatic?) )
+  ;if (had-unsafe-sex? and is-female? self and not females-symptomatic?)
   [
     set justification justification - justification-delta ;;10
   ]
+  ;]
 end
 
 
@@ -1132,6 +1167,10 @@ end
 ;;;
 ;;; REPORTER / MONITOR PROCEDURES
 ;;;
+
+to-report num-infected
+  report count turtles with [infected?]
+end
 
 to-report %infected
   ifelse any? turtles
