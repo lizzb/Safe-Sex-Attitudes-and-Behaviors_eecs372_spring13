@@ -107,30 +107,32 @@ turtles-own
   justification    ;sex-education ; the level of accurate education this agent has about safe sex
   
   
-  group-membership ; which cluster/friend group the friends and leaders are mainly part of
-                   ; but this still applies to some social butterflies - assume they have a core friend group 
-                   ; in addition to more out-of-group links than others
+
   
   
-  init-num-friends
-  max-num-friends  ;; Set a maximum on the number of friends a person can have
-                   ;; because otherwise will keep making friends, moving closer,
-                   ;; and all cluster in middle of screen
-  
+
+  had-unsafe-sex?      ;; Whether this person had sex without a condom on the last tick
   
   infected?            ;; If true, the person is infected (and infectious)
   known?               ;; The person is infected and knows it (due to being symptomatic)
-  
-  friendship-tendency ;; How likely this person is to make a new friend
-  coupling-tendency   ;; How likely the person is to join a couple.
-  commitment          ;; How long the person will stay in a couple-relationship.
   
   coupled?            ;; If true, the person is in a sexually active couple.
   partner             ;; The person that is our current partner in a couple.
   couple-length       ;; How long the person has been in a couple.
   
-  had-unsafe-sex?      ;; Whether this person had sex without a condom on the last tick
+  friendship-tendency ;; How likely this person is to make a new friend
+  coupling-tendency   ;; How likely the person is to join a couple.
+  commitment          ;; How long the person will stay in a couple-relationship.
   
+  
+  group-membership ; which cluster/friend group the friends and leaders are mainly part of
+                   ; but this still applies to some social butterflies - assume they have a core friend group 
+                   ; in addition to more out-of-group links than others
+  
+  init-num-friends
+  max-num-friends  ;; Set a maximum on the number of friends a person can have
+                   ;; because otherwise will keep making friends, moving closer,
+                   ;; and all cluster in middle of screen
 ]
 
 
@@ -447,7 +449,7 @@ to update-safe-sex-likelihood
   ;; higher certainty has less impact to /// more resistance to change
   set safe-sex-likelihood
       (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
-  assign-turtle-color ;; based on safe-sex-attitude
+  assign-turtle-color ;; based on safe-sex-likelihood ;;attitude
 end
 
 
@@ -716,11 +718,12 @@ to talk-to-peers  ;; turtle procedure
           ;set safe-sex-likelihood (attitude + opinionChange * .1)
           
           set attitude (attitude + opinionChange * .1)
-          update-safe-sex-likelihood
+          ;update-safe-sex-likelihood
         ]     
 
       set convoCount convoCount + 1
     ]
+    update-safe-sex-likelihood
   
 end
 
