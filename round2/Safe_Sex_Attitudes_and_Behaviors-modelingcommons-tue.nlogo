@@ -176,7 +176,7 @@ to setup
   ;; comment out the line below
 
   ;; GET RID OF THIS
-  ;infect-random  ;; infect one random person (user can choose more, if they want)
+  infect-random  ;; infect one random person (user can choose more, if they want)
 
                  
 ;; If you want your linked turtles to move spatially closer to each other, (update-network-layout)
@@ -1525,7 +1525,7 @@ num-cliques
 num-cliques
 1
 20
-4
+5
 1
 1
 NIL
@@ -1540,7 +1540,7 @@ avg-num-friends
 avg-num-friends
 2
 clique-size - 1
-5
+4
 1
 1
 NIL
@@ -1555,7 +1555,7 @@ infection-chance
 infection-chance
 0
 100
-21
+30
 1
 1
 NIL
@@ -1619,7 +1619,7 @@ avg-male-condom-intention
 avg-male-condom-intention
 0
 100
-18
+20
 1
 1
 NIL
@@ -1634,7 +1634,7 @@ avg-female-condom-intention
 avg-female-condom-intention
 0
 100
-70
+80
 1
 1
 NIL
@@ -1649,7 +1649,7 @@ avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-40
+80
 1
 1
 NIL
@@ -1758,7 +1758,7 @@ SLIDER
 %-receive-condom-sex-ed
 0
 100
-48
+90
 1
 1
 NIL
@@ -1771,7 +1771,7 @@ SWITCH
 43
 show-labels?
 show-labels?
-0
+1
 1
 -1000
 
@@ -2306,6 +2306,104 @@ NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="test2-infect-1" repetitions="5" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>%infected</metric>
+    <metric>%M-infected</metric>
+    <metric>%F-infected</metric>
+    <metric>avg-safe-sex-likelihood</metric>
+    <metric>avg-male-safe-sex-likelihood</metric>
+    <metric>avg-attitude</metric>
+    <metric>avg-male-attitude</metric>
+    <metric>avg-female-attitude</metric>
+    <metric>avg-female-safe-sex-likelihood</metric>
+    <metric>avg-certainty</metric>
+    <metric>avg-male-certainty</metric>
+    <metric>avg-female-certainty</metric>
+    <metric>avg-justification</metric>
+    <metric>avg-male-justification</metric>
+    <metric>avg-female-justification</metric>
+    <steppedValueSet variable="%-receive-condom-sex-ed" first="10" step="10" last="90"/>
+    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="10" step="10" last="90"/>
+    <enumeratedValueSet variable="num-cliques">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="clique-size">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-num-friends">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="social-butterflies?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-female-condom-intention">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-male-condom-intention">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="infection-chance">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="symptomatic?">
+      <value value="&quot;females-symptomatic?&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-labels?">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="infect-1-5cliquesof7-4friends-nobutterflies-femalesymp" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>%infected</metric>
+    <metric>%M-infected</metric>
+    <metric>%F-infected</metric>
+    <metric>avg-safe-sex-likelihood</metric>
+    <metric>avg-male-safe-sex-likelihood</metric>
+    <metric>avg-attitude</metric>
+    <metric>avg-male-attitude</metric>
+    <metric>avg-female-attitude</metric>
+    <metric>avg-female-safe-sex-likelihood</metric>
+    <metric>avg-certainty</metric>
+    <metric>avg-male-certainty</metric>
+    <metric>avg-female-certainty</metric>
+    <metric>avg-justification</metric>
+    <metric>avg-male-justification</metric>
+    <metric>avg-female-justification</metric>
+    <steppedValueSet variable="%-receive-condom-sex-ed" first="10" step="10" last="90"/>
+    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="10" step="10" last="90"/>
+    <enumeratedValueSet variable="num-cliques">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="clique-size">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-num-friends">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="social-butterflies?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-female-condom-intention">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-male-condom-intention">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="infection-chance">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="symptomatic?">
+      <value value="&quot;females-symptomatic?&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-labels?">
+      <value value="false"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
