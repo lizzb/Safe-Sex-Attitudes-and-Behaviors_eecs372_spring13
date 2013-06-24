@@ -968,7 +968,9 @@ to make-friends ;; turtle procedure
     ; just add another conditional
     
     ;; friendship tendency around a half
-    if (random-float max-friendship-factor) < (([friendship-tendency] of potential-friend) * friending-probability) ;; check math
+   ; if (random-float max-friendship-factor) < (([friendship-tendency] of potential-friend) * friending-probability) ;; check math
+     if ( (random-float max-friendship-factor < [friendship-tendency] of potential-friend)
+           and random-float 1.0 < friending-probability) ;; check math
       [
         create-friend-with potential-friend [ assign-link-color]
       ]
@@ -1130,7 +1132,9 @@ to check-infected
     set known? true 
     set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
     ;; FIX COMMENT WHATEVER
-    set safe-sex-likelihood 100; ;safe-sex-attitude 100 ;; also set their attitude towards safe sex to 100% positive
+    ;; set attitude 100
+    set attitude 100 
+    ;;safe-sex-likelihood 100; ;safe-sex-attitude 100 ;; also set their attitude towards safe sex to 100% positive
     ;update-safe-sex-attitude
     
     assign-shape
@@ -1139,12 +1143,6 @@ to check-infected
   ;; Justification goes down if agent believes they had unsafe sex and had no consequences 
   ;;(either didn't get infected, or doesn't feel symptoms, regardless of whether actually infected)
   ;; (if not symptomatic, don't change their known? variable as well)
-  
-  ;if ( had-unsafe-sex? and is-male? self
-  ;     and (not infected? or not males-symptomatic?) )
-  
-  ;if ( had-unsafe-sex? and (not infected? 
-  ;     or ( is-male? self and not males-symptomatic?)) )
   
   if ( had-unsafe-sex? and is-male? self
        and (not infected? or not males-symptomatic?) )
