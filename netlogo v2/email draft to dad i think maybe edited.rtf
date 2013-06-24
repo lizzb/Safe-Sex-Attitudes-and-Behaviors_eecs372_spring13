@@ -1,0 +1,245 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs26 \cf2 \cb3 \
+\
+\
+for reference:\
+(stillt rying to get terminology straight)\
+\
+\'a0 ;; weighted percentage that certainty plays in influencing an agents likelihood to practice safe sex\
+\'a0 attitude-weight \'a0 \'a0 \'a0 \'a0 \'a0 ;; how attitude...\
+\'a0 certainty-weight \'a0 \'a0 \'a0 \'a0 \'a0;; ....\
+\'a0 justification-weight \'a0 \'a0 \'a0;; ....\
+\
+;; The likelihood (0 - 100%) of this agent practicing safe sex (reflects behavior)\
+\'a0 ;; Likelihood is calculated through a weighted function of components of opinion/attitude????\
+\'a0 ;; (attitude, certainty, justification)\
+\'a0 ;; probability of a BEHAVIOR.... used to determine color (and label value)...\'a0\
+\'a0 ;; shoudl just be attitude...???\
+\'a0\'a0\
+\'a0 safe-sex-likelihood\'a0\
+\
+\'a0 ;; ATTITUDE IS YOUR LIKELIHOOD OF PRACTICING SAFE SEX ;;safe-sex-attitude\'a0\
+\'a0 ;; The percent chance a person uses protection while in a couple\
+\'a0 ;; (determined by gender, slider, & normal distribution)\
+\'a0\'a0\
+\'a0 opinion-delta \'a0 \'a0 \'a0 ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn\
+\'a0\'a0\
+\'a0 ;; ATTITUDE: \'a0\
+\'a0 ;; The desire that an agent wants to practice/the likelihood they will practice safe sex??\'a0\
+\'a0 ;; changes on ticks....\
+\'a0 attitude \'a0 \'a0 \'a0 \'a0 \'a0 \'a0;;attitude \'a0; feelings about / desire/intention to use / condoms\
+\'a0\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 ;; certainty - likelihood/degree to which attitude changes is inversely proportional to certainty\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 ;; 100 - certainty = likelihood/willingness to change attitude\
+\'a0\'a0\
+\'a0 ;; CERTAINTY:\
+\'a0 ;; how emotionally attached/strongly an agent feels about their opinion/attitude \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\
+\'a0 certainty \'a0 \'a0 \'a0 \'a0 \'a0 ;; initially set to mesosystem-condom-encouragement\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 ;; i.e. how much their upbringing encouraged safe sex\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 ;; might consist of parents' beliefs, life experiences, religious attitudes, etc.\'a0\
+\'a0\'a0\
+\'a0 ;; JUSTIFICATION:\
+\'a0 ;; the logic or reasoning why they have their opinion, what they have to back up their opinion/attitude\
+\'a0 justification \'a0 \'a0 \'a0 ;; initially set to the level of accurate education this agent has about safe sex and condom usage\
+\
+\
+\
+\
+\
+still working on some stuff, but here are formulas i'm trying to fix\
+\
+On each tick, turtles talk to their peers (both friends and sexual partners).\'a0\
+\
+\pard\pardeftab720
+
+\b \cf2 \ul \ulc2 problem 1.
+\b0 \ulnone \
+\
+The number of peers that they talk to should be determined by how certain they are of their opinion (assumption being that more certain --> more vocal to others).\'a0\
+\
+When they talk to a peer, there is a chance that talking to the peer will adjust their own attitude (and possibly certainty, I'm not sure...maybe if their opinion changes, they become less certain? currently certainty can't decrease, and that seems reasonable)\'a0\
+\
+\
+;;\
+;; Turtle interacts with its friends and potentially alters its attitude\
+;;\
+;;\
+to talk-to-peers \'a0;; turtle procedure\
+\'a0\
+\'a0 ;; the more confident you are in your attitude/opinion/behavior likelihood (certainty),\
+\'a0 ;; the more likely you are to share it with peers/links\
+\
+\'a0\
+\'a0 let convoCount 0\
+\'a0 while [ convoCount < \'a0( certainty / 100 ) * ( count my-links ) ]\'a0\
+\'a0 \'a0 [\'a0\
+\'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 let peer one-of link-neighbors\
+\'a0 \'a0 \'a0 if (peer != nobody)\
+\'a0 \'a0 \'a0 \'a0 [\
+\'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; An agent's certainty matters for how likely/how much they might adjust their own opinion\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; as you get more certain, you are less likey to change your opinion/attitude??\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; higher certainty --> agent is more resistant to changing their attitude\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; (100 - certainty) is how willing/likely you are to change your attitude\
+\'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; But an agent doesn't care how strongly their peer feels about their opinion (certainty),\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; only what reasoning they have to back up that opinion (peer's justification)\
+\
+\'a0 \'a0 \'a0 ; the amount of change this agent might make to their opinion\
+\'a0 \'a0 \'a0 ; is weighted by the certainty of the agent,\'a0\
+\'a0 \'a0 \'a0 ; and the difference in attitudes between the agent and their peer (not sure if should include this...?)\
+\
+;; ideally, encountering someone with a similar opinion should boost your certainty and your attitude in the correct direction\
+;; (ie down for under 50, up for over 50)\
+;; but not justification, no matter where your attitude is on the spectrum 0-100\
+;; encountering someone with a differing opinion should decrease your certainty a bit, and potentially change your attitude\
+;; based on how strong the peers justification and attitude is\
+;; if you have a really strong opinion on either end of the spectrum (<15 or >85), a differing opinion should not impact you as much,\
+;; so difference in opinion needs to be taken into account\
+\
+;; there is a global variable certainty-weight that could be set and potentially used int he calculation\
+\'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\
+\'a0 \'a0 \'a0 \'a0 \'a0;; FIX MATH ***\
+\'a0 \'a0let opinionChange (((100 - certainty) / 100 ) * ([attitude] of peer - attitude) \'a0* (justification / 100) * ([ justification / 100 ] of peer))\
+set opinionChange opinionChange * .1 ;; can't remember why the decimal exists....\
+\'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;; not sure if should change likelihood or just attitude, which plays a role in calculating likelihood....\
+\
+\'a0 \'a0 \'a0 \'a0 \'a0 ;set safe-sex-likelihood (attitude + opinionChange)\
+\'a0 \'a0 \'a0 \'a0 \'a0 set attitude (attitude + opinionChange)\
+\
+\'a0 \'a0 \'a0 \'a0 \'a0 update-safe-sex-likelihood\
+\'a0;; also not sure if should update likelihood after talking to each person,\
+;; or only update attitude (and potentially certainty)\
+\'a0 \'a0 \'a0 \'a0 ] \'a0 \'a0\'a0\
+\
+\'a0 \'a0 \'a0 set convoCount convoCount + 1\
+\'a0 \'a0 ]\
+\'a0 \'a0 update-safe-sex-likelihood ;; definitely update likelihood of practicing safe sex after talking to all peers\
+;; should i also ask peers to update their attitudes/certainties/likelihoods....???!!\
+\'a0\'a0\
+end\
+\
+\
+;;; --------------------------------------------------------------------- ;;;\
+\
+\'a0
+\b \ul problem 2:
+\b0 \ulnone \
+\
+;;\
+;; Update the likelihood (out of 100) that an agent will practice safe sex\'a0\
+;; Likelihood of engaging in safe sex behaviors is determined by the agent's opinion about safe sex\
+;; which is a combination of their attitude (desire), certainty (confidence in opinion/attitude),\
+;; and justification (knowledgeable background/logical reasoning for attitude)\
+;;\
+;;\
+to update-safe-sex-likelihood\
+\'a0\'a0\
+\'a0 let attitude-weight1 .5\
+\'a0 let certainty-weight1 .25\
+\'a0 let justification-weight1 .25\
+\
+\'a0 ;; strongly weighted to previous attitude (likelihood...??)\
+\'a0\'a0\
+\'a0 ;not sure if i should set the likelihood here, or the updated attitude\
+\'a0;; the bug is here because certainty shouldn't impact attitude, only the likelihood of attitude to change\
+\'a0;; otherwise certainty generally increases on each tick, so all attitudes will go up over time\'a0\
+\
+\'a0 ; set safe-sex-likelihood\
+\'a0 ;set attitude (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)\
+\'a0\'a0\
+\'a0\'a0\
+\'a0 ;; certainty mostly just impacts likelihood of changing when talking to others\
+\'a0 ;; need to take into account whether the certainty (and attitude!) is over 50 or under 50\
+\'a0 ;; what about 50 exactly...??\
+\'a0\'a0\
+\'a0 ;; in order to better deal with positives/negatives, temporarily subtract 50 from all values\
+\'a0 let temp-attitude (attitude - 50)\
+\'a0 let temp-certainty (certainty - 50)\
+\'a0 let temp-justification (justification - 50)\
+\'a0\'a0\
+; \'a0set attitude ( temp-attitude * attitude-weight +\
+; \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 temp-justification * justification-weight +\
+; \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 temp-certainty * certainty-weight )\
+\'a0 let old-likelihood safe-sex-likelihood\
+\'a0\'a0\
+\'a0\'a0\
+\'a0 ;set attitude (( temp-attitude * attitude-weight1 +\
+\'a0 set safe-sex-likelihood (( temp-attitude * attitude-weight1 +\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 temp-certainty * certainty-weight1 +\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 temp-justification * justification-weight1 ) + 50)\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\
+\'a0 ;; before setting the likelihood, determine how much their likelihood/opinion has changed since last tick\
+\'a0 ;; because if all opinions stop significantly changing, want to stop the simulation\
+\'a0 set opinion-delta (safe-sex-likelihood - old-likelihood) ;;(attitude - safe-sex-likelihood) ;; new - old\
+\'a0\'a0\
+\'a0 set safe-sex-likelihood attitude ;; update likelihood based on attitude.......\
+\'a0\'a0\
+\'a0 assign-turtle-color ;; based on safe-sex-likelihood\
+end\
+\
+\
+\
+
+\b \ul problem 3 - coupling likelihood
+\b0 \ulnone \
+i know i'm not doing this right... the probabilities, i mean\
+\
+\
+;;\
+;; Try to make friend links with other turtles\
+;; (will only be called if the turtle has not reached their maximum friend limit)\
+;; Uses similar approach as coupling, but gender doesn't matter\
+;;\
+to make-friends ;; turtle procedure\'a0\
+\'a0\'a0\
+\'a0 ;; This agent's clique (social/friend group) id\
+\'a0 let groupID group-membership\
+\'a0\'a0\
+\'a0 ;; Probability that friendship link will form\
+\'a0 ;; arbitrary number to overwrite\
+\'a0 let friending-probability 1.0\
+\'a0\'a0\
+\'a0 ;; Probability of successful coupling decreases if the\
+\'a0 ;; potential friend is not part of the agent's clique\
+\'a0 ;; Note: these are arbitrary number that could be adjusted for more realistic modeling\
+\'a0 let in-group-probability 5.0\'a0\
+\'a0 let out-group-probability 1.0\
+\'a0\'a0\
+\'a0\'a0\
+\'a0 ;; First, try to find someone in their clique who is not a current link\
+\'a0 let choice ( one-of other turtles with [not link-neighbor? myself\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0and group-membership = groupID\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0and (count friend-neighbors < num-friends)] )\
+\'a0 ifelse (choice != nobody)\'a0\
+\'a0 [\
+\'a0 \'a0 set friending-probability in-group-probability\
+\'a0 ]\
+\'a0 ;; If they couldn't find a potential friend within their friend group,\
+\'a0 ;; try finding the closest nearby agent\
+\'a0 [\
+\'a0 \'a0 set choice ( min-one-of (other turtles with [not link-neighbor? myself\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0and (count friend-neighbors < num-friends)]) [distance myself]) \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0 \'a0\'a0\
+\'a0 \'a0 set friending-probability out-group-probability\
+\'a0 ]\
+\'a0\'a0\
+\'a0 if (choice != nobody)\
+\'a0 [\'a0\
+\'a0 \'a0 ;; no need to check for gender compatibility,\
+\'a0 \'a0 ;; everyone can be friends with each other, yay!\
+\'a0 \'a0 if (random-float max-friendship-factor) < (([friendship-tendency] of choice) * friending-probability) ;; check math\
+\'a0 \'a0 \'a0 [\
+\'a0 \'a0 \'a0 \'a0 create-friend-with choice [ assign-link-color]\
+\'a0 \'a0 \'a0 ]\
+\'a0 ]\
+}
