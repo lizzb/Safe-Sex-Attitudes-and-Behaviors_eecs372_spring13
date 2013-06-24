@@ -578,7 +578,6 @@ end
 ;;
 to go
   
-  
   ;;; ----- Check for STOP conditions ----- ;;
   
   ;; Stop if every single turtle is infected
@@ -658,18 +657,11 @@ to go
   tick
 end
 
-
-
-
 ;;; --------------------------------------------------------------------- ;;;
 
 
 
 ;;---------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -694,25 +686,61 @@ end
 ;;
 ;; Update the likelihood (out of 100) that an agent will practice safe sex 
 ;; Likelihood of engaging in safe sex behaviors is determined by the agent's opinion about safe sex
-;; which is a combination of their attitude (desire), certainty (confidence in opinion),
-;; and justification (knowledgeable background/logical reasoning)
+;; which is a combination of their attitude (desire), certainty (confidence in opinion/attitude),
+;; and justification (knowledgeable background/logical reasoning for attitude)
 ;;
 ;;
 to update-safe-sex-likelihood
-
   
+  let attitude-weight1 .5
+  let certainty-weight1 .25
+  let justification-weight1 .25
+
   ;; strongly weighted to previous attitude (likelihood...??)
   
-  ;set safe-sex-likelihood (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
-  set attitude (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
+  ;not sure if i should set the likelihood here, or the updated attitude
+ ;; the bug is here because certainty shouldn't impact attitude, only the likelihood of attitude to change
+ ;; otherwise certainty generally increases on each tick, so all attitudes will go up over time 
+
+  ; set safe-sex-likelihood
+  ;set attitude (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
   
+  
+  ;; certainty mostly just impacts likelihood of changing when talking to others
+  ;; need to take into account whether the certainty (and attitude!) is over 50 or under 50
+  ;; what about 50 exactly...??
+  
+  ;; in order to better deal with positives/negatives, temporarily subtract 50 from all values
+  let temp-attitude (attitude - 50)
+  let temp-certainty (certainty - 50)
+  let temp-justification (justification - 50)
+  
+;  set attitude ( temp-attitude * attitude-weight +
+;                 temp-justification * justification-weight +
+;                 temp-certainty * certainty-weight )
+  let old-likelihood safe-sex-likelihood
+  
+  
+  ;set attitude (( temp-attitude * attitude-weight1 +
+  set safe-sex-likelihood (( temp-attitude * attitude-weight1 +
+                            ;temp-certainty * certainty-weight1 +
+                            temp-justification * justification-weight1 ) + 50)
+                            
+
   ;; before setting the likelihood, determine how much their likelihood/opinion has changed since last tick
-  set opinion-delta (attitude - safe-sex-likelihood)
+  ;; because if all opinions stop significantly changing, want to stop the simulation
+  ;;(attitude - safe-sex-likelihood) 
+  set opinion-delta (safe-sex-likelihood - old-likelihood) ;; new - old
   
-  set safe-sex-likelihood attitude ;; update likelihood based on attitude.......
+  ;set safe-sex-likelihood attitude ;; update likelihood based on attitude.......??
   
   assign-turtle-color ;; based on safe-sex-likelihood
 end
+  
+  
+  
+  
+  
 
 
 
@@ -746,6 +774,13 @@ to talk-to-peers  ;; turtle procedure
           
           ;; FIX THIS MATH
           
+                    ;; Your own certainty matters for changing your own attitude
+          ;; But you dont care about the other person's certainty
+          ;; you only about what they have to back up their opinion (peer's justification)
+          
+          ;; A person doesn't care how strongly their peer feels about their opinion (certainty),
+          ;; only what reasoning they have to back up their opinion (justification)
+          
           
           ;; your own certainty matters for changing your own attitude
           ;; you dont care about the other person's certainty, only what they have to back up their opinion (justification)
@@ -772,8 +807,8 @@ to talk-to-peers  ;; turtle procedure
           ;; COMMENT ME MORE
           ;set safe-sex-likelihood (attitude + opinionChange * .1)
           
-          set attitude (attitude + opinionChange * .1)
-          update-safe-sex-likelihood
+          set attitude (attitude + opinionChange * .1) 
+          ;update-safe-sex-likelihood
         ]     
 
       set convoCount convoCount + 1
@@ -804,51 +839,73 @@ end
 ;;
 to have-sex ;; turtle procedure ;; only for coupled turtles       
 
-  ;; only ask one gender, so that each turtle doesnt call??
-  ;; only ask one gender, so that each turtle doesnt call twice on each tick...??
+  ;; only ask one gender, so that each turtle doesnt call??/ for a couple doesnt call twice on each tick...??
   ;; no, because want each turtle to try mating on each tick incase one is infected and other not
   ;ask turtles with [is-female? self and coupled?]
   
   ask turtles with [coupled?]
   [
+    ;; ****** 
+    
     ;; Since this model simulates sexual relations between a male and a female,
     ;; only one of the partner's desire to use a condom must be strong enough
     ;; to make sure the couple has safe sex
     
-    ;; Note that for condom use to occur, both people must want to use one.  If
-    ;; either person chooses not to use a condom, infection is possible.  Changing the
-    ;; primitive to AND (from or) in the third line will make it such that if either person
-    ;; wants to use a condom, infection will not occur.
     
+    ;; Infection can occur if either person is infected, but the infection is unknown.
+    ;; This model assumes that people with known infections will continue to couple,
+    ;; but will automatically practice safe sex, regardless of their condom-use tendency.
+    
+    
+    ;; include an extra check / override check?
+   ;; if (infected? and known?) or  --> have safe sex
+   
     ;; ****** 
+   
+    ;; Note also that for condom use to occur, both people must want to use one.
+    ;; If either person chooses not to use a condom, infection is possible.
+    ;; Changing the primitive in the ifelse statement to AND (instead of OR) will make it
+    ;; so if either person wants to use a condom, infection will not occur.
     
+    ;; Since this model deals with male/female couples,
+    ;; extensions might choose to modify this.
+
     
+
     ;; doesnt account for if some people have a all safe sex always policy
     ;; doesnt account for potential conversation at mating which may influence opinion
     ;; possibly using portection could improve your attitude towards it?
     
     ;; or or and???
-    ifelse random-float 100 > safe-sex-likelihood or random-float 100 > ([safe-sex-likelihood] of partner) 
+    ifelse ( (random-float 100 > safe-sex-likelihood) or
+             (random-float 100 > ([safe-sex-likelihood] of partner))
+             and (not known? and [not known?] of partner) ) ;; need to check this logic.......
     [
       ;; if got past above conditional, that means the couple had unsafe sex
       set had-unsafe-sex? true
       ask partner [ set had-unsafe-sex? true ]
-      ;;if (random-float 100 < infection-chance) [ ask partner [ become-infected ] ]  
-      ;;if (infected? and random-float 100 < infection-chance) [ ask partner [ become-infected ] ]  
       
-      ;; since the sex only occurs once in a tick, should just have one probability of it being passed in a tick
+      ;; since the sex should only occur once in a tick,.....???
+      ;; should just have one probability of it being passed in a tick
       if (random-float 100 < infection-chance)
       [
         if (infected?) [ ask partner [ become-infected ] ] 
-        if ([infected?] of partner) [ become-infected ]
+        if ([infected?] of partner) [ become-infected ] ;; not sure if i need this if both agents call this on each tick.....
       ]
     ]  
     [
+      ;; This model assumes that safe sex (using a condom)
+      ;; always prevents/has no potential of spreading the std
+      ;; this could be modified in extensions to be more realistic
+      ;; for instance, incorrect condom usage, or stis passed thorugh other means...
      set had-unsafe-sex? false
      ask partner [set had-unsafe-sex? false]
     ]
   ]
 end
+
+
+
 
 
 
@@ -877,36 +934,43 @@ to make-friends ;; turtle procedure
   ;; Probability of successful coupling decreases if the
   ;; potential friend is not part of the agent's clique
   ;; Note: these are arbitrary number that could be adjusted for more realistic modeling
-  let in-group-probability 5.0 
-  let out-group-probability 1.0
+  let in-group-probability 0.8 
+  let out-group-probability 0.2
   
   
   ;; First, try to find someone in their clique who is not a current link
-  let choice ( one-of other turtles with [not link-neighbor? myself
+  let potential-friend ( one-of other turtles with [not link-neighbor? myself
                and group-membership = groupID
                and (count friend-neighbors < num-friends)] )
-  ifelse (choice != nobody) 
+  ifelse (potential-friend != nobody) 
   [
     set friending-probability in-group-probability
   ]
   ;; If they couldn't find a potential friend within their friend group,
   ;; try finding the closest nearby agent
   [
-    set choice ( min-one-of (other turtles with [not link-neighbor? myself
+    set potential-friend ( min-one-of (other turtles with [not link-neighbor? myself
                  and (count friend-neighbors < num-friends)]) [distance myself])                       
     set friending-probability out-group-probability
   ]
   
-
-
-  
-  if (choice != nobody)
+  if (potential-friend != nobody)
   [ 
-    ;;an    no need to check for gender compatibility,
+    ;; no need to check for gender compatibility,
     ;; everyone can be friends with each other, yay!
-    if (random-float max-friendship-factor) < (([friendship-tendency] of choice) * friending-probability)
+    
+    ; max friendship factor = 100
+    ; propose you ... friendship-tendency-of-choice
+    ; in group sum of inherent + extra contribution brings them above 80 and if not not a friend
+    ;; that way if out of group, it has a chance of becoming friend
+    ;; but if adding a piece to it guarantees most will become friends
+    ;
+    ; just add another conditional
+    
+    ;; friendship tendency around a half
+    if (random-float max-friendship-factor) < (([friendship-tendency] of potential-friend) * friending-probability) ;; check math
       [
-        create-friend-with choice [ assign-link-color]
+        create-friend-with potential-friend [ assign-link-color]
       ]
   ]
 end
@@ -1104,20 +1168,6 @@ end
 
 
 
-;; Infection can occur if either person is infected, but the infection is unknown.
-;; This model assumes that people with known infections will continue to couple,
-;; but will automatically practice safe sex, regardless of their condom-use tendency.
-;; Note also that for condom use to occur, both people must want to use one.  If
-;; either person chooses not to use a condom, infection is possible.  Changing the
-;; primitive to AND in the third line will make it such that if either person
-;; wants to use a condom, infection will not occur.
-
-;to infect  ;; turtle procedure
-;  if coupled? and infected? and not known?
-;    [ if random-float 11 > condom-use or
-;         random-float 11 > ([condom-use] of partner)
-;        [ if random-float 100 < infection-chance
-;            [ ask partner [ set infected? true ] ] ] ]
 
 
 
@@ -1507,7 +1557,7 @@ infection-chance
 infection-chance
 0
 100
-40
+21
 1
 1
 NIL
@@ -1723,7 +1773,7 @@ SWITCH
 43
 show-labels?
 show-labels?
-1
+0
 1
 -1000
 
@@ -1738,10 +1788,10 @@ Description of how liklihood is calculated from attitude, certainty, justificait
 1
 
 PLOT
-870
-265
-1070
-415
+900
+245
+1100
+395
 Average opinion change
 NIL
 NIL
