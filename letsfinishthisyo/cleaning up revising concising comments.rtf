@@ -184,4 +184,275 @@ User selects an agent in the model to infect with the mouse\
           ;; for first tick to display appropriate color of dot\
           ;; to reflect if this agent's gender is symptomatic\
           ;; and consequently if the agent knows they are infected\
-}
+\
+\
+\
+    ;; Note that the turtle will not "know" they are infected\
+      ;; until check-infected is called, and even then, they will\
+      ;; only be aware of their infected state if their gender\
+      ;; is symptomatic\
+      \
+      ;; check-infected so that we don't have to wait\
+      ;; for first tick to display appropriate color of dot\
+      ;; to reflect if this agent's gender is symptomatic\
+      ;; and consequent knowledge of infection\
+      ;; check-infected ;; RECONSIDER? TODO *****\
+\
+\
+\
+\
+\
+------------------------------\
+\
+\
+;; DOES THE LOGIC HERE INTERFERE WITH WHEN THE CHECK-INFECTED IS CALLED???\
+  \
+  ;; Justification goes down if an agent believes\
+  ;; they had unsafe sex and had no negative consequences (i.e. contracted an STI)\
+  ;; (either didn't get infected, or doesn't feel symptoms, regardless of whether s/he is actually infected)\
+  ;; (if not symptomatic, don't change their known? variable as well)\
+  \
+  if ( had-unsafe-sex? and is-male? self\
+       and (not infected? or not males-symptomatic?) )\
+  [\
+    set justification (justification - justification-delta)\
+  ]\
+  \
+  if ( had-unsafe-sex? and is-female? self\
+       and (not infected? or not females-symptomatic?) )\
+  [\
+    set justification (justification - justification-delta)\
+  ]\
+\
+\
+\
+\
+\
+      ;; This model assumes that safe sex (using a condom)\
+      ;; always prevents/has no potential of spreading the std\
+      ;; this could be modified in extensions to be more realistic\
+      ;; for instance, incorrect condom usage, or STIs passed through other means..\
+\
+ ;; This model assumes that safe sex (using a condom) is always \
+      ;; 100% effective in preventing the spread of infection. \
+      ;; This could be modified in extensions to be more realistic and\
+      ;; account for factors like incorrect/inconsistent condom usage,\
+     ;; condom failure, or STIs passed through other means.\
+\
+\
+\
+suffered no negative consequences \
+suffered, experienced, had\
+saw\
+\
+\
+  ;; Justification goes down if an agent believes\
+  ;; they had unsafe sex and had no negative consequences (i.e. contracted an STI)\
+  ;; (either didn't get infected, or doesn't feel symptoms, regardless of whether s/he is actually infected)\
+  ;; (if not symptomatic, don't change their known? variable as well)\
+  \
+  if ( had-unsafe-sex? and ( not infected? or\
+     (is-male? self and not males-symptomatic?) or\
+     (is-female? self and not females-symptomatic?) )\
+     )\
+  [\
+    ;; When agent thinks they had unsafe sex and sees no negative consequences \
+    ;; (didn't contract an STI, or doesn't feel symptoms, regardless of whether \
+    ;; s/he is actually infected), justification decreases.\
+    set justification (justification - justification-delta)\
+  ]\
+\
+\
+\
+\
+------\
+justification full\
+to check-infected\
+  \
+  ;; DOES THE LOGIC HERE INTERFERE WITH WHEN THE CHECK-INFECTED IS CALLED???\
+  \
+  ;; Justification goes down if an agent believes\
+  ;; they had unsafe sex and had no negative consequences (i.e. contracted an STI)\
+  ;; (either didn't get infected, or doesn't feel symptoms, regardless of whether s/he is actually infected)\
+  ;; (if not symptomatic, don't change their known? variable as well)\
+  \
+  \
+  ;; When agent thinks they had unsafe sex and sees no negative consequences \
+  ;; (didn't contract an STI, or doesn't feel symptoms, regardless of whether \
+  ;; s/he is actually infected), justification decreases.\
+  \
+  ;; Justification decreases when an agent thinks they had unsafe sex \
+  ;; and observes no negative consequences (i.e. didn't contract an STI,\
+  ;; or doesn't feel symptoms, regardless of whether s/he is actually infected).\
+  if ( had-unsafe-sex? and ( not infected? or\
+     (is-male? self and not males-symptomatic?) or\
+     (is-female? self and not females-symptomatic?) )\
+     )\
+  [ set justification (justification - justification-delta) ]\
+    \
+  \
+;  if ( had-unsafe-sex? ) and is-male? self\
+;       and (not infected? or not males-symptomatic?) )\
+;  [\
+;    set justification (justification - justification-delta)\
+;  ]\
+;  \
+;  if ( had-unsafe-sex? and is-female? self\
+;       and (not infected? or not females-symptomatic?) )\
+;  [\
+;    set justification (justification - justification-delta)\
+;  ]\
+\
+\
+\
+----------------\
+\
+TALK TO PEERS LEGGO\
+\
+\
+while [ convoCount < ( certainty / 100 ) * ( count my-links ) ] ;;convoCount < (same-gender-interaction-degree / 100) * ( count my-friends )\
+\
+; the amount of change is weighted by the same-gender-interaction-degree, the group-liking,\
+      ; and the difference in attitudes between the friend and one of their link neighbors\
+\
+\
+\
+  ;; use certainty..less likely to even talk to tohers??? COMMENT BETTTER\
+  ;; the more confident you are in your opinion,\
+  ;; they more likley you are to share it with peers/links\
+  \
+  ;; increment so that you can talk to more friends\
+  ;; the more certain you feel in your attitude\
+\
+\
+talks to on a given tick\
+\
+\
+\
+;; Your own certainty matters for changing your own attitude\
+          ;; But you dont care about the other person's certainty\
+          ;; you only about what they have to back up their opinion (peer's justification)\
+          \
+          ;; A person doesn't care how strongly their peer feels about their opinion (certainty),\
+          ;; only what reasoning they have to back up their opinion (justification)\
+\
+ ;; as you get more certain, you are less likey to change your opinion/attitude??\
+          ;; higher certainty --> agent is more resistant to changing their attitude\
+          ;; (100 - certainty) is how willing/likely you are to change your attitude\
+\
+\
+***\
+ ;; However, a person doesn't care about their peer's certainty, s/he only cares\
+          ;; about what logical reasoning (justification) the peer has to back up their attitude\
+\
+          ;; A person doesn't care how strongly their peer feels about their opinion (certainty),\
+          ;; only what reasoning they have to back up their opinion (justification)\
+          \
+          ;set safe-sex-attitude (safe-sex-attitude + attitudeChange * .1)\
+\
+\
+An agent grows more certain/gets more certain\
+\
+\
+;let attitudeChange ((100 - certainty) / 100 ) * ([safe-sex-attitude] of buddy - safe-sex-attitude)\
+          ; * (justification / 100) * ([ justification / 100 ] of buddy)\
+\
+\
+;; --- CERTAINTY ---\
+          ;; A person's certainty impacts how lik\
+\
+  ;; A person's CERTAINTY impacts \
+\
+          ;; A person's CERTAINTY impacts how likely they are to change their attitude.\
+          ;; An agent with higher certainty is more resistent to changing their attitude.\
+          ;; (100 - certainty) is how likely an agent is to adjust their attitude.\
+          \
+          ;; However, an agent doesn't care about how confident their peer\
+          ;; feels about his/her attitude (certainty), s/he only cares about\
+          ;; what reasoning they have to back up their attitude (JUSTIFICATION).\
+\
+\
+          ;set safe-sex-likelihood\
+          set attitude (attitude + attitudeChange * .1)\
+          \
+          ;; should i update after talking to every person???\
+          ;update-safe-sex-likelihood\
+\
+\
+------\
+spreadddd\
+;; Spread virus between an infected and non-infected coupled partner duo\
+;to spread-virus ;; turtle procedure\
+\
+;;\
+;; Only turtles with sexual partners (coupled) can spread an STI\
+;;\
+;;\
+to have-sex ;; turtle procedure (only for coupled turtles)\
+\
+  ;; only ask one gender, so that each turtle doesnt call??\
+  ;; / for a couple doesnt call twice on each tick...??\
+  ;; no, because want each turtle to try mating on each tick incase one is infected and other not\
+  ;ask turtles with [is-female? self and coupled?]\
+  \
+  ask turtles with [coupled?]\
+  [\
+    ;; ******\
+    \
+    ;; Since this model simulates sexual relations between a male and a female,\
+    ;; only one of the partner's desire to use a condom must be strong enough\
+    ;; to make sure the couple has safe sex\
+    \
+    \
+    ;; Infection can occur if either person is infected, but the infection is unknown.\
+    ;; This model assumes that people with known infections will continue to couple,\
+    ;; but will automatically practice safe sex, regardless of their condom-use tendency.\
+    \
+    \
+    ;; include an extra check / override check?\
+   ;; if (infected? and known?) or --> have safe sex\
+   \
+    ;; ******\
+   \
+    ;; Note also that for condom use to occur, both people must want to use one.\
+    ;; If either person chooses not to use a condom, infection is possible.\
+    ;; Changing the primitive in the ifelse statement to AND (instead of OR) will make it\
+    ;; so if either person wants to use a condom, infection will not occur.\
+    \
+    ;; Since this model deals with male/female couples,\
+    ;; extensions might choose to modify this.\
+\
+    \
+\
+    ;; doesnt account for if some people have a all safe sex always policy\
+    ;; doesnt account for potential conversation at mating which may influence opinion\
+    ;; possibly using portection could improve your attitude towards it?\
+    \
+    ;; or or and???\
+    ifelse ( (random-float 100 > safe-sex-likelihood) or\
+             (random-float 100 > ([safe-sex-likelihood] of partner))\
+             and (not known? and [not known?] of partner) ) ;; need to check this logic.......\
+    [\
+      ;; if got past above conditional, that means the couple had unsafe sex\
+      set had-unsafe-sex? true\
+      ask partner [ set had-unsafe-sex? true ]\
+      \
+      ;; since the sex should only occur once in a tick,.....???\
+      ;; should just have one probability of it being passed in a tick\
+      if (random-float 100 < infection-chance)\
+      [\
+        if (infected?) [ ask partner [ become-infected ] ]\
+        if ([infected?] of partner) [ become-infected ] ;; not sure if i need this if both agents call this on each tick.....\
+      ]\
+    ]\
+    [\
+      ;; This model assumes that safe sex (using a condom) is always \
+      ;; 100% effective in preventing the spread of infection. \
+      ;; This could be modified in extensions to be more realistic and\
+      ;; account for factors like incorrect/inconsistent condom usage,\
+      ;; condom failure, or STIs passed through other means.\
+     set had-unsafe-sex? false\
+     ask partner [set had-unsafe-sex? false]\
+    ]\
+  ]\
+end}
