@@ -405,7 +405,6 @@ to assign-normally-distributed-member-variables
     set friendship-tendency random-near avg-friendship-tendency
     
     
-    
     ;; Note: Gender must be set before this is called!
     ;; Assign initial attitude towards safe sex based on gender
     ;; Attitude can change during the simulation through talking to peers
@@ -489,43 +488,42 @@ end
 
 
 ;;
-;; Color of turtle depends on their attitude towards/propensity to practice safe sex.... EDIT
-;; green = more likely to use protection, red = less likely
+;; Color of the agent reflects their indvidual 
+;; likelihood of practicing safe sex
 ;;
 to assign-turtle-color ;; turtle procedure
   
   ;; Contemplated using the gradient extension here, but chose not to
-
   ;; If there was a switch statement for netlogo,
   ;; this could be where you'd use it
-
-  ;C10606 red - 0% likely to engage in safe sex (100% likely to engage in unsafe sex)
-  ;FFFFFF white - 50% likely of having safe sex (using a condom)
-  ;06C106 green - 100% likely to engage in safe sex
   
-  if (safe-sex-likelihood > 0) [ set color [ 193 6 6 ] ] ;; 0-5 ;; 0% - red
-  if (safe-sex-likelihood > 5) [ set color [ 198 26 26 ] ] ;; 5-10 ;; 5%
-  if (safe-sex-likelihood > 10) [ set color [ 204 51 51 ] ] ;; 10-15 ;; 10%
-  if (safe-sex-likelihood > 15) [ set color [ 210 77 77 ] ] ;; 15-20 ;; 15%
-  if (safe-sex-likelihood > 20) [ set color [ 217 102 102 ] ] ;; 20-25 ;; 20%
-  if (safe-sex-likelihood > 25) [ set color [ 223 127 127 ] ] ;; 25-30 ;; 25%
-  if (safe-sex-likelihood > 30) [ set color [ 229 153 153 ] ] ;; 30-35 ;; 30%
-  if (safe-sex-likelihood > 35) [ set color [ 236 178 178 ] ] ;; 35-40 ;; 35%
-  if (safe-sex-likelihood > 40) [ set color [ 242 204 204 ] ] ;; 40-45 ;; 40%
-  if (safe-sex-likelihood > 45) [ set color [ 248 229 229 ] ] ;; 45-50 ;; 45%
+  ;06C106 green - 100% likely to engage in safe sex (using a condom)
+  ;FFFFFF white - 50% likely of having safe sex 
+  ;C10606   red  - 0% likely to use a condom (100% likely to have unsafe sex)
+ 
+  if (safe-sex-likelihood > 0)  [ set color [ 193   6   6 ] ] ;; 0-5 % - red
+  if (safe-sex-likelihood > 5)  [ set color [ 198  26  26 ] ] ;; 5-10 %
+  if (safe-sex-likelihood > 10) [ set color [ 204  51  51 ] ] ;; 10-15 %
+  if (safe-sex-likelihood > 15) [ set color [ 210  77  77 ] ] ;; 15-20 %
+  if (safe-sex-likelihood > 20) [ set color [ 217 102 102 ] ] ;; 20-25 %
+  if (safe-sex-likelihood > 25) [ set color [ 223 127 127 ] ] ;; 25-30 %
+  if (safe-sex-likelihood > 30) [ set color [ 229 153 153 ] ] ;; 30-35 %
+  if (safe-sex-likelihood > 35) [ set color [ 236 178 178 ] ] ;; 35-40 %
+  if (safe-sex-likelihood > 40) [ set color [ 242 204 204 ] ] ;; 40-45 %
+  if (safe-sex-likelihood > 45) [ set color [ 248 229 229 ] ] ;; 45-50 %
   
   if (safe-sex-likelihood = 50) [ set color [ 255 255 255 ] ] ;; 50% - white
   
-  if (safe-sex-likelihood > 50) [ set color [ 229 248 229 ] ] ;; 50-55 ;; 55%
-  if (safe-sex-likelihood > 55) [ set color [ 204 242 204 ] ] ;; 55-60 ;; 60%
-  if (safe-sex-likelihood > 60) [ set color [ 178 236 178 ] ] ;; 60-65 ;; 65%
-  if (safe-sex-likelihood > 65) [ set color [ 153 229 153 ] ] ;; 65-70 ;; 70%
-  if (safe-sex-likelihood > 70) [ set color [ 127 223 127 ] ] ;; 70-75 ;; 75%
-  if (safe-sex-likelihood > 75) [ set color [ 102 217 102 ] ] ;; 75-80 ;; 80%
-  if (safe-sex-likelihood > 80) [ set color [ 77 210 77 ] ] ;; 80-85 ;; 85%
-  if (safe-sex-likelihood > 85) [ set color [ 51 204 51 ] ] ;; 85-90 ;; 90%
-  if (safe-sex-likelihood > 90) [ set color [ 26 198 26 ] ] ;; 90-95 ;; 95%
-  if (safe-sex-likelihood > 95) [ set color [ 6 193 6 ] ] ;; 95-100 ;; 100% - green
+  if (safe-sex-likelihood > 50) [ set color [ 229 248 229 ] ] ;; 50-55 %
+  if (safe-sex-likelihood > 55) [ set color [ 204 242 204 ] ] ;; 55-60 %
+  if (safe-sex-likelihood > 60) [ set color [ 178 236 178 ] ] ;; 60-65 %
+  if (safe-sex-likelihood > 65) [ set color [ 153 229 153 ] ] ;; 65-70 %
+  if (safe-sex-likelihood > 70) [ set color [ 127 223 127 ] ] ;; 70-75 %
+  if (safe-sex-likelihood > 75) [ set color [ 102 217 102 ] ] ;; 75-80 %
+  if (safe-sex-likelihood > 80) [ set color [  77 210  77 ] ] ;; 80-85 %
+  if (safe-sex-likelihood > 85) [ set color [  51 204  51 ] ] ;; 85-90 %
+  if (safe-sex-likelihood > 90) [ set color [  26 198  26 ] ] ;; 90-95 %
+  if (safe-sex-likelihood > 95) [ set color [   6 193   6 ] ] ;; 95-100 % - green
   
   
   ;; The label is just redundant information of the color
@@ -535,8 +533,9 @@ to assign-turtle-color ;; turtle procedure
   ifelse (show-labels?)
   [ set label (round safe-sex-likelihood) ]
   [ set label "" ]
-  
+    
 end
+
 
 ;;
 ;; Color of link indicates type of relationship between the two agents
@@ -569,34 +568,35 @@ to go
   ;; Stop if every single turtle is infected
   if all? turtles [infected?] [ stop ]
   
-  ;; if some variables arent changing any more then stop....????... reach some sort of stable state?
-  if all? turtles [safe-sex-likelihood < 0.1 or safe-sex-likelihood > 99.9 or certainty > 99.9] [stop]
+  ;; TODO FIX *****
+  ;; if some variables arent changing any more then stop....????... 
+  ;; reach some sort of stable state?
+  if all? turtles [
+    safe-sex-likelihood < 0.1 or
+    safe-sex-likelihood > 99.9 or
+    certainty > 99.9
+    ] [stop]
   ; (so sometimes the model never ends)....?? FIX
   
+    ;; (If likelihoods of all agents stop changing significantly,
+  ;; the simulation will stop.)
   
   
   
-  ;; on each tick, turtles talk to each other
-  ;; and may have their opinions/attitudes updated
-  
-  ;; talk to both friends and sexual partners (all links to the turtle)
-  ;;ask turtles [ talk-to-peers ]
-  
+
   ask turtles
   [
-    ;; talk to both friends and sexual partners (all links of the turtle)
+    ;; Agents talk to their friends and sexual partner (if any),
+    ;; which might adjust his/her personal likelihood of practicing safe sex
     talk-to-peers
     
-    ;; don't check if infected (known determined by being symptomatic) until after talking to friends
-    ;; because std's dont present symptoms right away
-    check-infected
-    
-    ;; If already coupled with a sexual partner, just increase length of relationship
+    ;; If already coupled with a sexual partner,
+    ;; just increase length of relationship
     ;; (turtles are monogamous in this simulation)
     ifelse coupled? [ set couple-length couple-length + 1 ]
     
     ;; If they are not coupled, a turtle tries to find a mate
-    
+ 
     ;; Any turtle can initiate mating if they are not coupled
     ;; (and random chance permits)
     [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
@@ -630,18 +630,19 @@ to go
   ;; and have potential of spreading an STI if they have unsafe sex
   ask turtles [ have-sex ]
   
+  
+  ;; TODO: FIGURE OUT BEST PLACE TO PUT THIS *****
+  ;; In order to best simulate that STIs may not present symptoms immediately,
+  ;; don't check if infected (known determined by being symptomatic)
+  ;; until after talking to friends about attitude and having sex
+  ask turtles [ check-infected ]
+  
   ask turtles
-  [
-    ;; an agent gets more certain of their opinion/attitude over time
-    ;; (regardless of what their opinion is)
-    ;; jrw: need to work on this.  as lizz pointed out, it goes up after discussion with peers
-    ;;      but when does it go down?  when something contrary to attitude happens?  
-    ;;      if attitude says have safe sex (attitude > 50) but unsafe sex is had "successfully", should certainty go down?
-    ;;      or is this justification that goes up?  or both?
-    set certainty certainty + certainty-delta
-    
+  [ 
     cap-member-variables ; make sure no variables got set to < 0 or > 100
-    assign-turtle-color
+    ;; TODO: STILL NECESSARY?!?!
+    
+    assign-turtle-color ;; based on safe-sex-likelihood
   ]
 
   tick
@@ -651,13 +652,78 @@ end
 
 
 
+
+
+
+;;; --------------------------------------------------------------------- ;;;
+;;
+;; Update the likelihood (out of 100) that an agent
+;; will practice safe sex (use a condom).
+;;
+to update-safe-sex-likelihood
+  
+  ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)
+  ;; is determined by a combination of the agent's:
+  ;;   - attitude (desire)
+  ;;   - certainty (confidence in opinion/attitude)
+  ;;   - justification (knowledgeable background/logical reasoning for attitude)
+  
+  ;; Likelihood is strongly weighted to.....
+  ;;*** previous attitude (likelihood...??)
+  
+  let attitude-weight1 .75
+  let certainty-weight1 .25
+  let justification-weight1 .25
+
+  let old-likelihood safe-sex-likelihood
+ 
+  
+  ;; Certainty impacts how resistant an agent is to change their attitude
+  ;; when talking to others, and how many others the agent interacts with
+  ;; Certainty is assumed to be independent of attitude value itself,
+  ;; even when the attitude is polarized (close to 100 or close to 0)
+  
+  ;; need to take into account whether the certainty (and attitude!)
+  ;; is over 50 or under 50
+  ;; what about 50 exactly...?? *****
+  
+  ;; JRW
+  ;; The likelihood of having safe sex is based on attitude and certainty.
+  ;; The baseline likelihood is the attitude.
+  ;; If the attitude is heavy towards safe sex, then the likelihood should be as well.
+  ;; However, this may be still influenced by their certainty. 
+  ;; Just like a high certainty makes one more resilient to change of attitude, it
+  ;; should also make them best resist going against their attitude.
+  ;; For now, using a basic formula of multiplying these two values. 
+  ;; However, may want to consider someting different.
+  ;; Right now, certainty is always reducing likelihood to below the attitude.
+  ;; Perhaps trying something like (certainty + 50) so that
+  ;; a high certainty will increase likelihood but a low certainty will reduce it.
+  ;; Lastly, a constant is added at the end.
+  ;; This may not be necessary, but let me explain the thinking.
+  ;; While attitude and certainty are the major influences on having sex,
+  ;; there are other environmental and contextual influences as well.
+  ;; These may include things like BAC, partner attractiveness,
+  ;; time since last intercourse, length of relationship, etc.
+  ;; Since the focus of the model is not these other influences, 
+  ;; I thought I'd just roll them all into some arbitrary constant.
+  ;; Most of these other influences seem to reduce the likelihood, 
+  ;; so some sort of small reduction in likelihood should be in order.
+  set safe-sex-likelihood ((attitude / 100) * (certainty / 100) * 100 - 10)    
+
+
+  ;; Determine how much this agent's likelihood of practicing safe sex
+  ;; has changed since last tick.
+  ;; (If likelihoods of all agents stop changing significantly,
+  ;; the simulation will stop.)
+
+  set opinion-delta (safe-sex-likelihood - old-likelihood) ;; new - old
+  
+  
+  ;assign-turtle-color ;; call from main go function instead
+end
+
 ;;---------------------------------------------------------------------
-
-
-
-;; but if infected report 100 set just and certain to 100
-;; friend gets std justification to 100
-;; but which weighted more?
 ;;
 ;;
 ;; Make sure the member variables don't exceed 100
@@ -671,78 +737,7 @@ to cap-member-variables ;; turtle procedure
   if (certainty < 0) [set certainty 0]
   if (justification > 100) [set justification 100]
   if (justification < 0) [set justification 0]
-end
-
-
-;;; --------------------------------------------------------------------- ;;;
-;;
-;; Update the likelihood (out of 100) that an agent will practice safe sex
-;; Likelihood of engaging in safe sex behaviors is determined by the agent's opinion about safe sex
-;; which is a combination of their attitude (desire), certainty (confidence in opinion/attitude),
-;; and justification (knowledgeable background/logical reasoning for attitude)
-;;
-;;
-to update-safe-sex-likelihood
-  
-  let attitude-weight1 .75
-  let certainty-weight1 .25
-  let justification-weight1 .25
-
-  ;; strongly weighted to previous attitude (likelihood...??)
-  
-  ;not sure if i should set the likelihood here, or the updated attitude
- ;; the bug is here because certainty shouldn't impact attitude, only the likelihood of attitude to change
- ;; otherwise certainty generally increases on each tick, so all attitudes will go up over time
-
-  ; set safe-sex-likelihood
-  ;set attitude (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)
-  
-  
-  ;; certainty mostly just impacts likelihood of changing when talking to others
-  ;; need to take into account whether the certainty (and attitude!) is over 50 or under 50
-  ;; what about 50 exactly...??
-  
-  ;; in order to better deal with positives/negatives, temporarily subtract 50 from all values
-  let temp-attitude (attitude - 50)
-  let temp-certainty (certainty - 50)
-  let temp-justification (justification - 50)
-  
-; set attitude ( temp-attitude * attitude-weight +
-; temp-justification * justification-weight +
-; temp-certainty * certainty-weight )
-  let old-likelihood safe-sex-likelihood
-  
-  
-  ;set attitude (( temp-attitude * attitude-weight1 +
-  ;set safe-sex-likelihood (( temp-attitude * attitude-weight1 +
-  ;                          ;temp-certainty * certainty-weight1 +
-  ;                          temp-justification * justification-weight1 ) + 50)
-  
-  ;; JRW
-  ;; The likelihood of having safe sex is based on attitude and certainty.  The baseline likelihood is the attitude.
-  ;; If the attitude is heavy towards safe sex, then the likelihood should be as well.  However, this may be still
-  ;; influnenced by their certainty.   Just like a high certainty makes one more resilient to change of attitude, it
-  ;; should also make them best resist going against their attitude.  For now, using a basic formula of multiplying these
-  ;; two values.  However, may want to consider someting different.  Right now, certainty is always reducing likelihood to below
-  ;; the attitude.  Perhaps trying something like (certainty + 50) so that a high certainty will increase likelihood but a low
-  ;; certainty will reduce it.
-  ;; Lastly, a constant is added at the end.  This may not be necessary, but let me explain the thinking.  While attitude and certainty
-  ;; are the major influences on having sex, there are other environmental and contextual influences as well.  These may include things
-  ;; like BAC, partner attractiveness, time since last intercourse, length of relationship, etc.  Since the focus of the model is not these
-  ;; other influences, I thought I'd just roll them all into some arbitrary constant.  Most of these other influences seem to reduce the
-  ;; likelihood, so some sort of small reduction in likelihood should be in order.
-  set safe-sex-likelihood ((attitude / 100) * (certainty / 100) * 100 - 10)    
-
-  ;; before setting the likelihood, determine how much their likelihood/opinion has changed since last tick
-  ;; because if all opinions stop significantly changing, want to stop the simulation
-  ;;(attitude - safe-sex-likelihood)
-  set opinion-delta (safe-sex-likelihood - old-likelihood) ;; new - old
-  
-  ;set safe-sex-likelihood attitude ;; update likelihood based on attitude.......??
-  
-  assign-turtle-color ;; based on safe-sex-likelihood
-end
-  
+end  
   
   
   
@@ -752,21 +747,35 @@ end
 
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
-;;; SPREAD ATTITUDES/OPINIONS ...??? to peers
+;;; SPREAD ATTITUDES
 ;;;
 ;;; --------------------------------------------------------------------- ;;;
 
 
 ;;
-;; Turtle interacts with its friends and potentially alters its attitude
-;;
+;; Agent interacts with its friends (and sexual partner, if any)
+;; and potentially alters its personal likelihood of practicing safe sex
 ;;
 to talk-to-peers ;; turtle procedure
   
-  ;; use certainty..less likely to even talk to tohers??? COMMET BETTTER
-  ;; the more confident you are in your opinion, they moe likley you are to share it with peers/links
   
-  ;; increment so that you can talk to more friends the more certain you feel in your attitude
+    ;; an agent gets more certain of their opinion/attitude over time
+    ;; (regardless of what their opinion is)
+    
+    ;; certainty goes up after discussion with peers
+    ;; but when does certainty go down?  when something contrary to attitude happens?  
+    ;; if attitude says have safe sex (attitude > 50)
+    ;; but unsafe sex is had "successfully", should certainty go down?
+    ;;      or is this justification that goes up?  or both?
+    
+    set certainty certainty + certainty-delta
+  
+  ;; use certainty..less likely to even talk to tohers??? COMMENT BETTTER
+  ;; the more confident you are in your opinion,
+  ;; they more likley you are to share it with peers/links
+  
+  ;; increment so that you can talk to more friends
+  ;; the more certain you feel in your attitude
  
   let convoCount 0
   while [ convoCount < ( certainty / 100 ) * ( count my-links ) ] ;;convoCount < (same-gender-interaction-degree / 100) * ( count my-friends )
@@ -1120,13 +1129,23 @@ end
 
 
 
+;;; --------------------------------------------------------------------- ;;;
+;;;
+;;; INFECTING PROCEDURES 
+;;;
+;;; --------------------------------------------------------------------- ;;;
 
-;;; ;;;
-;;; -------------------- INFECTING PROCEDURES -------------------- ;;;
-;;; ;;;
+
+;;
+;; Turtle becomes infected
+;;
+to become-infected ;; turtle procedure
+  set infected? true
+  assign-shape ;; infected turtles have a dot on their shape
+end
 
 
-
+;;---------------------------------------------------------------------
 ;;
 ;; Turtle checks for signs of infection (symptoms)
 ;; Don't want check-infect and become-infected to happen on same tick
@@ -1165,7 +1184,8 @@ to check-infected
     set justification (justification - justification-delta)
   ]
   
-  ;; What if they had safe sex, and didn't get infected.  That should be some (small) evidence to the benefits
+  ;; What if they had safe sex, and didn't get infected.
+  ;; That should be some (small) evidence to the benefits
   ;; of protection and increase their justification, if only slightly
 end
 
@@ -1182,14 +1202,6 @@ end
 
 
 
-;;---------------------------------------------------------------------
-;;
-;; Turtle becomes infected
-;;
-to become-infected ;; turtle procedure
-  set infected? true
-  assign-shape ;; infected turtles have a dot on their shape
-end
 
 
 ;;---------------------------------------------------------------------
@@ -1199,18 +1211,21 @@ end
 to infect-random
   if (count turtles > 1)
   [
-    ;; because don't want to have to wait for first tick to display appropriate color of dot
-    ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
+    
     ask n-of 1 turtles with [not infected?]
     [
       become-infected
-      check-infected
+      ;; check-infected so that we don't have to wait
+      ;; for first tick to display appropriate color of dot
+      ;; to reflect if this agent's gender is symptomatic
+      ;; and consequent knowledge of infection
+      check-infected ;; RECONSIDER? TODO *****
     ]
   ]
 end
 
 ;;
-;; User selects an agent to infect in the model with the mouse
+;; User selects an agent in the model to infect with the mouse
 ;;
 to select
   let picked? false
@@ -1222,8 +1237,11 @@ to select
         ask candidate
         [
           become-infected
-          ;; because don't want to have to wait for first tick to display appropriate color of dot
-          ;; to reflect if this agent's gender is symptomatic and consequent knowledge of infection
+          ;; check-infected so that we don't have to wait
+          ;; for first tick to display appropriate color of dot
+          ;; to reflect if this agent's gender is symptomatic
+          ;; and consequently if the agent knows they are infected
+          ;; TODO: change?!?! *****
           check-infected
           display
           set picked? true
@@ -1232,6 +1250,7 @@ to select
   ]
   if picked? [stop]
 end
+
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -1267,7 +1286,8 @@ end
 
 ;; ----- Reporters for safe-sex-attitude measures ----- ;;
 
-;; --------------- Safe sex likelihood (probability of safe sex behavior) --------------- ;;
+;; --------------- Safe sex likelihood  --------------- ;;
+;; ------------- (condom use probability) ------------- ;;
 
 to-report avg-safe-sex-likelihood
   report mean [safe-sex-likelihood] of turtles
@@ -1281,18 +1301,21 @@ to-report avg-female-safe-sex-likelihood
   report mean [safe-sex-likelihood] of females
 end
 
-;; --------------- Change of opinion/likelihood between ticks --------------- ;;
+;; --------------- Change in likelihood between ticks --------------- ;;
 
+;; Note: take absolute value, otherwise if some turtles are
+;; very positively increasing and others are very negatively decreasing,
+;; could result in calculating like there is no change occuring
 to-report avg-likelihood-change
-  report mean [opinion-delta] of turtles
+  report mean [ abs opinion-delta] of turtles
 end
 
 to-report avg-male-likelihood-change
-  report mean [opinion-delta] of males
+  report mean [abs opinion-delta] of males
 end
 
 to-report avg-female-likelihood-change
-  report mean [opinion-delta] of females
+  report mean [abs opinion-delta] of females
 end
 
 
@@ -1352,19 +1375,23 @@ to-report avg-partners-per-turtle
 end
 
 to-report num-in-group-friends
-  report count friends with [([group-membership] of end1 = [group-membership] of end2 )]
+  report count friends with [
+    ([group-membership] of end1 = [group-membership] of end2 )]
 end
 
 to-report num-out-group-friends
-  report count friends with [([group-membership] of end1 != [group-membership] of end2 )]
+  report count friends with [
+    ([group-membership] of end1 != [group-membership] of end2 )]
 end
 
 to-report num-in-group-partners
-  report count sexual-partners with [([group-membership] of end1 = [group-membership] of end2 )]
+  report count sexual-partners with [
+    ([group-membership] of end1 = [group-membership] of end2 )]
 end
 
 to-report num-out-group-partners
-  report count sexual-partners with [([group-membership] of end1 != [group-membership] of end2 )]
+  report count sexual-partners with [
+    ([group-membership] of end1 != [group-membership] of end2 )]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
