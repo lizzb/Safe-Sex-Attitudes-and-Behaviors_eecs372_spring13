@@ -113,7 +113,7 @@ turtles-own
   ;; The percent chance a person uses protection while in a couple
   ;; (determined by gender, slider, & normal distribution)
   
-  opinion-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
   
   ;; ATTITUDE:
   ;; The desire that an agent wants to practice/the likelihood they will practice safe sex??
@@ -310,6 +310,7 @@ to setup-clusters
       ]
     ]
     
+    ;; Increment the groupID to differentiate clique ID #'s
     set groupID groupID + 1
   ]
   
@@ -337,7 +338,7 @@ to setup-people
     ;; the initial number of friend links they have
     set num-friends (count friend-neighbors)
     
-    set opinion-delta 0 ;; Updates in update likelihood function
+    set likelihood-delta 0 ;; Updates in update likelihood function
 
     set breed males ;; Default breed male, change half to female later
     set coupled? false ;; Everyone is initially single
@@ -359,7 +360,7 @@ to setup-people
     assign-normally-distributed-member-variables
     
     ;; GET RID?? TODO
-    ;cap-member-variables
+    cap-member-variables
     
     update-safe-sex-likelihood
     
@@ -499,6 +500,8 @@ end
 ;;
 to assign-turtle-color ;; turtle procedure
   
+  cap-member-variables ;; call this just in case a variable went out of accepted range
+  
   ;; Contemplated using the gradient extension here, but chose not to
   ;; If there was a switch statement for netlogo,
   ;; this could be where you'd use it
@@ -507,7 +510,7 @@ to assign-turtle-color ;; turtle procedure
   ;FFFFFF white - 50% likely of having safe sex 
   ;C10606   red  - 0% likely to use a condom (100% likely to have unsafe sex)
  
-  if (safe-sex-likelihood > 0)  [ set color [ 193   6   6 ] ] ;; 0-5 % - red
+  if (safe-sex-likelihood >= 0)  [ set color [ 193   6   6 ] ] ;; 0-5 % - red
   if (safe-sex-likelihood > 5)  [ set color [ 198  26  26 ] ] ;; 5-10 %
   if (safe-sex-likelihood > 10) [ set color [ 204  51  51 ] ] ;; 10-15 %
   if (safe-sex-likelihood > 15) [ set color [ 210  77  77 ] ] ;; 15-20 %
@@ -722,7 +725,7 @@ to update-safe-sex-likelihood
   ;; (If likelihoods of all agents stop changing significantly,
   ;; the simulation will stop.)
 
-  set opinion-delta (safe-sex-likelihood - old-likelihood) ;; new - old
+  set likelihood-delta (safe-sex-likelihood - old-likelihood) ;; new - old
   
   
   ;assign-turtle-color ;; call from main go function instead
@@ -1313,15 +1316,15 @@ end
 ;; very positively increasing and others are very negatively decreasing,
 ;; could result in calculating like there is no change occuring
 to-report avg-likelihood-change
-  report mean [ abs opinion-delta] of turtles
+  report mean [ abs likelihood-delta] of turtles
 end
 
 to-report avg-male-likelihood-change
-  report mean [abs opinion-delta] of males
+  report mean [abs likelihood-delta] of males
 end
 
 to-report avg-female-likelihood-change
-  report mean [abs opinion-delta] of females
+  report mean [abs likelihood-delta] of females
 end
 
 
