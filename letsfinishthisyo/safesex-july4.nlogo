@@ -114,6 +114,7 @@ turtles-own
   ;; (determined by gender, slider, & normal distribution)
   
   likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  old-safe-sex-likelihood ; ***//
   
   ;; ATTITUDE:
   ;; The desire that an agent wants to practice/the likelihood they will practice safe sex??
@@ -341,7 +342,7 @@ to setup-people
     set num-friends (count friend-neighbors)
     
     set likelihood-delta 0 ;; Updates in update likelihood function
-
+    
     set breed males ;; Default breed male, change half to female later
     set coupled? false ;; Everyone is initially single
     set partner nobody
@@ -365,6 +366,8 @@ to setup-people
     cap-member-variables
     
     update-safe-sex-likelihood
+    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
+
     
     assign-turtle-color ;; Color is determined by likelihood of practicing safe sex
     assign-shape ;; Shape is determined by gender and sick status
@@ -596,8 +599,12 @@ to go
    ;; and potentially getting/realizing they are infected 
    
   let old-likelihood 0 ;;safe-sex-likelihood ;; temporary variable due to loops for setting
+  
+  
 
-  ask turtles [ set old-likelihood safe-sex-likelihood ]
+  ask turtles [ set old-likelihood safe-sex-likelihood 
+    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
+    ]
   
   ask turtles
   [
@@ -666,7 +673,9 @@ to go
   ]
   
       ;; likelihood can be changed by both the talk-to-peers and check-infected functions
-  ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) ];; new - old]
+  ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) 
+    set likelihood-delta (safe-sex-likelihood - old-safe-sex-likelihood)
+    ];; new - old]
 
   tick
 end
@@ -823,6 +832,7 @@ to talk-to-peers ;; turtle procedure
           let attitudeChange ((100 - certainty) / 100 ) * ([attitude] of peer - attitude)
                                * (justification / 100) * ([ justification / 100 ] of peer)
           
+          ;; ******* Jason added, not sure about it
           ;; one part of attitude changing, through communication with peers,
           ;; is update own justifications
           set justification justification + [justification / 100] of peer
@@ -1581,7 +1591,7 @@ num-cliques
 num-cliques
 1
 20
-3
+4
 1
 1
 NIL
@@ -1596,7 +1606,7 @@ avg-num-friends
 avg-num-friends
 2
 clique-size - 1
-4
+6
 1
 1
 NIL
@@ -1626,7 +1636,7 @@ clique-size
 clique-size
 2
 35
-7
+12
 1
 1
 people
@@ -1778,7 +1788,7 @@ SWITCH
 103
 social-butterflies?
 social-butterflies?
-0
+1
 1
 -1000
 
@@ -1899,7 +1909,7 @@ PLOT
 1085
 160
 Safe Sex Likelihood Histogram
-NIL
+likelihood
 NIL
 0.0
 100.0
@@ -1907,7 +1917,7 @@ NIL
 25.0
 true
 false
-"" ""
+"set-plot-y-range 0 (count turtles / 1.5)" ""
 PENS
 "M" 10.0 1 -13345367 true "" "histogram [safe-sex-likelihood] of males"
 "F" 10.0 1 -2064490 true "" "histogram [safe-sex-likelihood] of females"
