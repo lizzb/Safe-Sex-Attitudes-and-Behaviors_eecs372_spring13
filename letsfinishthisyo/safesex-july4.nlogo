@@ -113,7 +113,7 @@ turtles-own
   ;; The percent chance a person uses protection while in a couple
   ;; (determined by gender, slider, & normal distribution)
   
-  likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  ;likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
   old-safe-sex-likelihood ; ***//
   
   ;; ATTITUDE:
@@ -181,11 +181,10 @@ to setup
   setup-clusters ;; set up social groups/cliques
   setup-people   ;; change breeds to male/female, set individual turtle attributes
   
-  ;; By default, infect a random individual in the model with an STI
-  ;; but if you want to also explore spread of attitudes without an STI going through the population,
-  ;; comment out the line below
+  ;; By default, setup infects one random individual in the model with an STI
+  ;; but if you want to also explore spread of attitudes without an STI spreading
+  ;; through the population, comment out the line below
 
-  ;; GET RID OF THIS
   infect-random ;; infect one random person (user can choose more, if they want)
 
                
@@ -220,8 +219,8 @@ to setup-globals
   ;; For simplicity, use predetermined values to set these variables
   ;; (compared to AIDS model, which uses sliders) 
   
-  set max-friendship-factor 100 ;; .... edit...? 90 ********
-  set max-coupling-factor 100   ;; .... edit...? 85
+  set max-friendship-factor 70 ;; .... edit...? 90 ********
+  set max-coupling-factor 40   ;; .... edit...? 85
     
   set avg-friendship-tendency (max-friendship-factor / 2)
   set avg-coupling-tendency (max-coupling-factor / 2)
@@ -341,8 +340,6 @@ to setup-people
     ;; the initial number of friend links they have
     set num-friends (count friend-neighbors)
     
-    set likelihood-delta 0 ;; Updates in update likelihood function
-    
     set breed males ;; Default breed male, change half to female later
     set coupled? false ;; Everyone is initially single
     set partner nobody
@@ -365,6 +362,10 @@ to setup-people
     ;; GET RID?? TODO
     cap-member-variables
     
+      ;; Determine how much this agent's likelihood of practicing safe sex
+  ;; has changed since last tick.
+  ;; (If likelihoods of all agents stop changing significantly,
+  ;; the simulation will stop.)
     update-safe-sex-likelihood
     set old-safe-sex-likelihood safe-sex-likelihood ; ***//
 
@@ -506,6 +507,8 @@ end
 to assign-turtle-color ;; turtle procedure
   
   cap-member-variables ;; call this just in case a variable went out of accepted range
+  
+  ;update-safe-sex-likelihood ;; ---- call here or no??? no did weird things
   
   ;; Contemplated using the gradient extension here, but chose not to
   ;; If there was a switch statement for netlogo,
@@ -662,20 +665,18 @@ to go
   
   ask turtles
   [ 
-    cap-member-variables ; make sure no variables got set to < 0 or > 100
+    ;cap-member-variables ; make sure no variables got set to < 0 or > 100
     ;; TODO: STILL NECESSARY?!?!
     
-    ;update-safe-sex-likelihood
-
-    
+    update-safe-sex-likelihood
     
     assign-turtle-color ;; based on safe-sex-likelihood
   ]
   
       ;; likelihood can be changed by both the talk-to-peers and check-infected functions
-  ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) 
-    set likelihood-delta (safe-sex-likelihood - old-safe-sex-likelihood)
-    ];; new - old]
+  ;ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) 
+  ;  set likelihood-delta (safe-sex-likelihood - old-safe-sex-likelihood)
+  ;  ];; new - old]
 
   tick
 end
@@ -694,6 +695,9 @@ end
 ;;
 to update-safe-sex-likelihood
   
+  cap-member-variables ; make sure no variables got set to < 0 or > 100
+  ;; NECESSARY?!?!!? *****
+  
   ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)
   ;; is determined by a combination of the agent's:
   ;;   - attitude (desire)
@@ -707,7 +711,8 @@ to update-safe-sex-likelihood
   let certainty-weight1 .25
   let justification-weight1 .25
 
-  ;let old-likelihood safe-sex-likelihood ;; move to go function
+ 
+ ;; cap variables just in case...???
  
   
   ;; Certainty impacts how resistant an agent is to change their attitude
@@ -744,13 +749,6 @@ to update-safe-sex-likelihood
   set safe-sex-likelihood ((attitude / 100) * (certainty / 100) * 100 - 10)    
 
 
-  ;; Determine how much this agent's likelihood of practicing safe sex
-  ;; has changed since last tick.
-  ;; (If likelihoods of all agents stop changing significantly,
-  ;; the simulation will stop.)
-
-  ;set likelihood-delta (safe-sex-likelihood - old-likelihood) ;; new - old move to go function
-
 end
 
 ;;---------------------------------------------------------------------
@@ -785,8 +783,6 @@ end
 to talk-to-peers ;; turtle procedure
 
 
-  
- 
   let convoCount 0
   ;;( count my-friends )... should they ALWAYS talk to partner too? or just generic? TODO ******
   
@@ -832,7 +828,7 @@ to talk-to-peers ;; turtle procedure
           let attitudeChange ((100 - certainty) / 100 ) * ([attitude] of peer - attitude)
                                * (justification / 100) * ([ justification / 100 ] of peer)
           
-          ;; ******* Jason added, not sure about it
+          ;; ******* Jason added, not sure about it **********
           ;; one part of attitude changing, through communication with peers,
           ;; is update own justifications
           set justification justification + [justification / 100] of peer
@@ -846,7 +842,8 @@ to talk-to-peers ;; turtle procedure
       ]
       set convoCount convoCount + 1
     ]
-    update-safe-sex-likelihood
+    
+    update-safe-sex-likelihood ;; update personal likelihood based on talking to peers
   
 end
 
@@ -1265,13 +1262,11 @@ to check-infected
     set known? true
     set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
     set attitude 100 ;; also set their attitude towards safe sex to 100% positive
-
-    update-safe-sex-likelihood ; not sure if comment out or not
-    
-    assign-shape ;; color of dot changes based on whether the agent knows they are infected
   ]
   
-  
+  update-safe-sex-likelihood ; not sure if comment out or not
+  assign-turtle-color ;; pretty sure this is already called in go so dont need to
+  assign-shape ;; color of dot changes based on whether the agent knows they are infected
 
 end
 
@@ -1334,17 +1329,21 @@ end
 ;; very positively increasing and others are very negatively decreasing,
 ;; could result in calculating like there is no change occuring
 to-report avg-likelihood-change
-  report mean [ abs likelihood-delta] of turtles
+  report mean [ abs (safe-sex-likelihood - old-safe-sex-likelihood)] of turtles
 end
 
 to-report avg-male-likelihood-change
-  report mean [abs likelihood-delta] of males
+  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of males
 end
 
 to-report avg-female-likelihood-change
-  report mean [abs likelihood-delta] of females
+  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of females
 end
 
+  ;; Determine how much this agent's likelihood of practicing safe sex
+  ;; has changed since last tick.
+  ;; (If likelihoods of all agents stop changing significantly,
+  ;; the simulation will stop.)
 
 ;; --------------- Attitude --------------- ;;
 to-report avg-attitude
@@ -1591,7 +1590,7 @@ num-cliques
 num-cliques
 1
 20
-4
+3
 1
 1
 NIL
@@ -1606,7 +1605,7 @@ avg-num-friends
 avg-num-friends
 2
 clique-size - 1
-6
+3
 1
 1
 NIL
@@ -1636,7 +1635,7 @@ clique-size
 clique-size
 2
 35
-12
+6
 1
 1
 people
@@ -1917,7 +1916,7 @@ NIL
 25.0
 true
 false
-"set-plot-y-range 0 (count turtles / 1.5)" ""
+"set-plot-y-range 0 (count turtles / 2.5)" ""
 PENS
 "M" 10.0 1 -13345367 true "" "histogram [safe-sex-likelihood] of males"
 "F" 10.0 1 -2064490 true "" "histogram [safe-sex-likelihood] of females"

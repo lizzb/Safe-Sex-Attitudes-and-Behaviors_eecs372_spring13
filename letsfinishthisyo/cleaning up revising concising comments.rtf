@@ -5,6 +5,225 @@
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
 \f0\fs24 \cf0 \
+\
+Change of opinion/likelihood between ticks \
+\
+\
+LIKELIHOOD\
+\
+;; --------------- Safe sex likelihood  --------------- ;;\
+;; --------------- (probability of wearing a condom)\
+\
+;; Color of turtle depends on their attitude towards/propensity to practice safe sex.... EDIT\
+;; green = more likely to use protection, red = less likely\
+\
+  ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)\
+  ;; is determined by a combination of the agent's:\
+  ;;   - attitude (desire),\
+  ;;   - certainty (confidence in opinion/attitude), and\
+  ;;   - justification (knowledgeable background/logical reasoning for attitude)\
+  \
+\
+\
+ATTITUDE\
+\
+attitude vs opinion?\
+\
+attitude towards safe sex (desire to engage in safe sex)\
+\
+SPREAD ATTITUDES/OPINIONS ...??? to peers\
+;;;\
+\
+and may have their opinions/attitudes updated\
+\
+\
+CERTAINTY\
+\
+A person's certainty impacts how likely/resistent they are to changing their attitude\
+\
+    ;; an agent gets more certain of their opinion/attitude over time\
+    ;; (regardless of what their opinion is)\
+\
+ ;; Certainty impacts how resistant an agent is to change their attitude\
+  ;; when talking to others, and how many others the agent interacts with\
+  ;; Certainty is assumed to be independent of attitude value itself,\
+  ;; even when the attitude is polarized (close to 100 or close to 0)\
+  \
+  ;; need to take into account whether the certainty (and attitude!) is over 50 or under 50\
+  ;; what about 50 exactly...??\
+\
+JUSTIFICATION\
+justification (logical rationalization of an opinion) \
+\
+;;\
+;; Update the likelihood (out of 100) that an agent will practice safe sex\
+;; Likelihood of engaging in safe sex behaviors is determined by\
+;; the agent's opinion about safe sex, \
+;; which is a combination of their attitude (desire), certainty (confidence in opinion/attitude),\
+;; and justification (knowledgeable background/logical reasoning for attitude)\
+;;\
+;;\
+\
+\
+;; Your own certainty matters for changing your own attitude\
+          ;; But you dont care about the other person's certainty\
+          ;; you only about what they have to back up their opinion (peer's justification)\
+          \
+          ;; A person doesn't care how strongly their peer feels about their opinion (certainty),\
+          ;; only what reasoning they have to back up their opinion (justification)\
+\
+\
+todo\
+\
+# of people taled to on each turn\
+\
+stop conditions\
+\
+figure out where to put check infected\
+\
+CAPmember variables still necessary?\
+\
+change being infected knowing about it??\
+\
+difference between one ask turtles loop or multiple??\
+\
+;; but if infected report 100 set just and certain to 100\
+;; friend gets std justification to 100\
+;; but which weighted more?\
+\
+\
+\
+;; Note: take absolute value, otherwise if some turtles are\
+;; very positively increasing and others are very negatively decreasing,\
+;; could result in calculating like there is no change occuring \'85. true???\
+\
+WHEN DO THESE THINGS HAPPEN\
+\
+direction		attitude		certainty		justification\
+\
+up\
+\
+down\
+\
+\
+\
+write about\
+\
+  ;; NOTE: These "conversations"/"interactions" are one-directional in this model\
+\
+bugs \
+\
+ ;not sure if i should set the likelihood here, or the updated attitude\
+ ;; the bug is here because certainty shouldn't impact attitude, only the likelihood of attitude to change\
+ ;; otherwise certainty generally increases on each tick, so all attitudes will go up over time\
+\
+\
+;; figured out the the bug if you dont choose an infected person initially\
+;; justification will never change because justifcation only changed within infect function\
+;; which only applies to infected people, when should apply to all\
+;; so have-sex instead\
+\
+\
+bugs/ issues\
+\
+making it more less likely to couple based on lciques\
+\
+    ; max friendship factor = 100\
+    ; propose you ... friendship-tendency-of-choice\
+    ; in group sum of inherent + extra contribution brings them above 80 and if not not a friend\
+    ;; that way if out of group, it has a chance of becoming friend\
+    ;; but if adding a piece to it guarantees most will become friends\
+    ;\
+    ; just add another conditional\
+\
+-----------------------------------------------\
+\
+\
+    ; max friendship factor = 100\
+    ; propose you ... friendship-tendency-of-choice\
+    ; in group sum of inherent + extra contribution brings them above 80 and if not not a friend\
+    ;; that way if out of group, it has a chance of becoming friend\
+    ;; but if adding a piece to it guarantees most will become friends\
+    ;\
+    ; just add another conditional\
+    \
+    ;; friendship tendency around a half\
+   ; if (random-float max-friendship-factor) < (([friendship-tendency] of potential-friend) * friending-probability) ;; check math\
+     if ( (random-float max-friendship-factor < [friendship-tendency] of potential-friend)\
+           and random-float 1.0 < friending-probability) ;; check math\
+\
+end\
+\
+-----------------------------\
+\
+\
+\
+\
+\
+    ;; an agent gets more certain of their opinion/attitude over time\
+    ;; (regardless of what their opinion is) --> no\
+\
+\
+;; certainty goes up after discussion with peers\
+    ;; but when does certainty go down?  when something contrary to attitude happens?  \
+    ;; if attitude says have safe sex (attitude > 50)\
+    ;; but unsafe sex is had "successfully", should certainty go down?\
+    ;;      or is this justification that goes up?  or both?\
+\
+\
+  ;; What if they had safe sex, and didn't get infected.\
+  ;; That should be some (small) evidence to the benefits\
+  ;; of protection and increase their justification, if only slightly\
+\
+\
+  ;; JRW\
+  ;; The likelihood of having safe sex is based on attitude and certainty.\
+  ;; The baseline likelihood is the attitude.\
+  ;; If the attitude is heavy towards safe sex, then the likelihood should be as well.\
+  ;; However, this may be still influenced by their certainty. \
+  ;; Just like a high certainty makes one more resilient to change of attitude, it\
+  ;; should also make them best resist going against their attitude.\
+  ;; For now, using a basic formula of multiplying these two values. \
+  ;; However, may want to consider someting different.\
+  ;; Right now, certainty is always reducing likelihood to below the attitude.\
+  ;; Perhaps trying something like (certainty + 50) so that\
+  ;; a high certainty will increase likelihood but a low certainty will reduce it.\
+  ;; Lastly, a constant is added at the end.\
+  ;; This may not be necessary, but let me explain the thinking.\
+  ;; While attitude and certainty are the major influences on having sex,\
+  ;; there are other environmental and contextual influences as well.\
+  ;; These may include things like BAC, partner attractiveness,\
+  ;; time since last intercourse, length of relationship, etc.\
+  ;; Since the focus of the model is not these other influences, \
+  ;; I thought I'd just roll them all into some arbitrary constant.\
+  ;; Most of these other influences seem to reduce the likelihood, \
+  ;; so some sort of small reduction in likelihood should be in order.\
+\
+\
+;; JRW\
+  ;; The likelihood of having safe sex is based on attitude and certainty.\
+  ;; The baseline likelihood is the attitude.\
+  ;; If the attitude is heavy towards safe sex, then the likelihood should be as well.\
+  ;; However, this may be still influenced by their certainty. \
+  ;; Just like a high certainty makes one more resilient to change of attitude, it\
+  ;; should also make them best resist going against their attitude.\
+  ;; For now, using a basic formula of multiplying these two values. \
+  ;; However, may want to consider someting different.\
+  ;; Right now, certainty is always reducing likelihood to below the attitude.\
+  ;; Perhaps trying something like (certainty + 50) so that\
+  ;; a high certainty will increase likelihood but a low certainty will reduce it.\
+  ;; Lastly, a constant is added at the end.\
+  ;; This may not be necessary, but let me explain the thinking.\
+  ;; While attitude and certainty are the major influences on having sex,\
+  ;; there are other environmental and contextual influences as well.\
+  ;; These may include things like BAC, partner attractiveness,\
+  ;; time since last intercourse, length of relationship, etc.\
+  ;; Since the focus of the model is not these other influences, \
+  ;; I thought I'd just roll them all into some arbitrary constant.\
+  ;; Most of these other influences seem to reduce the likelihood, \
+  ;; so some sort of small reduction in likelihood should be in order.\
+\
+\
 -------------------------------------------------------------------------------------------------------\
 \
 num-friends ;; The number of friends that an agent will/wants to have \
