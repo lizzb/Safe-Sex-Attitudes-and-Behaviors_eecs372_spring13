@@ -83,7 +83,7 @@ globals
   justification-weight ;; ....
   
   certainty-delta ;; the amount that certainty increases on every tick for every agent
-                            ;; certainty increases over time, which makes it harder to change an agent's opinion
+                  ;; certainty increases over time, which makes it harder to change an agent's opinion
   
   justification-delta ;; the amount that justification decreases
                             ;; every time an agent thingks they "got away" with unsafe sex
@@ -201,13 +201,14 @@ end
 ;;
 to setup-globals
 
-  set certainty-weight .25
   set attitude-weight .5
+  set certainty-weight .25
   set justification-weight .25
   
-  set certainty-delta .1
-  set justification-delta 10
+  set certainty-delta .1 ;; the amount certainty increases when an agent repeats their attitude
+  set justification-delta 2;10 ;; the amount justification decreases when an agent "gets away with" unsafe sex
   
+  ;; These could also be set in assign-sex-ed-level
   set no-condom-sex-ed-level 20
   set condom-sex-ed-level 80
   
@@ -216,14 +217,15 @@ to setup-globals
   run word "set-" symptomatic?
   
   ;; For simplicity, use predetermined values to set these variables
-  ;; (compared to AIDS model, which uses sliders)
+  ;; (compared to AIDS model, which uses sliders) 
   
-  set max-friendship-factor 10.0 ;; .... edit...? 90
-  set max-coupling-factor 10 ;; .... edit...? 85
+  set max-friendship-factor 100 ;; .... edit...? 90 ********
+  set max-coupling-factor 100   ;; .... edit...? 85
     
-  set avg-coupling-tendency (max-coupling-factor / 2)
-  set avg-relationship-length 25
   set avg-friendship-tendency (max-friendship-factor / 2)
+  set avg-coupling-tendency (max-coupling-factor / 2)
+  
+  set avg-relationship-length 25
   
 end
 
@@ -588,9 +590,15 @@ to go
   ; (so sometimes the model never ends)....?? FIX
   
     ;; (If likelihoods of all agents stop changing significantly,
-  ;; the simulation will stop.)
+    ;; the simulation will stop.)
  
+  ;; record each agent's likelihood before interacting with others,
+   ;; and potentially getting/realizing they are infected 
+   
+  let old-likelihood 0 ;;safe-sex-likelihood ;; temporary variable due to loops for setting
 
+  ask turtles [ set old-likelihood safe-sex-likelihood ]
+  
   ask turtles
   [
     ;; Agents talk to their friends and sexual partner (if any), which
@@ -650,8 +658,15 @@ to go
     cap-member-variables ; make sure no variables got set to < 0 or > 100
     ;; TODO: STILL NECESSARY?!?!
     
+    ;update-safe-sex-likelihood
+
+    
+    
     assign-turtle-color ;; based on safe-sex-likelihood
   ]
+  
+      ;; likelihood can be changed by both the talk-to-peers and check-infected functions
+  ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) ];; new - old]
 
   tick
 end
@@ -683,7 +698,7 @@ to update-safe-sex-likelihood
   let certainty-weight1 .25
   let justification-weight1 .25
 
-  let old-likelihood safe-sex-likelihood
+  ;let old-likelihood safe-sex-likelihood ;; move to go function
  
   
   ;; Certainty impacts how resistant an agent is to change their attitude
@@ -725,10 +740,8 @@ to update-safe-sex-likelihood
   ;; (If likelihoods of all agents stop changing significantly,
   ;; the simulation will stop.)
 
-  set likelihood-delta (safe-sex-likelihood - old-likelihood) ;; new - old
-  
-  
-  ;assign-turtle-color ;; call from main go function instead
+  ;set likelihood-delta (safe-sex-likelihood - old-likelihood) ;; new - old move to go function
+
 end
 
 ;;---------------------------------------------------------------------
@@ -817,7 +830,8 @@ to talk-to-peers ;; turtle procedure
           
           set attitude (attitude + attitudeChange * .1)
           
-          ;; should i update after talking to every person???
+          ;; should i update after talking to every person??? *******
+          ;; its just a function of the otehr values, so dont htink it matters
           ;update-safe-sex-likelihood
       ]
       set convoCount convoCount + 1
@@ -839,6 +853,10 @@ end
 ;;
 to have-sex ;; turtle procedure (only for coupled turtles)
   
+    ;; limitations:
+    ;; doesnt account for if some people have a all safe sex always policy
+    ;; doesnt account for potential conversation at mating which may influence opinion or relationship
+    ;; possibly using protection could improve your attitude towards it?
   
 
   ;ask turtles with [is-female? self and coupled?]
@@ -861,7 +879,7 @@ to have-sex ;; turtle procedure (only for coupled turtles)
     
     
     ;; include an extra check / override check?
-   ;; if (infected? and known?) or --> have safe sex
+    ;; if (infected? and known?) or --> have safe sex
    
     ;; ******
    
@@ -875,36 +893,39 @@ to have-sex ;; turtle procedure (only for coupled turtles)
 
     
 
-    ;; doesnt account for if some people have a all safe sex always policy
-    ;; doesnt account for potential conversation at mating which may influence opinion
-    ;; possibly using portection could improve your attitude towards it?
+
     
-    ;; or or and???
-    ifelse ( (random-float 100 > safe-sex-likelihood) or
+    ;; need to check this logic....... ****
+    ;; If neither parter is aware they are infected.... **
+    ;;.......
+    ifelse ( (not known? and [not known?] of partner) and
+             (random-float 100 > safe-sex-likelihood) or   ;; Optional: change this to AND *****
              (random-float 100 > ([safe-sex-likelihood] of partner))
-             and (not known? and [not known?] of partner) ) ;; need to check this logic.......
+           ) 
     [
-      ;; if got past above conditional, that means the couple had unsafe sex
+      ;; If got past the above conditional, that means the couple had unprotected sex
       set had-unsafe-sex? true
       ask partner [ set had-unsafe-sex? true ]
       
-      ;; since the sex should only occur once in a tick,.....???
-      ;; should just have one probability of it being passed in a tick
+      ;; since the sex should only occur once in a tick,.....??? ***
+      ;; should just have one probability of it being passed in a tick 
       if (random-float 100 < infection-chance)
       [
         ;; Spread virus between an infected and non-infected coupled partner duo
         if (infected?) [ ask partner [ become-infected ] ]
-        if ([infected?] of partner) [ become-infected ] ;; not sure if i need this if both agents call this on each tick.....
+        if ([infected?] of partner) [ become-infected ] ;; not sure if i need this if both agents call this on each tick..... ****
       ]
     ]
     [
+      set had-unsafe-sex? false
+      ask partner [set had-unsafe-sex? false]
+      
       ;; This model assumes that safe sex (using a condom) is always 
-      ;; 100% effective in preventing the spread of infection. 
+      ;; 100% effective in preventing the spread of infection - 
+      ;; thus there is no random chance of the infection spreading if a condom is used.
       ;; This could be modified in extensions to be more realistic and
       ;; account for factors like incorrect/inconsistent condom usage,
       ;; condom failure, or STIs passed through other means.
-     set had-unsafe-sex? false
-     ask partner [set had-unsafe-sex? false]
     ]
   ]
 end
@@ -912,15 +933,11 @@ end
 
 
 
-
-
-
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
-;;; Making friends/attitude influencers? PROCEDURE
+;;; MAKE FRIENDS (Potential attitude influencers)
 ;;;
 ;;; --------------------------------------------------------------------- ;;;
-
 
 ;;
 ;; Try to make friend links with other turtles
@@ -933,15 +950,18 @@ to make-friends ;; turtle procedure
   let groupID group-membership
   
   ;; Probability that friendship link will form
-  ;; arbitrary number to overwrite
+  ;; (arbitrary number to overwrite)
   let friending-probability 1.0
   
   ;; Probability of successful coupling decreases if the
   ;; potential friend is not part of the agent's clique
-  ;; Note: these are arbitrary number that could be adjusted for more realistic modeling
+  ;; Note: these are arbitrary numbers that could be adjusted for more realistic modeling
   let in-group-probability 0.8
   let out-group-probability 0.2
   
+  ;; No need to check for gender compatibility,
+  ;; everyone can be friends with each other, yay!
+  ;; However, the potential-friend must not have maxed out their friend count
   
   ;; First, try to find someone in their clique who is not a current link
   let potential-friend ( one-of other turtles with [not link-neighbor? myself
@@ -961,24 +981,11 @@ to make-friends ;; turtle procedure
   
   if (potential-friend != nobody)
   [
-    ;; no need to check for gender compatibility,
-    ;; everyone can be friends with each other, yay!
-    
-    ; max friendship factor = 100
-    ; propose you ... friendship-tendency-of-choice
-    ; in group sum of inherent + extra contribution brings them above 80 and if not not a friend
-    ;; that way if out of group, it has a chance of becoming friend
-    ;; but if adding a piece to it guarantees most will become friends
-    ;
-    ; just add another conditional
-    
-    ;; friendship tendency around a half
-   ; if (random-float max-friendship-factor) < (([friendship-tendency] of potential-friend) * friending-probability) ;; check math
-     if ( (random-float max-friendship-factor < [friendship-tendency] of potential-friend)
-           and random-float 1.0 < friending-probability) ;; check math
-      [
-        create-friend-with potential-friend [ assign-link-color]
-      ]
+     ;; Use friending-probability to impact chance of successfully becoming friends
+     ;; Higher likelihood if they are in the same friend group, lower if they are not
+     if ( (random-float 1.0 < friending-probability) and   
+          (random-float max-friendship-factor < [friendship-tendency] of potential-friend) )
+      [ create-friend-with potential-friend [ assign-link-color] ]
   ]
 end
 
@@ -1002,13 +1009,22 @@ end
 ;;
 to couple ;; turtle procedure
   
-  
-  let coupling-probability 1.0 ; arbitrary number
-  
-  ;; this agent's social/friend group id
+  ;; This agent's clique (social/friend group) id
   let groupID group-membership
   
-  ;; create variable that we will overwrite
+  ;; Probability that sexual partnership link will form
+  ;; (arbitrary number to overwrite)
+  let coupling-probability 1.0 
+  
+  ;; Probability of successful coupling decreases if the
+  ;; potential friend is not part of the agent's clique
+  ;; Note: these are arbitrary numbers that could be adjusted for more realistic modeling
+  let friend-probability 0.8
+  let in-group-probability 0.6 ;.8
+  let out-group-probability 0.3
+ 
+  
+  ;; Create variable that we will overwrite
   let potential-partner one-of friend-neighbors
   
   ;;
@@ -1016,56 +1032,65 @@ to couple ;; turtle procedure
   ;; for simplicity, only dealing with straight people (male + female pairs)
   ;;
   
-  ;; male agent - wants to find a female potential partner
+  ;; Male agent - wants to find a female potential partner
   ifelse is-male? self
   [
-    ;; preferably find a female that is already a friend / look at existing female friends
+    ;; First check out existing female friends
     set potential-partner (one-of females with [friend-neighbor? myself and not coupled?])
+    set coupling-probability friend-probability
     
-    ;; then, try to find a female that is within your friend group, but not a current link
+    ;; If that wasn't successful,
+    ;; try to find a female within his clique that is not a current friend/link
     if (potential-partner = nobody)
     [
       set potential-partner
       (one-of females with [not link-neighbor? myself and not coupled? and group-membership = groupID])
-      set coupling-probability 0.8 ; arbitrary number
+      set coupling-probability in-group-probability
     ]
     
-    ;; as a last resort, try looking for the closest non-linked female
+    ;; As a last resort,
+    ;; look for the closest female that is not a link, even if they aren't in your clique
     if (potential-partner = nobody)
     [
       set potential-partner (min-one-of (females with [not link-neighbor? myself and not coupled?]) [distance myself])
-      set coupling-probability 0.3 ; arbitrary number
+      set coupling-probability out-group-probability
     ]
-    
   ]
   
-  ;; female agent - wants to find a male potential partner
+  ;; Female agent - wants to find a male potential partner
   [
-    ;; preferably find a male that is already a friend / look at existing male friends
+    ;; First check out existing male friends
     set potential-partner (one-of males with [friend-neighbor? myself and not coupled?])
+    set coupling-probability friend-probability
     
-    ;; then, try to find a male that is within your friend group, but not a current link
+    ;; If that wasn't successful,
+    ;; try to find a male within her clique that is not a current friend/link
     if (potential-partner = nobody)
     [
       set potential-partner
       (one-of males with [not link-neighbor? myself and not coupled? and group-membership = groupID])
-      set coupling-probability 0.8 ; arbitrary number
+      set coupling-probability in-group-probability
     ]
     
-    ;; as a last resort, try looking for the closest non-linked male
+    ;; As a last resort,
+    ;; look for the closest male that is not a link, even if they aren't in your clique
     if (potential-partner = nobody)
     [
       set potential-partner
       (min-one-of (males with [not link-neighbor? myself and not coupled?]) [distance myself])
-      set coupling-probability 0.2 ; arbitrary number
+      set coupling-probability out-group-probability
     ]
   ]
   
-  
+  ;; Finally, if they found a person who meets the above criteria,
+  ;; Determine if potential partner is willing to couple with them
   if potential-partner != nobody
     [
-      ;; Determine if potential partner is willing to couple/start a sexual partnership
-      if (random-float max-coupling-factor) < (([coupling-tendency] of potential-partner) * coupling-probability)
+      ;; Use coupling-probability to impact chance of successfully forming relationship
+      ;; Highest likelihood if agents were already friends, lowest likelihood if agents weren't from same clique
+      
+       if ( (random-float 1.0 < coupling-probability) and   
+          (random-float max-coupling-factor < [coupling-tendency] of potential-partner) )
         [
           set partner potential-partner
           set coupled? true
@@ -1075,7 +1100,8 @@ to couple ;; turtle procedure
             set coupled? true
           ]
           
-          ;; Change breed of link if friends, and create link for sexual relationship regardless
+          ;; Change breed of link if friends,
+          ;; and create link for sexual relationship regardless
           if (friend-neighbor? partner) [ask friend-with partner [die] ]
           create-sexual-partner-with partner [ assign-link-color]
         ]
@@ -1115,13 +1141,11 @@ end
 
 
 
-
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
 ;;; INFECTING PROCEDURES 
 ;;;
 ;;; --------------------------------------------------------------------- ;;;
-
 
 ;;
 ;; Turtle becomes infected
@@ -1130,10 +1154,8 @@ to become-infected ;; turtle procedure
   set infected? true
   assign-shape ;; infected turtles have a dot on their shape
   
-  ;; Note that the turtle will not "know" they are infected
-  ;; until check-infected is called, and even then, they will
-  ;; only be aware of their infected state if their gender
-  ;; is symptomatic
+  ; Note that the turtle will not "know" they are infected
+  ; (and set the known? variable) until check-infected is called
 end
 
 
@@ -1148,7 +1170,10 @@ end
 ;; Note that in both of these procedures, the infected agent 
 ;; will not "know" they are infected until check-infected is called,
 ;; and even then, they will only be aware of their infected state
-;; if his/her gender is symptomatic
+;; if his/her gender is symptomatic.
+
+;; By doing it this way, the agents have a chance to spread the STI
+;; before they realize they are infected
 
 ;;
 ;; Infect a random turtle (can do multiple times, if user wishes)
@@ -1201,54 +1226,37 @@ to check-infected
   
   ;; DOES THE LOGIC HERE INTERFERE WITH WHEN THE CHECK-INFECTED IS CALLED???
   
-  ;; Justification goes down if an agent believes
-  ;; they had unsafe sex and had no negative consequences (i.e. contracted an STI)
-  ;; (either didn't get infected, or doesn't feel symptoms, regardless of whether s/he is actually infected)
-  ;; (if not symptomatic, don't change their known? variable as well)
-  
-  
-  ;; When agent thinks they had unsafe sex and sees no negative consequences 
-  ;; (didn't contract an STI, or doesn't feel symptoms, regardless of whether 
-  ;; s/he is actually infected), justification decreases.
-  
   ;; Justification decreases when an agent thinks they had unsafe sex 
   ;; and observes no negative consequences (i.e. didn't contract an STI,
   ;; or doesn't feel symptoms, regardless of whether s/he is actually infected).
+  
   if ( had-unsafe-sex? and ( not infected? or
      (is-male? self and not males-symptomatic?) or
      (is-female? self and not females-symptomatic?) )
      )
   [ set justification (justification - justification-delta) ]
-    
-  
-;  if ( had-unsafe-sex? ) and is-male? self
-;       and (not infected? or not males-symptomatic?) )
-;  [
-;    set justification (justification - justification-delta)
-;  ]
-;  
-;  if ( had-unsafe-sex? and is-female? self
-;       and (not infected? or not females-symptomatic?) )
-;  [
-;    set justification (justification - justification-delta)
-;  ]
+
     
   ;; ***********
   ;; What if they had safe sex, and didn't get infected.
   ;; That should be some (small) evidence to the benefits
   ;; of protection and increase their justification, if only slightly
+  ;; ***********
   
-  if infected? and
+  ;; If an agent is infected and realizes it (due to being symptomatic)
+  ;; Their likelihood of practicing safe sex increases significantly,
+  ;; due to.... **** TODO
+  
+  if ((infected? and not known?) and
     ((is-male? self and males-symptomatic?) or
-    (is-female? self and females-symptomatic?))
+    (is-female? self and females-symptomatic?)))
   [
+    ;; *********** FIX ME ............
     set known? true
     set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
-    ;; FIX COMMENT WHATEVER ***** TODO
-    ;; set attitude 100
-    set attitude 100
-    ;;safe-sex-likelihood 100; ;safe-sex-attitude 100 ;; also set their attitude towards safe sex to 100% positive
-    ;update-safe-sex-attitude
+    set attitude 100 ;; also set their attitude towards safe sex to 100% positive
+
+    update-safe-sex-likelihood ; not sure if comment out or not
     
     assign-shape ;; color of dot changes based on whether the agent knows they are infected
   ]
@@ -1406,11 +1414,11 @@ end
 GRAPHICS-WINDOW
 485
 10
-878
-424
+873
+419
 15
 15
-12.355
+12.2
 1
 10
 1
@@ -1431,10 +1439,10 @@ weeks
 30.0
 
 BUTTON
-320
-320
-445
-353
+350
+285
+475
+318
 setup
 setup
 NIL
@@ -1449,9 +1457,9 @@ NIL
 
 MONITOR
 880
-455
+430
 955
-500
+475
 % infected
 %infected
 2
@@ -1460,9 +1468,9 @@ MONITOR
 
 PLOT
 625
-455
+425
 875
-605
+575
 % of Population Infected
 weeks
 percentage
@@ -1480,9 +1488,9 @@ PENS
 
 MONITOR
 880
-555
+530
 955
-600
+575
 % F infected
 %F-infected
 2
@@ -1491,9 +1499,9 @@ MONITOR
 
 MONITOR
 880
-505
+480
 955
-550
+525
 % M infected
 %M-infected
 2
@@ -1502,9 +1510,9 @@ MONITOR
 
 BUTTON
 305
-270
+245
 375
-303
+278
 NIL
 select
 T
@@ -1519,9 +1527,9 @@ NIL
 
 TEXTBOX
 310
-250
+225
 470
-268
+243
 Select a person to have an STI
 11
 0.0
@@ -1529,9 +1537,9 @@ Select a person to have an STI
 
 TEXTBOX
 10
-235
-220
-265
+215
+275
+245
 Certainty: Could include parental influences, religious background, etc.
 11
 0.0
@@ -1539,9 +1547,9 @@ Certainty: Could include parental influences, religious background, etc.
 
 BUTTON
 380
-270
+245
 475
-303
+278
 NIL
 infect-random
 NIL
@@ -1555,35 +1563,35 @@ NIL
 1
 
 CHOOSER
-310
-190
-475
-235
+305
+175
+470
+220
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
 2
 
 SLIDER
-5
-45
-145
-78
+10
+30
+160
+63
 num-cliques
 num-cliques
 1
 20
-5
+3
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-5
-85
-145
-118
+325
+30
+465
+63
 avg-num-friends
 avg-num-friends
 2
@@ -1595,10 +1603,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-310
-150
-475
-183
+305
+135
+470
+168
 infection-chance
 infection-chance
 0
@@ -1610,10 +1618,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-150
-45
-305
-78
+165
+30
+320
+63
 clique-size
 clique-size
 2
@@ -1625,10 +1633,10 @@ people
 HORIZONTAL
 
 BUTTON
+350
 320
-360
-380
-393
+410
+353
 go-once
 go
 NIL
@@ -1642,10 +1650,10 @@ NIL
 1
 
 BUTTON
-385
-360
-445
-393
+415
+320
+475
+353
 NIL
 go
 T
@@ -1659,25 +1667,25 @@ NIL
 1
 
 SLIDER
-5
-150
-215
-183
+10
+135
+220
+168
 avg-male-condom-intention
 avg-male-condom-intention
 0
 100
-16
+20
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-5
-185
-215
-218
+10
+170
+220
+203
 avg-female-condom-intention
 avg-female-condom-intention
 0
@@ -1690,34 +1698,34 @@ HORIZONTAL
 
 SLIDER
 5
-270
+245
 280
-303
+278
 avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-80
+30
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-5
-130
-245
-148
+10
+115
+250
+133
 Attitude: Intention/desire to use a condom
 11
 0.0
 1
 
 TEXTBOX
-310
-130
-440
-148
+340
+115
+475
+133
 STI characteristics
 11
 0.0
@@ -1725,9 +1733,9 @@ STI characteristics
 
 PLOT
 335
-430
+425
 620
-605
+575
 Average safe sex likelihood
 weeks
 percentages
@@ -1746,8 +1754,8 @@ PENS
 TEXTBOX
 10
 10
-285
-51
+475
+28
 Parameters to initialize a social network, consisting of discrete social groups (cliques).
 11
 0.0
@@ -1755,19 +1763,19 @@ Parameters to initialize a social network, consisting of discrete social groups 
 
 TEXTBOX
 10
-325
+290
 235
-355
+320
 Justification: accurate knowledge about safe sex practices and benefits
 11
 0.0
 1
 
 SWITCH
-150
-85
-305
-118
+10
+70
+160
+103
 social-butterflies?
 social-butterflies?
 0
@@ -1776,9 +1784,9 @@ social-butterflies?
 
 PLOT
 5
-410
+380
 330
-605
+575
 Components of Safe Sex Behavior
 NIL
 NIL
@@ -1799,45 +1807,45 @@ PENS
 
 SLIDER
 10
-355
+320
 227
-388
+353
 %-receive-condom-sex-ed
 %-receive-condom-sex-ed
 0
 100
-90
+42
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-885
-10
-1010
-43
+350
+370
+475
+403
 show-labels?
 show-labels?
-1
+0
 1
 -1000
 
 TEXTBOX
-395
-405
-545
-461
+900
+105
+1050
+161
 Description of how liklihood is calculated from attitude, certainty, justificaiton...
 11
 0.0
 1
 
 PLOT
-900
-245
-1100
-395
+885
+265
+1085
+415
 Average opinion change
 NIL
 NIL
@@ -1854,36 +1862,55 @@ PENS
 "pen-2" 1.0 0 -5825686 true "" "plot avg-female-likelihood-change"
 
 TEXTBOX
-310
-80
-480
-130
+165
+70
+425
+100
 Enable to initialize a limited number of inter-group links between \"clique leaders\".
 11
 0.0
 1
 
 MONITOR
-890
-100
-1065
-145
-NIL
+955
+215
+1020
+260
+delta F
 avg-female-likelihood-change
 17
 1
 11
 
 MONITOR
-895
-175
-1070
-220
+885
+215
+950
+260
 delta M
 avg-male-likelihood-change
 17
 1
 11
+
+PLOT
+885
+10
+1085
+160
+Safe Sex Likelihood Histogram
+NIL
+NIL
+0.0
+100.0
+0.0
+25.0
+true
+false
+"" ""
+PENS
+"M" 10.0 1 -13345367 true "" "histogram [safe-sex-likelihood] of males"
+"F" 10.0 1 -2064490 true "" "histogram [safe-sex-likelihood] of females"
 
 @#$#@#$#@
 ### NOTE: The documentation accompanying this model, and the comments in the code, are incomplete.

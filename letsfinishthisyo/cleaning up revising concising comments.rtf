@@ -108,8 +108,7 @@ Green = more likely to use protection, Red = less likely\
 \
 \
 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 -----------------------------------------------\
+-----------------------------------------------\
 \
 commence craziness from update function\
 \
@@ -455,4 +454,118 @@ to have-sex ;; turtle procedure (only for coupled turtles)\
      ask partner [set had-unsafe-sex? false]\
     ]\
   ]\
-end}
+end\
+\
+\
+\
+\
+  if infected? and\
+    ((is-male? self and males-symptomatic?) or\
+    (is-female? self and females-symptomatic?))\
+  [\
+    set known? true\
+    set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason\
+    ;; FIX COMMENT WHATEVER ***** TODO\
+    ;; set attitude 100\
+    set attitude 100\
+    ;;safe-sex-likelihood 100; ;safe-sex-attitude 100 ;; also set their attitude towards safe sex to 100% positive\
+    ;update-safe-sex-attitude\
+    \
+    assign-shape ;; color of dot changes based on whether the agent knows they are infected\
+  ]\
+  \
+\
+\
+  ;; Note that the turtle will not "know" they are infected\
+  ;; (and set the known? variable) until check-infected is called, and even then, they will\
+  ;; only be aware of their infected state if their gender\
+  ;; is symptomatic\
+\
+  ;; Note that the turtle will not "know" they are infected\
+  ;; until check-infected is called, and even then, they will\
+  ;; only be aware of their infected state if their gender\
+  ;; is symptomatic\
+\
+\
+\
+\
+\
+;; preferably find a male that is already a friend / look at existing male friends\
+\
+\
+\
+\
+\
+\
+\
+\
+;; preferably find a female that is already a friend / look at existing female friends\
+    set potential-partner (one-of females with [friend-neighbor? myself and not coupled?])\
+    \
+    ;; then, try to find a female that is within your friend group, but not a current link\
+    if (potential-partner = nobody)\
+    [\
+      set potential-partner\
+      (one-of females with [not link-neighbor? myself and not coupled? and group-membership = groupID])\
+      set coupling-probability 0.8 ; arbitrary number\
+    ]\
+    \
+    ;; as a last resort, try looking for the closest non-linked female\
+    if (potential-partner = nobody)\
+    [\
+      set potential-partner (min-one-of (females with [not link-neighbor? myself and not coupled?]) [distance myself])\
+      set coupling-probability 0.3 ; arbitrary number\
+    ]\
+    \
+  ]\
+  \
+  ;; Female agent - wants to find a male potential partner\
+  [\
+    ;; First check out existing male friends\
+    set potential-partner (one-of males with [friend-neighbor? myself and not coupled?])\
+    \
+    ;; If that wasn't successful,\
+    ;; try to find a male within your clique that is not a current friend/link\
+    if (potential-partner = nobody)\
+    [\
+      set potential-partner\
+      (one-of males with [not link-neighbor? myself and not coupled? and group-membership = groupID])\
+      set coupling-probability 0.8 ; arbitrary number\
+    ]\
+    \
+    ;; As a last resort,\
+    ;; look for the closest male that is not a link, even if they aren't in your clique\
+    if (potential-partner = nobody)\
+    [\
+      set potential-partner\
+      (min-one-of (males with [not link-neighbor? myself and not coupled?]) [distance myself])\
+      set coupling-probability 0.2 ; arbitrary number\
+\
+\
+    ; max friendship factor = 100\
+    ; propose you ... friendship-tendency-of-choice\
+    ; in group sum of inherent + extra contribution brings them above 80 and if not not a friend\
+    ;; that way if out of group, it has a chance of becoming friend\
+    ;; but if adding a piece to it guarantees most will become friends\
+    ;\
+    ; just add another conditional\
+\
+\
+\
+\
+\
+;; Finally, if they found a person who meets the above criteria,\
+  ;; see if that person even wants to couple with them\
+  if potential-partner != nobody\
+\
+\
+\
+      ;; Use coupling-probability to impact chance of successfully forming relationship\
+      ;; Highest likelihood if agents were already friends, lowest likelihood if agents weren't from same clique\
+      \
+       if ( (random-float 1.0 < friending-probability) and   \
+          (random-float max-friendship-factor < [friendship-tendency] of potential-friend) )\
+       \
+      ;; Determine if potential partner is willing to couple/start a sexual partnership\
+      if (random-float max-coupling-factor) < (([coupling-tendency] of potential-partner) * coupling-probability)\
+        [}
