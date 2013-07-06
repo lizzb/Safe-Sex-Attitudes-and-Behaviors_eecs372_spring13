@@ -380,12 +380,3 @@ to go
   ;; until after talking to friends about attitude and having sex
   ask turtles [ check-infected ]
   
-  ask turtles
-  [ 
-    ;cap-member-variables ; make sure no variables got set to < 0 or > 100
-    ;; TODO: STILL NECESSARY?!?!
-    
-    update-safe-sex-likelihood
-    
-    assign-turtle-color ;; based on safe-sex-likelihood
-  ]
