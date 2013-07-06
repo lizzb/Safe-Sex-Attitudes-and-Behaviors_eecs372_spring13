@@ -245,7 +245,7 @@ If the agent has not reached their friend limit, look for a valid potential frie
 A valid potential friend must not have reached his/her friend limit (but gender irrelevant).
 1) Look at agents within friend group that are not currently linked to you
 2) Find a nearby person as a last resort
-Based on probability… will try to friend...(probability of successful friend-making decreases for last option)
+Based on probability… will try to friend…(probability of successful friend-making decreases for last option)
 
 This agent's clique (social/friend group) id
 
@@ -297,24 +297,7 @@ from have-sex:
 ;;
 to go
   
-  ;;; ----- Check for STOP conditions ----- ;;
   
-  ;; Stop if every single turtle is infected
-  if all? turtles [infected?] [ stop ]
-  
-  ;; TODO FIX *****
-  ;; if some variables arent changing any more then stop....????... 
-  ;; reach some sort of stable state?
-  if all? turtles [
-    safe-sex-likelihood < 0.1 or
-    safe-sex-likelihood > 99.9 or
-    certainty > 99.9
-    ] [stop]
-  ; (so sometimes the model never ends)....?? FIX
-  
-    ;; (If likelihoods of all agents stop changing significantly,
-    ;; the simulation will stop.)
- 
   ;; record each agent's likelihood before interacting with others,
    ;; and potentially getting/realizing they are infected 
    
@@ -326,57 +309,11 @@ to go
     set old-safe-sex-likelihood safe-sex-likelihood ; ***//
     ]
   
-  ask turtles
-  [
-    ;; Agents talk to their friends and sexual partner (if any), which
-    ;; might impact his/her personal likelihood of practicing safe sex
-    talk-to-peers
-    
-    ;; If already coupled with a sexual partner,
-    ;; just increase length of relationship
-    ;; (turtles are monogamous in this simulation)
-    ifelse coupled? [ set couple-length couple-length + 1 ]
-    
-    ;; If they are NOT coupled, a turtle tries to find a mate
- 
-    ;; Any turtle can initiate mating if they are not coupled
-    ;; (and random chance permits)
-    [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
-  ]
+. 
   
-  ;; give everyone (coupled or not) a chance to make a friend
-  ask turtles
-  [
-    ;; everyone should attempt to make friends on each tick as well
-    ;; because otherwise, all the sexual partner links break
-    ;; then it becomes single-sex clusters and nothing cool happens
-    
-    ;; If this agent already has reached their maximum limit of friends,
-    ;; don't try to create any more friend links
-    
-    ;; If this agent has not reached their maximum limit of friends,
-    ;; try to make a friend / create a friend link
-    if ( (count friend-neighbors < num-friends) and
-         random-float max-friendship-factor < friendship-tendency )
-    [ make-friends ]
-  ]
-  
-  ;; Agents will uncouple if the length of the relationship reaches
-  ;; the commitment threshold for one of the partners
-  ;; Call uncouple after make-friends and couple, 
-  ;; because you wouldnt want exes immediately friending each other again,
-  ;; and this model doesn't simulate instant rebounds
-  ask turtles [ uncouple ]
-  
-  ;; If turtles are coupled (have a sexual partner), 
-  ;; they will have sex on each tick, and have the potential
-  ;; of spreading an STI if they have unprotected sex.
-  ask turtles [ have-sex ]
+
   
   
-  ;; TODO: FIGURE OUT BEST PLACE TO PUT THIS *****
-  ;; In order to best simulate that STIs may not present symptoms immediately,
-  ;; don't check if infected (known determined by being symptomatic)
-  ;; until after talking to friends about attitude and having sex
-  ask turtles [ check-infected ]
+
+
   
