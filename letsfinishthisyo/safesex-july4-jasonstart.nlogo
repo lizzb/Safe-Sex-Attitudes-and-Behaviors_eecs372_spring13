@@ -7,7 +7,8 @@
 ;; default turtle type, will later be changed to male or female
 breed [ people person ]
 breed [ leaders leader ] ;; "clique leader" in a way
-                         ;; helps with creating spatial layout and (optional) link between groups
+                         ;; helps with creating spatial layout and
+                         ;; (optional) some initial links between groups
 
 ;; Breeds (agentsets) for gender
 ;; (once social groups/networks established)
@@ -1590,7 +1591,7 @@ num-cliques
 num-cliques
 1
 20
-3
+20
 1
 1
 NIL
@@ -1605,7 +1606,7 @@ avg-num-friends
 avg-num-friends
 2
 clique-size - 1
-3
+2
 1
 1
 NIL
@@ -1635,7 +1636,7 @@ clique-size
 clique-size
 2
 35
-6
+35
 1
 1
 people

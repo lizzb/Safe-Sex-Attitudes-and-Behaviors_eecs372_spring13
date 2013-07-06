@@ -1,0 +1,239 @@
+
+
+;; "clique leader" in a way
+                         ;; helps with creating spatial layout and
+                         ;; (optional) some initial links between groups
+
+;; The next 3 values are set by sliders, where default is scale 0 - 100
+  
+
+  
+
+
+                             
+  
+  ;; The next two values are set by the %-receive-condom-sex-ed slider
+  ;; and used only in assign-sex-ed-level
+  ;; Average level of accurate knowledge if agent received:
+  no-condom-sex-ed-level ;; sex education that did not include/cover condom use
+  condom-sex-ed-level    ;; sex education that included condom use for STI protection
+  
+  
+  ;; The next two values are determined by the symptomatic? chooser
+  males-symptomatic?   ;; If true, males will be symptomatic IF infected with an STI
+  females-symptomatic? ;; If true, females will be symptomatic IF infected with an STI
+                                 
+  
+
+  ;; The next two values are the maximum value for tendency of any agent 
+  ;; to make a friend or sexual partner link on a given turn. (scale 1 to 100)
+  ;; Used as an upper bound for generating random chance for individual agents 
+  max-friendship-factor ;; Maximum friendship-making-coupling tendency value
+  max-coupling-factor   ;; Maximum coupling tendency value (sexual partner)
+                     
+  ;; The next two values are the average tendency of an agent to form a
+  ;; friendship/sexual partnership with another agent
+  ;; Both are set to the max factor / 2
+avg-friendship-tendency:	Average tendency of a person to make friends with another person
+avg-coupling-tendency:	Average tendency of a person to couple with another person 
+
+In order to couple, the pairings must consist of one male and one female,
+and both partners must be single/uncoupled
+ (duplicate later)
+avg-relationship-length:	Average number of ticks a sexual partnership/couple will stay together (commitment)
+  
+  
+  ;; weighted percentage that certainty plays
+  ;; in influencing an agents likelihood to practice safe sex.... TODO *****
+  attitude-weight ;; how attitude...
+  certainty-weight ;; ....
+  justification-weight ;; ....
+  
+  certainty-delta ;; the amount that certainty increases on every tick for every agent
+                  ;; certainty increases over time, which makes it harder to change an agent's opinion
+  
+  justification-delta ;; the amount that justification decreases
+                            ;; every time an agent thingks they "got away" with unsafe sex
+
+
+
+
+;; The likelihood (0 - 100%) of this agent practicing safe sex (reflects behavior)
+  ;; Likelihood is calculated through a weighted function of components of opinion/attitude????
+  ;; (attitude, certainty, justification)
+  ;; probability of a BEHAVIOR.... used to determine color (and label value)...
+  ;; shoudl just be attitude...???
+  
+  safe-sex-likelihood
+
+  ;; ATTITUDE IS YOUR LIKELIHOOD OF PRACTICING SAFE SEX ;;safe-sex-attitude
+  ;; The percent chance a person uses protection while in a couple
+  ;; (determined by gender, slider, & normal distribution)
+  
+  ;likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  old-safe-sex-likelihood ; ***//
+  
+
+  
+                     
+  
+
+  
+
+  
+
+
+
+
+
+  
+
+  
+
+
+
+ ;; Leaders are used for spatially setting up discrete clusters
+  ;; and for providing some links between groups.
+  ;; If they are disabled, there are no initial inter-group links,
+  ;; but agents might still form friendships or sexual partnerships 
+  ;; with agents that are not in their clique.
+  if (not social-butterflies?) [ask leaders [ die ] ]
+    
+   
+    
+
+  
+  ask turtles
+  [
+    ;; Individual variables per agent are set randomly following
+    ;; a normal distribution based on slider or global values
+    assign-normally-distributed-member-variables
+    
+    ;; GET RID?? TODO
+    cap-member-variables
+    
+      ;; Determine how much this agent's likelihood of practicing safe sex
+  ;; has changed since last tick.
+  ;; (If likelihoods of all agents stop changing significantly,
+  ;; the simulation will stop.)
+    update-safe-sex-likelihood
+    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
+
+
+
+
+
+
+Use helper procedure RANDOM-NEAR from AIDS model, which approximates a "normal" distribution around a given average value by generating many small random numbers and adding them together.
+
+;;
+;; Assign values to variables of agents in the population using
+;; the helper procedure RANDOM-NEAR so that individual agents variables
+;; follow an approximately "normal" distribution around average values.
+;;
+to assign-normally-distributed-member-variables
+  
+The variables of commitment, coupling-tendency, friendship-tendency, certainty (initially), are randomly assigned to each turtle following an approximately normal distribution (the values will vary for each turtle). …. mention attitude too….
+    
+
+
+attitude:	Assign initial attitude/desire???? towards safe sex based on gender
+certainty: (based on avg-mesosystem-condom-encouragement)   
+    
+    ;; Attitude can change during the simulation through talking to peers
+    ;; and potentially becoming aware of contracting an STI .... TODO FIX ******
+
+    
+    ;; Assign initial certainty based on mesosystem encouragement
+    ;; Certainty increases over time naturally, never decreases in this model ****
+
+    
+    ;; Assign initial justification based on sex ed agent received
+    ;; Justification can decrease if agent thinks they "got away with" having unsafe sex
+    ;; or increase if they contract an STI themselves
+    assign-sex-ed-level
+
+;;
+;; Assign a level of accurate knowledge of safe sex
+;; normally distributed around a high or low value
+;; based on type of sex ed the agent received.
+;; Used to initialize the agent's justification.
+;;
+to assign-sex-ed-level
+  
+  ;; Note: The condom-sex-ed level and no-condom-sex-ed-level are
+  ;; static global values in this model for convenience. Since
+  ;; they are only used here, they could be set locally instead.
+  
+  ifelse (random 100 <= %-receive-condom-sex-ed)
+  [
+    ;; If agent received sex ed including condom usage,
+    ;; assume knowledge randomly distributed around HIGH value
+    ;; (static global value)
+    set justification random-near condom-sex-ed-level
+  ]
+  [
+    ;; If agent received sex ed without condom usage,
+    ;; Assume knowledge randomly distributed around LOW value
+    set justification random-near no-condom-sex-ed-level
+  ]
+end
+
+
+  
+
+
+  
+
+
+
+;; In the next two procedures, users can infect an agent in the model
+;; infect-random will choose a random agent, while select allows the 
+;; user to choose an agent to infect with the mouse.
+;; At least one function should be used at the beginning of the model run,
+;; but they can be called at any time during the simulation
+
+;; Note that in both of these procedures, the infected agent 
+;; will not "know" they are infected until check-infected is called,
+;; and even then, they will only be aware of their infected state
+;; if his/her gender is symptomatic.
+
+;; By doing it this way, the agents have a chance to spread the STI
+;; before they realize they are infected
+
+
+infect-random:	Infect a random agent in the model. 
+select:		User selects an agent in the model to infect with the mouse.
+
+The user can do these actions multiple times, at any time during the simulation, if they wish.
+(for example/particularly if the initially infected person is symptomatic and therefore starts practicing safe sex…? or in an attempt to change a friend group opinion??
+
+
+People 
+Agents might couple depending on their gender, their tendency to couple,
+and if they are already friends/in same clique/nearby a potential single mate.
+
+Agents might become friends depending on their tendency to make friends,
+and if they are in same clique/nearby a potential friend.
+
+Try to find a valid potential sexual partner (must be opposite sex and not coupled):
+Try to find a valid potential friend (must not have reached friend limit, gender irrelevant):
+
+
+In order to couple, the pairings must consist of one male and one female,
+and both partners must be single/uncoupled.
+
+If the agent is not coupled/in a relationship, look for a valid potential sexual partner.
+A valid potential sexual partner must be the opposite gender and not coupled.
+1) Look at existing friend links of opposite sex
+2) Look at opposite sex agents within friend group that are not currently linked to you
+3) Find a nearby opposite sex person as a last resort
+Based on probability… will try to couple...(probability of successful coupling decreases for last 2 options)
+
+
+If the agent has not reached their friend limit, look for a valid potential friend.
+A valid potential friend must not have reached his/her friend limit (but gender irrelevant).
+1) Look at agents within friend group that are not currently linked to you
+2) Find a nearby person as a last resort
+Based on probability… will try to friend...(probability of successful friend-making decreases for last option)
+
