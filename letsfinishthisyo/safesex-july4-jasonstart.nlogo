@@ -45,8 +45,8 @@ globals
   ;avg-male-condom-intention  
                              
   
-  ;; The next two values are set by the %-receive-condom-sex-ed slider
-  ;; and used only in assign-sex-ed-level
+  ;; The next two values are used only in assign-sex-ed-level, and
+  ;; will be assigned depending on the %-receive-condom-sex-ed slider value
   ;; Average level of accurate knowledge if agent received:
   no-condom-sex-ed-level ;; sex education that did not include/cover condom use
   condom-sex-ed-level    ;; sex education that included condom use for STI protection

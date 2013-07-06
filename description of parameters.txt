@@ -4,16 +4,8 @@
                          ;; helps with creating spatial layout and
                          ;; (optional) some initial links between groups
 
-;; The next 3 values are set by sliders, where default is scale 0 - 100
-  
-
-  
-
-
                              
-  
-  ;; The next two values are set by the %-receive-condom-sex-ed slider
-  ;; and used only in assign-sex-ed-level
+
   ;; Average level of accurate knowledge if agent received:
   no-condom-sex-ed-level ;; sex education that did not include/cover condom use
   condom-sex-ed-level    ;; sex education that included condom use for STI protection
@@ -105,17 +97,12 @@ avg-relationship-length:	Average number of ticks a sexual partnership/couple wil
   
   ask turtles
   [
-    ;; Individual variables per agent are set randomly following
-    ;; a normal distribution based on slider or global values
-    assign-normally-distributed-member-variables
     
-    ;; GET RID?? TODO
-    cap-member-variables
     
-      ;; Determine how much this agent's likelihood of practicing safe sex
+    
+  ;; Determine how much this agent's likelihood of practicing safe sex
   ;; has changed since last tick.
-  ;; (If likelihoods of all agents stop changing significantly,
-  ;; the simulation will stop.)
+
     update-safe-sex-likelihood
     set old-safe-sex-likelihood safe-sex-likelihood ; ***//
 
@@ -126,13 +113,11 @@ avg-relationship-length:	Average number of ticks a sexual partnership/couple wil
 
 Use helper procedure RANDOM-NEAR from AIDS model, which approximates a "normal" distribution around a given average value by generating many small random numbers and adding them together.
 
-;;
-;; Assign values to variables of agents in the population using
-;; the helper procedure RANDOM-NEAR so that individual agents variables
-;; follow an approximately "normal" distribution around average values.
-;;
-to assign-normally-distributed-member-variables
-  
+Assign values to variables of agents in the population using the helper procedure RANDOM-NEAR so that individual agents variables follow an approximately "normal" distribution around average values.
+
+Randomly assign values to variables of agents in the population so that individual agents variables follow an approximately "normal" distribution around average values using the helper procedure RANDOM-NEAR from AIDS model, which approximates a "normal" distribution around a given average value by generating many small random numbers and adding them together.
+
+
 The variables of commitment, coupling-tendency, friendship-tendency, certainty (initially), are randomly assigned to each turtle following an approximately normal distribution (the values will vary for each turtle). …. mention attitude too….
     
 
@@ -258,19 +243,7 @@ This agent's clique (social/friend group) id
 
 ;; Probability that friendship link will form
 
-from have-sex:
 
-    ;; limitations:
-    ;; doesnt account for if some people have a all safe sex always policy
-    ;; doesnt account for potential conversation at mating which may influence opinion or relationship
-    ;; possibly using protection could improve your attitude towards it?
-
-      ;; This model assumes that safe sex (using a condom) is always 
-      ;; 100% effective in preventing the spread of infection - 
-      ;; thus there is no random chance of the infection spreading if a condom is used.
-      ;; This could be modified in extensions to be more realistic and
-      ;; account for factors like incorrect/inconsistent condom usage,
-      ;; condom failure, or STIs passed through other means.
 
 
 
@@ -292,14 +265,10 @@ from have-sex:
 
 
 
-;;
-;; Run the simulation
-;;
-to go
-  
+
   
   ;; record each agent's likelihood before interacting with others,
-   ;; and potentially getting/realizing they are infected 
+  ;; and potentially getting/realizing they are infected 
    
   let old-likelihood 0 ;;safe-sex-likelihood ;; temporary variable due to loops for setting
   
