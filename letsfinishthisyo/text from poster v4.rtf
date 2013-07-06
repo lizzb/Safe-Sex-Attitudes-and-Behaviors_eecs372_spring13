@@ -1,0 +1,68 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 Overview and Motivation\
+\
+\
+\
+This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults. It also takes into account how these variables influence one another and change over time using theories of attitude change and certainty.\
+\
+This project specifically focuses on modeling college students in the United States. Male and female students come to universities with diverse backgrounds, including education and attitudes towards(regarding???) safe sex behaviors.\
+\
+\
+Model Parameters\
+\
+Social network: users can control control the number and size (members) of cliques, and whether they are initialized with some inter-group links. These cliques consist of agents that primarily interact with members of the same group. \
+\
+STI: users can control the likelihood of an infection spreading during an unprotected sex(ual??) encounter, and which genders (if any) show symptoms of the infection\
+\
+Attitude: users can separately define the initial likelihood a male vs. female agent will practice safe sex. (This attitude evolves during the course of the model.) -- remove?\
+\
+Certainty: agents have an initial confidence in their opinion, which might be influenced by factors such as parental guidance or religious background\
+\
+Justification: users can indicate the percentage of agents that receive sexual education including condom use. (The current value in America is about 48%)\
+\
+\
+Guiding Questions\
+\
+What factors seem to be most influential in determining whether an individual will contract an STI?\
+\
+What factors influence the spread of attitudes towards safe sex?\
+\
+Are the two above questions interdependent? What implications could this have for targeting information campaigns to this age group?\
+\
+Other NetLogo Models\
+AIDS\
+Virus\
+Virus on a Network\
+Sullivan\'92s 372 Final Project (in Modeling Commons)\
+\
+\
+References\
+Petty\'92s theories of attitude change\
+\
+Model Behavior\
+\
+On each tick:\
+Agents talk to their friends (indicated with blue links), and potentially update their opinions about (and consequently likelihood to practice) safe sex.\
+\
+Agents look for a sexual partner (male-female coupling). If they already have one, they have sex. The likelihood that the couple will engage in safe sex depends on the willingness of both participants.\
+\
+If one of the partners is infected and the couple has unprotected sex, there is a chance that the other partner will become infected. An infected agent is distinguished by a dot on their shape. \
+\
+Only agents of genders that are symptomatic (set by the symptomatic? slider) will know they are infected. If an agent knows s/he is infected, s/he will always want to practice safe sex for the rest of the simulation.\
+\
+If an agent has unsafe sex and doesn\'92t notice any consequences (either is not infected, or is not symptomatic), that agent\'92s inclination to practice safe sex will decrease.\
+\
+Sample Outcomes\
+Members of the same social group influence one another\'92s attitudes\
+Still has a negative attitude towards wearing a condom, because he doesn\'92t realize he is infected\
+Dot color indicates whether the agent knows they have an STI (based on being symptomatic)\
+Once an agent realizes they have an STI, they form a strong desire for safe sex \
+\
+\
+Analysis & Sample Trials\
+}

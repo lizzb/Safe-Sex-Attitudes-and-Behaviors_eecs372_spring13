@@ -1,0 +1,150 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\b\fs28 \cf0 ## parameters\
+\
+
+\b0\fs24 :: Parameters to initialize a social network, consisting of discrete social groups (cliques).\
+\
+num-cliques (range 1-20)\
+clique-size (range 1-35)\
+avg-num-friends (range 2- 1-cliquesize)\
+social-butterflies? \
+:: Enable to initialize a limited number of inter-group links between "clique leaders".\
+\
+:: Attitude: Intention/desire to use a condom\
+avg-male-condom-intention (0-100)\
+avg-female-condom-intention (0-100)\
+\
+:: Certainty: Could include parental influences, religious background, etc. -->> explain!! **\
+avg-mesosystem-condom-encouragement (0-100)\
+\
+:: Justification: accurate knowledge about safe sex practices and benefits\
+\
+:: STI characteristics\
+infection-chance (0-100)\
+symptomatic?\
+:: Select a person to have an STI\
+select\
+infect-random\
+go-once\
+go\
+show-labels?\
+\
+PLOTS\
+\
+Components of safe sex behavior\
+average safe sex likelihood --> histogram\
+% of Population Infected\
+\
+
+\b\fs28 \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+## Extensions
+\b0\fs24 \
+\
+interaction between sexual partners and peers equal or no?\
+\
+media/environment influences - since a lot of articles written during time that hiv/aids was exploding, prior to that condom use/protection/safe sex more about preventing pregnancy\'85\
+
+\b\fs28 \
+## NETlogo features\
+\
+\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+
+\b0\fs24 \cf0 should I have 2 breeds of sexual links? or just one with a type and color\'85.? 2 breeds
+\b\fs28 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+## Next steps
+\b0\fs24 \
+\
+Creating custom attitudes for each agent, rather than blanket assumptions about actions\
+Establishing networks consisting of "friendship" links and "sexual partner" links\
+Implementing (or deciding whether it is valid to implement) whether a particular gender is symptomatic of an STI, therefore becoming aware of it, getting treated, and potentially changing their future behaviors\
+\
+ -- Determining what factors inform/influence attitudes towards safe sex (and consequently behaviors), and to what extent they do so [potential options: attitudes of parents/friends/sexual partners, infection history of self or friends, education/awareness of safe sex practices]\
+ -- Implementing likelihood of proper use of sexual protection based on statistics, and consequently different potential rates of transmission\
+ -- Investigating whether a female being on birth control is a valid parameter that might impact whether she chooses to engage in safe sex\
+\
+\
+I will do further research in order to determine and more accurately base some of the assumptions of this model in scientific literature.\
+\
+
+\b\fs28 \
+## Guiding questions to consider / goals of the model\
+
+\b0\fs24 \
+What factors seem to be most influential in determining whether or not an individual will contract an STI?\
+\
+What factors [most??] influence the spread of attitudes towards safe sex?\
+\
+Are the two above questions interdependent? What implications could this have for targeting information campaigns to this age group?\
+\
+\
+
+\b\fs28 ## Assumptions, Simplifications, Limitations\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs24 \cf0 \ul \ulc0 Assume:
+\b0 \ulnone \
+Only 1 type of STD\
+If they are symptomatic, they will know they have an std, and will want to practice safe sex from there forward (assuming that people are kind and not malicious)\
+Assume no testing/curing takes place? just whether they get an std??? not susre\'85\'85***\
+the turtles don't get cured of this std, because after having an std, they always want to practice safe sex, so its about the same effect anyway (if i dont get condom accuracy stuff in)\
+Assumptions:\
+if they know they are infected, want to use safe sex\
+no friendships die, no social group membership changes\
+\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\cf0 Should agents be able to have multiple sexual partners? --> NO\
+Should people get treated and cured\'85?? no\
+gender balance workgroups?? no, it is randomized\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 make friends (will only be called if the turtle has not reached their maximum friend limit) and their tendency is acceptable\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 **Clarify condom use as ONLY?? mode of safe sex protection form\
+\
+Explain how 
+\b percentages of types of sexual education throughout america/ levels of knowledge of safe sex when entering college were created. decided 
+\b0 Don't need stats on percentages of prevalence of STIs in target demographic, to start out simulation (rather than having person choose to infect people) \'85. since could vary, and want to also simulate without an infection present, which could potentially be younger kids??\
+\
+\
+\
+likelihood higher than either alone - can't force numerical score though (????)\
+\
+\
+attitude (change?) is a function of certainty\
+certainty only impacts how much their opinion will change by talking to peers\
+updated attitude only depends on previous attitude and justification\
+rather than whole change happen only fraction of change - dampening\
+\
+\
+\
+
+\b\fs28 ## References, progress\
+\
+
+\b0\fs24 used sophias as a starting point, but only took relevant stuff, mostly just network generation and creating spatially separated clusters - e.g. no equivalent to bosses in my model, so removed...\
+\
+\
+decided to eliminate:\
+vocality - used certainty instead for simplification. but could be an extension? this model assumes that the agents are willing to talk about the sensitive topic of safe sex behaviors with their peers, which may not be true at all se\
+\
+\
+\
+was interested in media/environment influences - since a lot of articles written during time that hiv/aids was exploding, prior to that condom use/protection/safe sex more about preventing pregnancy\'85. but left as extension for user}
