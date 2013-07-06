@@ -114,8 +114,9 @@ turtles-own
   ;; The percent chance a person uses protection while in a couple
   ;; (determined by gender, slider, & normal distribution)
   
-  ;likelihood-delta ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
-  old-safe-sex-likelihood ; ***//
+  ;; Used to determine likelihood-delta:  ; ***//
+  ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  old-safe-sex-likelihood 
   
   ;; ATTITUDE:
   ;; The desire that an agent wants to practice/the likelihood they will practice safe sex??
@@ -363,10 +364,10 @@ to setup-people
     ;; GET RID?? TODO
     cap-member-variables
     
-      ;; Determine how much this agent's likelihood of practicing safe sex
-  ;; has changed since last tick.
-  ;; (If likelihoods of all agents stop changing significantly,
-  ;; the simulation will stop.)
+    ;; Determine how much this agent's likelihood of practicing safe sex
+    ;; has changed since last tick.
+    ;; (If likelihoods of all agents stop changing significantly,
+    ;; the simulation will stop.)
     update-safe-sex-likelihood
     set old-safe-sex-likelihood safe-sex-likelihood ; ***//
 
@@ -785,7 +786,8 @@ to talk-to-peers ;; turtle procedure
 
 
   let convoCount 0
-  ;;( count my-friends )... should they ALWAYS talk to partner too? or just generic? TODO ******
+  ;;( count my-friends )... should they ALWAYS talk to partner too?
+  ;; or just generic? TODO ******
   
   ;; Use certainty to determine how many links this agent talks to per tick
   ;; The more certain a person is in their attitude,
@@ -971,6 +973,9 @@ to make-friends ;; turtle procedure
   ;; everyone can be friends with each other, yay!
   ;; However, the potential-friend must not have maxed out their friend count
   
+  ;; A valid potential friend must not have reached his/her friend limit
+  ;; (but gender is irrelevant).
+  
   ;; First, try to find someone in their clique who is not a current link
   let potential-friend ( one-of other turtles with [not link-neighbor? myself
                and group-membership = groupID
@@ -1026,7 +1031,8 @@ to couple ;; turtle procedure
   
   ;; Probability of successful coupling decreases if the
   ;; potential friend is not part of the agent's clique
-  ;; Note: these are arbitrary numbers that could be adjusted for more realistic modeling
+  ;; Note: these are arbitrary numbers that
+  ;; could be adjusted for more realistic modeling
   let friend-probability 0.8
   let in-group-probability 0.6 ;.8
   let out-group-probability 0.3
@@ -1035,10 +1041,10 @@ to couple ;; turtle procedure
   ;; Create variable that we will overwrite
   let potential-partner one-of friend-neighbors
   
-  ;;
-  ;; Find a potential partner that is not coupled
-  ;; for simplicity, only dealing with straight people (male + female pairs)
-  ;;
+  ;; For simplicity, only dealing with straight people (male + female pairs).
+  
+  ;; Try to find a valid potential sexual partner.
+  ;; A valid potential sexual partner must be the opposite gender and not coupled.
   
   ;; Male agent - wants to find a female potential partner
   ifelse is-male? self

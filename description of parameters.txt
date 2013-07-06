@@ -202,12 +202,22 @@ end
 ;; before they realize they are infected
 
 
+  ;;
+  ;; Find a potential partner that is not coupled
+  ;; for simplicity, only dealing with straight people (male + female pairs)
+  ;;
+  
+
+
 infect-random:	Infect a random agent in the model. 
 select:		User selects an agent in the model to infect with the mouse.
 
 The user can do these actions multiple times, at any time during the simulation, if they wish.
 (for example/particularly if the initially infected person is symptomatic and therefore starts practicing safe sex…? or in an attempt to change a friend group opinion??
+ ;; This agent's clique (social/friend group) id
 
+  ;; Find a potential partner that is not coupled
+  ;; for simplicity, only dealing with straight people (male + female pairs)
 
 People 
 Agents might couple depending on their gender, their tendency to couple,
@@ -237,3 +247,145 @@ A valid potential friend must not have reached his/her friend limit (but gender 
 2) Find a nearby person as a last resort
 Based on probability… will try to friend...(probability of successful friend-making decreases for last option)
 
+This agent's clique (social/friend group) id
+
+; Use friending-probability to impact chance of successfully becoming friends
+     ;; Higher likelihood if they are in the same friend group, lower if they are not
+
+
+      ;; Use coupling-probability to impact chance of successfully forming relationship
+      ;; Highest likelihood if agents were already friends, lowest likelihood if 
+
+;; Probability that friendship link will form
+
+from have-sex:
+
+    ;; limitations:
+    ;; doesnt account for if some people have a all safe sex always policy
+    ;; doesnt account for potential conversation at mating which may influence opinion or relationship
+    ;; possibly using protection could improve your attitude towards it?
+
+      ;; This model assumes that safe sex (using a condom) is always 
+      ;; 100% effective in preventing the spread of infection - 
+      ;; thus there is no random chance of the infection spreading if a condom is used.
+      ;; This could be modified in extensions to be more realistic and
+      ;; account for factors like incorrect/inconsistent condom usage,
+      ;; condom failure, or STIs passed through other means.
+
+
+
+
+  
+      ;; likelihood can be changed by both the talk-to-peers and check-infected functions
+  ;ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) 
+  ;  set likelihood-delta (safe-sex-likelihood - old-safe-sex-likelihood)
+  ;  ];; new - old]
+
+  ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)
+  ;; is determined by a combination of the agent's:
+  ;;   - attitude (desire)
+  ;;   - certainty (confidence in opinion/attitude)
+  ;;   - justification (knowledgeable background/logical reasoning for attitude)
+  
+  ;; Likelihood is strongly weighted to.....
+  ;;*** previous attitude (likelihood...??)
+
+
+
+;;
+;; Run the simulation
+;;
+to go
+  
+  ;;; ----- Check for STOP conditions ----- ;;
+  
+  ;; Stop if every single turtle is infected
+  if all? turtles [infected?] [ stop ]
+  
+  ;; TODO FIX *****
+  ;; if some variables arent changing any more then stop....????... 
+  ;; reach some sort of stable state?
+  if all? turtles [
+    safe-sex-likelihood < 0.1 or
+    safe-sex-likelihood > 99.9 or
+    certainty > 99.9
+    ] [stop]
+  ; (so sometimes the model never ends)....?? FIX
+  
+    ;; (If likelihoods of all agents stop changing significantly,
+    ;; the simulation will stop.)
+ 
+  ;; record each agent's likelihood before interacting with others,
+   ;; and potentially getting/realizing they are infected 
+   
+  let old-likelihood 0 ;;safe-sex-likelihood ;; temporary variable due to loops for setting
+  
+  
+
+  ask turtles [ set old-likelihood safe-sex-likelihood 
+    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
+    ]
+  
+  ask turtles
+  [
+    ;; Agents talk to their friends and sexual partner (if any), which
+    ;; might impact his/her personal likelihood of practicing safe sex
+    talk-to-peers
+    
+    ;; If already coupled with a sexual partner,
+    ;; just increase length of relationship
+    ;; (turtles are monogamous in this simulation)
+    ifelse coupled? [ set couple-length couple-length + 1 ]
+    
+    ;; If they are NOT coupled, a turtle tries to find a mate
+ 
+    ;; Any turtle can initiate mating if they are not coupled
+    ;; (and random chance permits)
+    [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
+  ]
+  
+  ;; give everyone (coupled or not) a chance to make a friend
+  ask turtles
+  [
+    ;; everyone should attempt to make friends on each tick as well
+    ;; because otherwise, all the sexual partner links break
+    ;; then it becomes single-sex clusters and nothing cool happens
+    
+    ;; If this agent already has reached their maximum limit of friends,
+    ;; don't try to create any more friend links
+    
+    ;; If this agent has not reached their maximum limit of friends,
+    ;; try to make a friend / create a friend link
+    if ( (count friend-neighbors < num-friends) and
+         random-float max-friendship-factor < friendship-tendency )
+    [ make-friends ]
+  ]
+  
+  ;; Agents will uncouple if the length of the relationship reaches
+  ;; the commitment threshold for one of the partners
+  ;; Call uncouple after make-friends and couple, 
+  ;; because you wouldnt want exes immediately friending each other again,
+  ;; and this model doesn't simulate instant rebounds
+  ask turtles [ uncouple ]
+  
+  ;; If turtles are coupled (have a sexual partner), 
+  ;; they will have sex on each tick, and have the potential
+  ;; of spreading an STI if they have unprotected sex.
+  ask turtles [ have-sex ]
+  
+  
+  ;; TODO: FIGURE OUT BEST PLACE TO PUT THIS *****
+  ;; In order to best simulate that STIs may not present symptoms immediately,
+  ;; don't check if infected (known determined by being symptomatic)
+  ;; until after talking to friends about attitude and having sex
+  ask turtles [ check-infected ]
+  
+  ask turtles
+  [ 
+    ;cap-member-variables ; make sure no variables got set to < 0 or > 100
+    ;; TODO: STILL NECESSARY?!?!
+    
+    update-safe-sex-likelihood
+    
+    assign-turtle-color ;; based on safe-sex-likelihood
+  ]
