@@ -1,8 +1,8 @@
 
 
 ;; "clique leader" in a way
-                         ;; helps with creating spatial layout and
-                         ;; (optional) some initial links between groups
+;; helps with creating spatial layout and
+;; (optional) some initial links between groups
 
                              
 
@@ -10,17 +10,13 @@
   no-condom-sex-ed-level ;; sex education that did not include/cover condom use
   condom-sex-ed-level    ;; sex education that included condom use for STI protection
   
-  
-  ;; The next two values are determined by the symptomatic? chooser
-  males-symptomatic?   ;; If true, males will be symptomatic IF infected with an STI
-  females-symptomatic? ;; If true, females will be symptomatic IF infected with an STI
                                  
   
 
   ;; The next two values are the maximum value for tendency of any agent 
   ;; to make a friend or sexual partner link on a given turn. (scale 1 to 100)
   ;; Used as an upper bound for generating random chance for individual agents 
-  max-friendship-factor ;; Maximum friendship-making-coupling tendency value
+  max-friendship-factor ;; Maximum friendship-making tendency value
   max-coupling-factor   ;; Maximum coupling tendency value (sexual partner)
                      
   ;; The next two values are the average tendency of an agent to form a
@@ -51,7 +47,7 @@ avg-relationship-length:	Average number of ticks a sexual partnership/couple wil
 
 
 ;; The likelihood (0 - 100%) of this agent practicing safe sex (reflects behavior)
-  ;; Likelihood is calculated through a weighted function of components of opinion/attitude????
+;; Likelihood is calculated through a weighted function of components of opinion/attitude????
   ;; (attitude, certainty, justification)
   ;; probability of a BEHAVIOR.... used to determine color (and label value)...
   ;; shoudl just be attitude...???
