@@ -1,4 +1,6 @@
 
+:: Certainty: Could include parental influences, religious background, etc. -->> explain!! ** on interface better
+
 
 ;; "clique leader" in a way
 ;; helps with creating spatial layout and
