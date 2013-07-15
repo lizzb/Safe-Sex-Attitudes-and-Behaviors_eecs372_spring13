@@ -70,7 +70,7 @@ globals
                           ;; in order to couple, the pairings must consist of one male and one female,
                           ;; and both partners must be single/uncoupled
 
-  avg-relationship-length ;; Average number of ticks a sexual parternship/couple will stay together (commitment)
+  avg-relationship-length ;; Average number of ticks a sexual partnership/couple will stay together (commitment)
   
   
   certainty-delta ;; the amount that certainty increases
@@ -78,7 +78,7 @@ globals
                   ;; as certainty increases, it becomes harder to change an agent's opinion
   
   justification-delta ;; the amount that justification decreases
-                      ;; every time an agent thingks they "got away" with unsafe sex
+                      ;; every time an agent thinks they "got away" with unsafe sex
  
 ]
 
@@ -110,7 +110,7 @@ turtles-own
   
   ;; CERTAINTY:
   ;; how confidently/strongly an agent feels about their attitude
-  ;; The chance that an attitude attitude changes is inversely proportional to certainty
+  ;; The chance that an attitude changes is inversely proportional to certainty
   certainty ;; initially set to mesosystem-condom-encouragement
             ;; i.e. how much their upbringing encouraged safe sex
             ;; might consist of parents' beliefs, life experiences, religious attitudes, etc.
@@ -118,7 +118,7 @@ turtles-own
   
   ;; JUSTIFICATION:
   ;; the logic or reasoning to rationalize having a postive attitude towards safe sex,
-  ;; which is indepdendent of how strongly they feel about it (certainty)
+  ;; which is independent of how strongly they feel about it (certainty)
   ;; or what their actual attitude is
   justification ;; initially set to the level of accurate education this agent has about safe sex and condom usage
   
@@ -247,7 +247,7 @@ to setup-clusters
   
   ;; The number of total inter-group links between members
   let num-links ( ( avg-num-friends - 1 ) * clique-size ) / 2
-  ; The - 1 accounts for each member intially linking to the leader
+  ; The - 1 accounts for each member initially linking to the leader
   ; Multiplying by clique-size ensures there are enough for all group members
   ; Then divide by 2, since you only need 1 link to connect 2 people
   
@@ -422,7 +422,7 @@ end
 ;; Assign a level of accurate knowledge of safe sex
 ;; normally distributed around a high or low value
 ;; based on type of sex ed the agent received.
-;; Used to intialize the agent's justification.
+;; Used to initialize the agent's justification.
 ;;
 to assign-sex-ed-level ;; turtle procedure
   
@@ -480,7 +480,7 @@ end
 
 
 ;;
-;; Color of the agent reflects their indvidual 
+;; Color of the agent reflects their individual 
 ;; likelihood of practicing safe sex
 ;;
 to assign-turtle-color ;; turtle procedure
@@ -611,7 +611,7 @@ to go
   ;; Agents will uncouple if the length of the relationship reaches
   ;; the commitment threshold for one of the partners
   ;; Call uncouple after make-friends and couple, 
-  ;; because you wouldnt want exes immediately friending each other again,
+  ;; because you wouldn't want exes immediately friending each other again,
   ;; and this model doesn't simulate instant rebounds
   ask turtles [ uncouple ]
   
@@ -714,7 +714,7 @@ to talk-to-peers ;; turtle procedure
         
         
         ;; A person's certainty impacts how likely they are to change their attitude.
-        ;; An agent with higher certainty is more resistent to changing their attitude.
+        ;; An agent with higher certainty is more resistant to changing their attitude.
         ;; (100 - certainty) is how likely an agent is to adjust their attitude.
         
         let attitude-change-chance ( (100 - certainty) / 100 )
@@ -1268,7 +1268,7 @@ end
 
 ;; Note: take absolute value, otherwise if some turtles are
 ;; very positively increasing and others are very negatively decreasing,
-;; could result in calculating like there is no change occuring
+;; could result in calculating like there is no change occurring
 to-report avg-likelihood-change
   report mean [ abs (safe-sex-likelihood - old-safe-sex-likelihood)] of turtles
 end
