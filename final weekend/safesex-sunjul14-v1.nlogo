@@ -1397,23 +1397,6 @@ to-report avg-female-safe-sex-likelihood
   report mean [safe-sex-likelihood] of females
 end
 
-;; --------------- Change in likelihood between ticks --------------- ;;
-
-;; Note: take absolute value, otherwise if some turtles are
-;; very positively increasing and others are very negatively decreasing,
-;; could result in calculating like there is no change occuring
-to-report avg-likelihood-change
-  report mean [ abs (safe-sex-likelihood - old-safe-sex-likelihood)] of turtles
-end
-
-to-report avg-male-likelihood-change
-  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of males
-end
-
-to-report avg-female-likelihood-change
-  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of females
-end
-
   ;; Determine how much this agent's likelihood of practicing safe sex
   ;; has changed since last tick.
   ;; (If likelihoods of all agents stop changing significantly,
@@ -1466,6 +1449,28 @@ end
 
 ;; Begin somewhat unnecessary reporters that were at one point used for debugging-ish
 
+
+;; --------------- Change in likelihood between ticks --------------- ;;
+
+;; Note: take absolute value, otherwise if some turtles are
+;; very positively increasing and others are very negatively decreasing,
+;; could result in calculating like there is no change occuring
+to-report avg-likelihood-change
+  report mean [ abs (safe-sex-likelihood - old-safe-sex-likelihood)] of turtles
+end
+
+to-report avg-male-likelihood-change
+  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of males
+end
+
+to-report avg-female-likelihood-change
+  report mean [abs (safe-sex-likelihood - old-safe-sex-likelihood)] of females
+end
+
+;; originally used above measures for a plot,
+;; but it wasn't very interesting given the space it took up
+
+
 to-report avg-friends-per-turtle
   report mean [count friend-neighbors] of turtles
 end
@@ -1495,9 +1500,9 @@ to-report num-out-group-partners
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-485
+680
 10
-879
+1074
 425
 15
 15
@@ -1522,10 +1527,10 @@ weeks
 30.0
 
 BUTTON
-350
-285
-475
-318
+515
+310
+660
+343
 setup
 setup
 NIL
@@ -1539,10 +1544,10 @@ NIL
 1
 
 MONITOR
-885
-435
-960
-480
+1075
+460
+1150
+505
 % infected
 %infected
 2
@@ -1550,10 +1555,10 @@ MONITOR
 11
 
 PLOT
-630
+825
 430
-880
-580
+1075
+595
 % of Population Infected
 weeks
 percentage
@@ -1570,10 +1575,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
 MONITOR
-885
-535
-960
-580
+1075
+550
+1150
+595
 % F infected
 %F-infected
 2
@@ -1581,10 +1586,10 @@ MONITOR
 11
 
 MONITOR
-885
-485
-960
-530
+1075
+505
+1150
+550
 % M infected
 %M-infected
 2
@@ -1592,10 +1597,10 @@ MONITOR
 11
 
 BUTTON
-305
-245
-375
-278
+505
+260
+575
+293
 NIL
 select
 T
@@ -1609,10 +1614,10 @@ NIL
 1
 
 TEXTBOX
-310
-225
-470
-243
+510
+240
+670
+258
 Select a person to have an STI
 11
 0.0
@@ -1620,19 +1625,19 @@ Select a person to have an STI
 
 TEXTBOX
 10
-215
-275
-245
-Certainty: Could include parental influences, religious background, etc.
+235
+320
+280
+Certainty: How confident an agent feels in their atittude.\nMay be influenced by parental involvement, religious background, etc.
 11
 0.0
 1
 
 BUTTON
-380
-245
-475
-278
+580
+260
+675
+293
 NIL
 infect-random
 NIL
@@ -1646,19 +1651,19 @@ NIL
 1
 
 CHOOSER
-305
-175
-470
-220
+505
+185
+670
+230
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
 0
 
 SLIDER
-10
+15
 30
-160
+165
 63
 num-cliques
 num-cliques
@@ -1671,9 +1676,9 @@ NIL
 HORIZONTAL
 
 SLIDER
-325
+330
 30
-465
+470
 63
 avg-num-friends
 avg-num-friends
@@ -1686,10 +1691,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-305
-135
-470
-168
+505
+140
+670
+173
 infection-chance
 infection-chance
 0
@@ -1701,9 +1706,9 @@ NIL
 HORIZONTAL
 
 SLIDER
-165
+170
 30
-320
+325
 63
 clique-size
 clique-size
@@ -1716,10 +1721,10 @@ people
 HORIZONTAL
 
 BUTTON
+515
 350
-320
-410
-353
+585
+390
 go-once
 go
 NIL
@@ -1733,10 +1738,10 @@ NIL
 1
 
 BUTTON
-415
-320
-475
-353
+590
+350
+660
+390
 NIL
 go
 T
@@ -1751,9 +1756,9 @@ NIL
 
 SLIDER
 10
-135
+160
 220
-168
+193
 avg-male-condom-intention
 avg-male-condom-intention
 0
@@ -1766,9 +1771,9 @@ HORIZONTAL
 
 SLIDER
 10
-170
+195
 220
-203
+228
 avg-female-condom-intention
 avg-female-condom-intention
 0
@@ -1780,15 +1785,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-5
-245
+10
 280
-278
+285
+313
 avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-90
+30
 1
 1
 NIL
@@ -1796,18 +1801,18 @@ HORIZONTAL
 
 TEXTBOX
 10
-115
+145
 250
-133
+163
 Attitude: Intention/desire to use a condom
 11
 0.0
 1
 
 TEXTBOX
-340
+540
 115
-475
+675
 133
 STI characteristics
 11
@@ -1815,10 +1820,10 @@ STI characteristics
 1
 
 PLOT
-340
+320
 430
-625
-580
+560
+595
 Average safe sex likelihood
 weeks
 percentages
@@ -1835,9 +1840,9 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot avg-female-safe-sex-likelihood"
 
 TEXTBOX
+15
 10
-10
-475
+480
 28
 Parameters to initialize a social network, consisting of discrete social groups (cliques).
 11
@@ -1846,18 +1851,18 @@ Parameters to initialize a social network, consisting of discrete social groups 
 
 TEXTBOX
 10
-290
-235
 320
-Justification: accurate knowledge about safe sex practices and benefits
+345
+380
+Justification: The level of logical reasoning an agent has to rationalize their attitude towards safe sex.\nReceiving sex ed including condom usage increases accurate knowledge about safe sex practices and benefits.
 11
 0.0
 1
 
 SWITCH
-10
+15
 70
-160
+165
 103
 social-butterflies?
 social-butterflies?
@@ -1867,9 +1872,9 @@ social-butterflies?
 
 PLOT
 5
-380
-325
-545
+430
+315
+595
 Safe Sex Likelihood Components
 NIL
 NIL
@@ -1890,24 +1895,24 @@ PENS
 
 SLIDER
 10
-320
+380
 227
-353
+413
 %-receive-condom-sex-ed
 %-receive-condom-sex-ed
 0
 100
-82
+42
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-350
-370
-475
-403
+355
+360
+480
+393
 show-labels?
 show-labels?
 0
@@ -1915,72 +1920,20 @@ show-labels?
 -1000
 
 TEXTBOX
-900
-105
-1050
-161
-Description of how liklihood is calculated from attitude, certainty, justificaiton...
-11
-0.0
-1
-
-PLOT
-885
-265
-1085
-415
-Average likelihood change
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-true
-"" ""
-PENS
-"Total" 1.0 0 -10899396 true "" "plot avg-likelihood-change"
-"M" 1.0 0 -13345367 true "" "plot avg-male-likelihood-change"
-"F" 1.0 0 -5825686 true "" "plot avg-female-likelihood-change"
-
-TEXTBOX
-165
+170
 70
-425
+430
 100
 Enable to initialize a limited number of inter-group links between \"clique leaders\".
 11
 0.0
 1
 
-MONITOR
-955
-215
-1020
-260
-delta F
-avg-female-likelihood-change
-17
-1
-11
-
-MONITOR
-885
-215
-950
-260
-delta M
-avg-male-likelihood-change
-17
-1
-11
-
 PLOT
-885
-10
-1085
-160
+565
+430
+820
+595
 Safe Sex Likelihood Histogram
 likelihood
 # agents
@@ -1994,6 +1947,26 @@ true
 PENS
 "M" 10.0 1 -13345367 true "" "histogram [safe-sex-likelihood] of males"
 "F" 10.0 1 -2064490 true "" "histogram [safe-sex-likelihood] of females"
+
+TEXTBOX
+35
+120
+230
+138
+Safe Sex Likelihood Components
+11
+0.0
+1
+
+TEXTBOX
+345
+395
+510
+430
+Shows the exact likelihood of an agent engaging in safe sex.
+11
+0.0
+1
 
 @#$#@#$#@
 ### NOTE: The documentation accompanying this model, and the comments in the code, are incomplete.
@@ -2465,198 +2438,9 @@ NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="test2-infect-1" repetitions="5" runMetricsEveryStep="true">
+  <experiment name="initial-certainty-vs-intial-justification-impact" repetitions="5" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>%infected</metric>
-    <metric>%M-infected</metric>
-    <metric>%F-infected</metric>
-    <metric>avg-safe-sex-likelihood</metric>
-    <metric>avg-male-safe-sex-likelihood</metric>
-    <metric>avg-attitude</metric>
-    <metric>avg-male-attitude</metric>
-    <metric>avg-female-attitude</metric>
-    <metric>avg-female-safe-sex-likelihood</metric>
-    <metric>avg-certainty</metric>
-    <metric>avg-male-certainty</metric>
-    <metric>avg-female-certainty</metric>
-    <metric>avg-justification</metric>
-    <metric>avg-male-justification</metric>
-    <metric>avg-female-justification</metric>
-    <steppedValueSet variable="%-receive-condom-sex-ed" first="10" step="10" last="90"/>
-    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="10" step="10" last="90"/>
-    <enumeratedValueSet variable="num-cliques">
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="clique-size">
-      <value value="7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-num-friends">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="social-butterflies?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-female-condom-intention">
-      <value value="80"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-male-condom-intention">
-      <value value="20"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="infection-chance">
-      <value value="30"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="symptomatic?">
-      <value value="&quot;females-symptomatic?&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="show-labels?">
-      <value value="false"/>
-    </enumeratedValueSet>
-  </experiment>
-  <experiment name="infect-1-5cliquesof7-4friends-nobutterflies-femalesymp" repetitions="5" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <metric>%infected</metric>
-    <metric>%M-infected</metric>
-    <metric>%F-infected</metric>
-    <metric>avg-safe-sex-likelihood</metric>
-    <metric>avg-male-safe-sex-likelihood</metric>
-    <metric>avg-attitude</metric>
-    <metric>avg-male-attitude</metric>
-    <metric>avg-female-attitude</metric>
-    <metric>avg-female-safe-sex-likelihood</metric>
-    <metric>avg-certainty</metric>
-    <metric>avg-male-certainty</metric>
-    <metric>avg-female-certainty</metric>
-    <metric>avg-justification</metric>
-    <metric>avg-male-justification</metric>
-    <metric>avg-female-justification</metric>
-    <steppedValueSet variable="%-receive-condom-sex-ed" first="10" step="10" last="90"/>
-    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="10" step="10" last="90"/>
-    <enumeratedValueSet variable="num-cliques">
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="clique-size">
-      <value value="7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-num-friends">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="social-butterflies?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-female-condom-intention">
-      <value value="80"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-male-condom-intention">
-      <value value="20"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="infection-chance">
-      <value value="30"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="symptomatic?">
-      <value value="&quot;females-symptomatic?&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="show-labels?">
-      <value value="false"/>
-    </enumeratedValueSet>
-  </experiment>
-  <experiment name="some clique sizing and gonnoreahi cant spell" repetitions="5" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="1000"/>
-    <metric>avg-safe-sex-likelihood</metric>
-    <metric>avg-male-safe-sex-likelihood</metric>
-    <metric>avg-female-safe-sex-likelihood</metric>
-    <metric>%infected</metric>
-    <metric>%M-infected</metric>
-    <metric>%F-infected</metric>
-    <metric>avg-likelihood-change</metric>
-    <metric>avg-male-likelihood-change</metric>
-    <metric>avg-female-likelihood-change</metric>
-    <metric>avg-male-attitude</metric>
-    <metric>avg-male-certainty</metric>
-    <metric>avg-male-justification</metric>
-    <metric>avg-female-attitude</metric>
-    <metric>avg-female-certainty</metric>
-    <metric>avg-female-justification</metric>
-    <enumeratedValueSet variable="symptomatic?">
-      <value value="&quot;males-symptomatic?&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="infection-chance">
-      <value value="45"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="social-butterflies?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-male-condom-intention">
-      <value value="20"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-female-condom-intention">
-      <value value="80"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="num-cliques">
-      <value value="4"/>
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-num-friends">
-      <value value="6"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="clique-size">
-      <value value="8"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="show-labels?">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="0" step="10" last="90"/>
-    <steppedValueSet variable="%-receive-condom-sex-ed" first="12" step="10" last="82"/>
-  </experiment>
-  <experiment name="some clique sizing and gonnoreahi cant spell" repetitions="5" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="1000"/>
-    <metric>avg-safe-sex-likelihood</metric>
-    <metric>avg-male-safe-sex-likelihood</metric>
-    <metric>avg-female-safe-sex-likelihood</metric>
-    <metric>%infected</metric>
-    <metric>%M-infected</metric>
-    <metric>%F-infected</metric>
-    <metric>avg-male-attitude</metric>
-    <metric>avg-female-attitude</metric>
-    <enumeratedValueSet variable="symptomatic?">
-      <value value="&quot;males-symptomatic?&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="infection-chance">
-      <value value="45"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="social-butterflies?">
-      <value value="false"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-male-condom-intention">
-      <value value="20"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-female-condom-intention">
-      <value value="80"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="num-cliques">
-      <value value="4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="avg-num-friends">
-      <value value="6"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="clique-size">
-      <value value="8"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="show-labels?">
-      <value value="true"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="0" step="10" last="90"/>
-    <steppedValueSet variable="%-receive-condom-sex-ed" first="12" step="10" last="82"/>
-  </experiment>
-  <experiment name="6c-of-10-7-friends" repetitions="5" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <final>ask turtles [show safe-sex-likelihood]</final>
     <timeLimit steps="1000"/>
     <metric>avg-safe-sex-likelihood</metric>
     <metric>avg-male-safe-sex-likelihood</metric>
