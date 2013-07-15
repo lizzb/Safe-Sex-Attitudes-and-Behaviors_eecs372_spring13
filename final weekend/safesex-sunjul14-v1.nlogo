@@ -1,7 +1,4 @@
-
-
 ;;; --------------------------------------------------------------------- ;;;
-
 ;; --- Temporary breeds for setting up social groups/cliques --- ;;
 
 ;; default turtle type, will later be changed to male or female
@@ -1500,9 +1497,9 @@ to-report num-out-group-partners
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-680
+615
 10
-1074
+1009
 425
 15
 15
@@ -1527,10 +1524,10 @@ weeks
 30.0
 
 BUTTON
-515
-310
-660
-343
+430
+295
+575
+328
 setup
 setup
 NIL
@@ -1543,21 +1540,10 @@ NIL
 NIL
 1
 
-MONITOR
-1075
-460
-1150
-505
-% infected
-%infected
-2
-1
-11
-
 PLOT
-825
+790
 430
-1075
+1010
 595
 % of Population Infected
 weeks
@@ -1574,33 +1560,11 @@ PENS
 "M" 1.0 0 -13791810 true "" "plot %M-infected"
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
-MONITOR
-1075
-550
-1150
-595
-% F infected
-%F-infected
-2
-1
-11
-
-MONITOR
-1075
-505
-1150
-550
-% M infected
-%M-infected
-2
-1
-11
-
 BUTTON
-505
-260
-575
-293
+415
+255
+485
+288
 NIL
 select
 T
@@ -1614,10 +1578,10 @@ NIL
 1
 
 TEXTBOX
-510
-240
-670
-258
+420
+235
+580
+253
 Select a person to have an STI
 11
 0.0
@@ -1626,7 +1590,7 @@ Select a person to have an STI
 TEXTBOX
 10
 235
-320
+315
 280
 Certainty: How confident an agent feels in their atittude.\nMay be influenced by parental involvement, religious background, etc.
 11
@@ -1634,10 +1598,10 @@ Certainty: How confident an agent feels in their atittude.\nMay be influenced by
 1
 
 BUTTON
-580
-260
-675
-293
+490
+255
+585
+288
 NIL
 infect-random
 NIL
@@ -1651,10 +1615,10 @@ NIL
 1
 
 CHOOSER
-505
-185
-670
-230
+415
+180
+580
+225
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
@@ -1691,9 +1655,9 @@ NIL
 HORIZONTAL
 
 SLIDER
-505
+415
 140
-670
+580
 173
 infection-chance
 infection-chance
@@ -1721,10 +1685,10 @@ people
 HORIZONTAL
 
 BUTTON
-515
-350
-585
-390
+430
+335
+500
+375
 go-once
 go
 NIL
@@ -1738,10 +1702,10 @@ NIL
 1
 
 BUTTON
-590
-350
-660
-390
+505
+335
+575
+375
 NIL
 go
 T
@@ -1810,9 +1774,9 @@ Attitude: Intention/desire to use a condom
 1
 
 TEXTBOX
-540
+450
 115
-675
+585
 133
 STI characteristics
 11
@@ -1820,9 +1784,9 @@ STI characteristics
 1
 
 PLOT
-320
+315
 430
-560
+545
 595
 Average safe sex likelihood
 weeks
@@ -1851,9 +1815,9 @@ Parameters to initialize a social network, consisting of discrete social groups 
 
 TEXTBOX
 10
+315
 320
-345
-380
+390
 Justification: The level of logical reasoning an agent has to rationalize their attitude towards safe sex.\nReceiving sex ed including condom usage increases accurate knowledge about safe sex practices and benefits.
 11
 0.0
@@ -1873,7 +1837,7 @@ social-butterflies?
 PLOT
 5
 430
-315
+310
 595
 Safe Sex Likelihood Components
 NIL
@@ -1895,9 +1859,9 @@ PENS
 
 SLIDER
 10
-380
+390
 227
-413
+423
 %-receive-condom-sex-ed
 %-receive-condom-sex-ed
 0
@@ -1909,10 +1873,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-355
-360
-480
-393
+440
+385
+565
+418
 show-labels?
 show-labels?
 0
@@ -1930,9 +1894,9 @@ Enable to initialize a limited number of inter-group links between \"clique lead
 1
 
 PLOT
-565
+550
 430
-820
+785
 595
 Safe Sex Likelihood Histogram
 likelihood
@@ -1959,43 +1923,24 @@ Safe Sex Likelihood Components
 1
 
 TEXTBOX
-345
-395
-510
-430
+270
+390
+435
+425
 Shows the exact likelihood of an agent engaging in safe sex.
 11
 0.0
 1
 
 @#$#@#$#@
-### NOTE: The documentation accompanying this model, and the comments in the code, are incomplete.
-
-
 ## WHAT IS IT?
 
-This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of of young adults. It also takes into account how these variables influence one another and change over time using theories of attitude change and certainty.
+This model aims to simulate the spread and development of safe sex attitudes and behaviors in response to the prevalence of a sexually transmitted infection (STI) throughout a social network of young adults. It also takes into account how these variables influence one another and change over time using theories of attitude change and certainty.
 
 
 ## HOW IT WORKS
 
-Agents in this model are either male or female - the difference between these agents is distinguishable by their shape. Their color indicates their likelihood of engaging in safe sex (red = least likely --> green = most likely).
-
-An agent's likelihood of engaging in safe sex is a probability that depends on his or her:
--- Attitude: their personal desire/intention to have safe sex (CONDOM-USAGE) is originally set by sliders dependent on gender.
--- Certainty: their conviction with which they hold their attitude. The influence of an individual's upbringing, such as parental beliefs and religious attitudes (symbolized by the MESOSYSTEM-CONDOM-ENCOURAGEMENT variable), represents their initial certainty.
--- Justification: the strength of the logical explanations to back up their attitude. Initially, this will be set to a variable representing a level of sex ed. Experiences such as contracting an STD, or a friend contracting an STD, would increase this parameter.
-
-;; On each tick, agents talk to their friends (and partner, if any),
-;; and potentially update their attitude about safe sex
-
-Each time step (tick), if an agent is coupled, they increment the length of their relationship. The sexual relationship lasts for a limited period of time (based on the commitment levels of each partner), soif their relationship length has gotten too long, the two will break all links to one another when the sexual relationship ends.
-
-If an agent is does not have a sexual partner on a tick, they attempt to find a mate that is single and of the opposite gender. First they examine their friends, if that is unsuccessful, they try finding a agent within the same social circle that they are not linked to, and as a last resort, they try to find the closest potential mate.
-
-Every agent, regardless of coupled status, has a chance to make a new friend each tick, if their friend count has not already reached a maximum. (A maximum friend count is required so that the clusters remain somewhat discrete and do not form one large clump in the middle of the screen.)
-
-On every tick while the two agents are coupled, if one partner is infected, the other partner is at risk for infection based on a probability of having sex and using protection. If an agent becomes infected through this interaction (and is of a symptomatic gender), they do not realize they are infected until the next tick.
+blaj;lksadfj
 
 
 ## HOW TO USE IT
@@ -2007,12 +1952,15 @@ Whether a central "clique leader" should have links to leaders of other cliques.
 
 The SETUP button generates this network and assigns unique values to each individual, based on a normal distribution centered around the average values indicated by the sliders AVG-MESOSYSTEM-CONDOM-ENCOURAGEMENT and AVG-MALE-CONDOM-INTENTION/AVG-FEMALE-CONDOM-INTENTION (depends on agent's gender),as well as setting other variables that are not visible to the user in the same fashion (e.g. tendency to make a friend or sexual partner, maximum length of time willing to spend coupled with a sexual partner).
 
-SETUP will infect one person in the population by default. If the user wants to infect another agent, they can do so through pressing the SELECT button and clicking on an agent, or pressing INFECT-RANDOM. This can also be done while the model is running.
+SETUP will infect one male and one female in the population by default. If the user wants to infect another agent, they can do so through pressing the SELECT button and clicking on an agent, or pressing INFECT-RANDOM. This can also be done while the model is running.
 
-An infected person is denoted with the addition of a dot on their body, and they will have a INFECTION-CHANCE chance of infecting a partner during unprotected sex. If they are of a gender that is symptomatic of the STI (set by the SYMPTOMATIC? chooser), they are aware of their infected status, the dot will be white, and the agent will automatically practice safe sex to protect his or her partners. However, if the agent is not a gender that is symptomatic, the dot will appear black, they will be oblivious to their infected state, and continue their normal probability of practicing safe sex.
+An infected person is denoted with the addition of a dot on their body, and they will have a INFECTION-CHANCE chance of infecting a partner during unprotected sex. If they are of a gender that is symptomatic of the STI (set by the SYMPTOMATIC? chooser), they are aware of their infected status, the dot will be white, and the agent will adjust their attitude and safe sex likelihood to automatically practice safe sex to protect his or her partners. However, if the agent is not a gender that is symptomatic, the dot will appear black, they will be oblivious to their infected state, and continue their normal likelihood of practicing safe sex.
 
 
-The model stops when the entire population is infected, or if all agents have reached a single, unchanging safe-sex-attitude of either 0 or 100.
+As the model runs... mention something about looking at people and their colors and stuff....??? *****
+
+
+The model stops when the entire population is infected, if all agents reach 100% certainty in their attitude, or if all agents have reached a single, unchanging safe-sex-attitude of either 0 or 100.
 
 
 ### Simplifying assumptions
@@ -2023,62 +1971,43 @@ Although STIs may be transmitted through avenues other than sexual behavior, as 
 
 Although some members of the cliques have or develop links to agents in other groups, the social groups are generated at the beginning of the simulation and remain fairly static. Agents cannot change group affiliation over time, and are not able to be part of more than one social group at a time.
 
-if coupled, ahve sex every time! and if not coupled, always looking for a partner
-
 
 ## THINGS TO NOTICE
 
+Set one of the genders to not be symptomatic. What happens to their justification, in comparison to the other gender? What trends happen to their attitude and safe sex likelihood overall?
+
+Occasionally, there will be an agent that forms a very different likelihood for safe sex than that that of his or her clique, and seemingly refuses to change his or her mind.  (This becomes obvious, since color is used to indicate an individual's safe sex likelihood.) Why does this happen? What circumstances or agent characteristics seem to make this event more likely to happen?
+
+TODO mention attitudes spreading through a clique first....!!! ****
 
 
 ## THINGS TO TRY
 
-Set one of the genders to not be symptomatic. What happens to their certainty, in comparison to the other gender? What happens to their attitude adjustment overall?
+By default, 2 agents in the population are infected - 1 male and 1 female. Under what conditions can the spread of infection be minimized?
 
+By adjusting the parameters, is it possible to have every agent in the simulation colored very green, i.e. have a safe sex likelihood near 100%? Can you adjust the parameters so that every agent in the simulation colored very red, i.e. have a safe sex likelihood near 0%? Can both of these outcomes be accomplished without the infection spreading significantly? 
+
+Can the model variables be adjusted (specifically those relating to the social networks) be adjusted so that members of some cliques form safe sex likelihoods that are significantly different from those of other cliques? Is the safe sex likelihood of clique members (which is influenced by agent attitudes and interactions with one another) dependent on one of the members becoming aware of contracting an STI?
 
 
 ## EXTENDING THE MODEL
 
+Condom use for the purpose of protection against sexually transmitted diseases (vs. just for pregnancy prevention) increased when fear of HIV/AIDS was prevalent in the media in the late 80's and early 90's. Incorporate an element of media influence that impacts the behaviors of the agents in some way.
 
+Relationships that involve sexual partners are more complex in nature than as they are represented in this model. (In the existing functionality, single agents are constantly looking for sexual partners, and coupled agents are always having sex.) For instance, some couples are strictly monogamous, or some individuals choose to be abstinent, which greatly lowers the risk of contracting a sexually transmitted infection. Between sexually active couples, condom usage may vary, or other forms of protection may be used. Additionally, condoms are not always a fully effective form of protection: they are often not properly used, or may be used for some sexual acts, but not others, which still presents a risk of spreading an STI. Extend the model to attempt to account for some of the complex behaviors and infection risks surrounding sexual partnerships. For example, some individuals might refuse to have unprotected sex, which might potentially cause tension between the couple, or even prompt them to break up. 
 
-Symptoms of sexually transmitted infections aren't always visible or known, and some STIs display symptoms differently in different genders. These factors impact how often a particular gender might choose to get tested or use protection in sexual encounters. To better simulate real-life behaviors, implement the chance that females have a high likelihood of experiencing symptoms, while males do not. If a person experiences symptoms, they can become treated and cured of the infection in some defined amount of time. You can also implement the condition that if a person thinks they are infected, they will definitely use protection. See how these changes impact the outcome of the model.
+In this model, agents are assumed to be willing to talk about their attitude, certainty, and justification regarding safe sex with their peers. Given the private nature of this topic, this may not be the case. It is probably more likely that safe sex will be discussed with potential sexual partners, so extend the model to increase the likelihood of discussing safe sex with partners, and optionally increase the potential influence of these interactions on an individual's safe sex attitude, certainty, and/or justification. Additionally, implement a mechanism that makes agents more or less likely to share their thoughts about safe sex with friends. Optionally, include gender in this mechanism - e.g., same-sex friends are more likely to discuss sexual health with one another, or one gender is more likely to discuss safe sex in general.
 
-In different relationships, condom use may vary. Additionally, condoms are not always effective or properly used, and may be used for some sexual acts, but not others. To more accurately account for likelihood of condom use and consequent transmission of infections, create different condom-use tendencies for each sexual orientation and create a probability that a condom is ineffective.
-
-
-Condom use for the purpose of protection against sexually transmitted diseases (vs. just for pregnancy prevention) increased when fear of HIV/AIDS was prevalent in the media. Incorporate an element of media influence that impacts the attitudes and/or behaviors of the agents.
-
-
-;; don't need a had-std? variable or need to get treated, because
-                                   ;; assumption made is that having just 1 std will deter the person from having unsafe sex... but this isnt true
-
-monogamy
-
-
-  ;if Boss-influence? [ talk-to-boss ]
-    -- talking to partner is different than just friends, possible different genders of friends too
-
-use the netowrks extension
-
-
-
+Use the [Networks NetLogo extension] (https://github.com/NetLogo/NW-Extension) to create and analyze a more complex and realistic social network. 
 
 
 ## NETLOGO FEATURES
-n-of is used to split the agent population into two genders evenly.
 
 Breeds are used for the genders of turtles, as well as for distinguishing friend links from sexual partner links.
 
+n-of is used to split the agent population into two genders evenly.
+
 The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values across the population.
-
-
-
-
-  ;; The initial number of friends that an agent had (num-friends)
-  ;; is used as a maximum number of friend links to create
-  ;; Otherwise, the agents will keep making way too many friends
-  
-  ;; and if updating layout is enabled, will keep moving closer,
-  ;; and all cluster in middle of screen
 
 
 ## RELATED MODELS, CREDITS AND REFERENCES
@@ -2087,7 +2016,7 @@ AIDS
 Disease Solo
 Virus on a Network
 STI model (Lizz Bartos & Landon Basham for LS 426, Winter 2013)
-Sophia Sullivan Final Project (EECS372 Spring 11): http://modelingcommons.org/browse/one_model/3023
+[Sophia Sullivan Final Project for EECS372 Spring 11] (http://modelingcommons.org/browse/one_model/3023)
 @#$#@#$#@
 default
 true
