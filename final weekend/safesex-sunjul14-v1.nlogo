@@ -1789,9 +1789,9 @@ On each tick:
 
   * Any agent can initiate “friending” with any other agent (independent of gender) if they (and the potential friend) have not reached their maximum limit of friends and random chance permits (based on their personal/individual friendship tendency).
   * A hierarchy of friending is assumed. The probability of successfully becoming friends decreases for each of these types of potential friends:
-    * First agents look at agents within their friend group that they are not currently friends with;
+    * First agents try to choose an agent within their friend group that they are not currently linked to;
     * If there isn’t one, then they resort to choosing the closest non-linked agent.
-    * If both partners are willing to become friends, they form a [blue] friendship link.
+    * If both agents are willing to become friends, they form a [blue] friendship link.
 
 
 -- **Agents that (currently) have a sexual partner can potentially uncouple. Agents will uncouple if the length of the relationship reaches the commitment threshold for one of the partners.**
