@@ -53,7 +53,6 @@ globals
   males-symptomatic?   ;; If true, males will be symptomatic IF infected with an STI
   females-symptomatic? ;; If true, females will be symptomatic IF infected with an STI
                                  
-  
 
   ;; The next two values are the maximum value for tendency of any agent 
   ;; to make a friend or sexual partner link on a given turn. (scale 1 to 100)
@@ -74,20 +73,14 @@ globals
   avg-relationship-length ;; Average number of ticks a sexual parternship/couple will stay together (commitment)
   
   
-  ;; weighted percentage that certainty plays
-  ;; in influencing an agents likelihood to practice safe sex.... TODO *****
-  attitude-weight ;; how attitude...
-  certainty-weight ;; ....
-  justification-weight ;; ....
-  
-  certainty-delta ;; the amount that certainty increases on every tick for every agent
-                  ;; certainty increases over time, which makes it harder to change an agent's opinion
+  certainty-delta ;; the amount that certainty increases
+                  ;; whenever an agent repeats their attitude to others
+                  ;; as certainty increases, it becomes harder to change an agent's opinion
   
   justification-delta ;; the amount that justification decreases
-                            ;; every time an agent thingks they "got away" with unsafe sex
+                      ;; every time an agent thingks they "got away" with unsafe sex
  
 ]
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -98,70 +91,61 @@ globals
 
 turtles-own
 [
-  
+  ;; The percent chance a person uses protection (condoms) while in a couple
   ;; The likelihood (0 - 100%) of this agent practicing safe sex (reflects behavior)
-  ;; Likelihood is calculated through a weighted function of components of opinion/attitude????
-  ;; (attitude, certainty, justification)
-  ;; probability of a BEHAVIOR.... used to determine color (and label value)...
-  ;; shoudl just be attitude...???
-  
+  ;; Likelihood is influenced by three components:
+  ;; attitude, certainty, and justification
+
   safe-sex-likelihood
 
-  ;; ATTITUDE IS YOUR LIKELIHOOD OF PRACTICING SAFE SEX ;;safe-sex-attitude
-  ;; The percent chance a person uses protection while in a couple
-  ;; (determined by gender, slider, & normal distribution)
-  
-  ;; Used to determine likelihood-delta:  ; ***//
-  ;; how much their attitude/opinion/likelihood/whatever has changed from the last turn
+  ;; Variable used to determine how much this agent's safe sex likelihood
+  ;; has changed since the last tick
   old-safe-sex-likelihood 
   
   ;; ATTITUDE:
-  ;; The desire that an agent wants to practice/the likelihood they will practice safe sex??
-  ;; changes on ticks....
-  attitude ;;attitude ; feelings about / desire/intention to use / condoms
-  
-                      ;; certainty - likelihood/degree to which attitude changes is inversely proportional to certainty
-                      ;; 100 - certainty = likelihood/willingness to change attitude
+  ;; The intention or desire of an agent to practice safe sex (use a condom)
+  ;; Evolves over time through talking to peers, or becoming infected
+  attitude 
+                 
   
   ;; CERTAINTY:
-  ;; how emotionally attached/strongly an agent feels about their opinion/attitude
+  ;; how confidently/strongly an agent feels about their attitude
+  ;; The chance that an attitude attitude changes is inversely proportional to certainty
   certainty ;; initially set to mesosystem-condom-encouragement
-                      ;; i.e. how much their upbringing encouraged safe sex
-                      ;; might consist of parents' beliefs, life experiences, religious attitudes, etc.
+            ;; i.e. how much their upbringing encouraged safe sex
+            ;; might consist of parents' beliefs, life experiences, religious attitudes, etc.
+  
   
   ;; JUSTIFICATION:
-  ;; the logic or reasoning why they have their opinion, what they have to back up their opinion/attitude
+  ;; the logic or reasoning to rationalize having a postive attitude towards safe sex,
+  ;; which is indepdendent of how strongly they feel about it (certainty)
+  ;; or what their actual attitude is
   justification ;; initially set to the level of accurate education this agent has about safe sex and condom usage
   
-
-
+  
   had-unsafe-sex? ;; Whether this person had sex without a condom on the last tick
   
   infected? ;; If true, the person is infected (and infectious)
   known?    ;; The person is infected and knows it (due to being symptomatic)
   ;; In this model, agents that know they are infected
   ;; always use condoms to protect their sexual partners
-    ;; If an agent is not symptomatic/of a symptomatic gender,
-    ;; their known? variable never gets set to true, which 
-    ;; may enable an STI to more easily spread through a population ******
+  ;; If an agent is not symptomatic/of a symptomatic gender,
+  ;; their known? variable never gets set to true, which 
+  ;; may enable an STI to more easily spread through a population
   
-  coupled? ;; If true, the person is in a sexually active couple.
-  partner ;; The person that is our current partner in a couple.
+  coupled?      ;; If true, the person is in a sexually active couple.
+  partner       ;; The person that is our current partner in a couple.
   couple-length ;; How long the person has been in a couple.
   
   friendship-tendency ;; How likely this person is to make a new friend
   coupling-tendency   ;; How likely the person is to join a couple.
-  commitment ;; How long the person will stay in a couple/relationship.
+  commitment          ;; How long the person will stay in a couple/relationship.
   
-  
-  group-membership ; which cluster/friend group the friends and leaders are mainly part of
-                   ; but this still applies to some social butterflies - assume they have a core friend group
-                   ; in addition to more out-of-group links than others
+  group-membership ;; which clique/friend group/cluster this agent is part of
   
   num-friends ;; The number of friends that an agent wants to have
 
 ]
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -180,11 +164,11 @@ to setup
   setup-clusters ;; set up social groups/cliques
   setup-people   ;; change breeds to male/female, set individual turtle attributes
   
-  ;; By default, setup infects one random individual in the model with an STI
+  ;; By default, setup infects two random individuals in the model with an STI
   ;; but if you want to also explore spread of attitudes without an STI spreading
   ;; through the population, comment out the line below
 
-  infect-random ;; infect one random person (user can choose more, if they want)
+  infect-random ;; infect one random male and one random female
 
                
   ; To set up, don't initialize any sexual partnerships, since
@@ -199,13 +183,12 @@ end
 ;; Initialize global variables
 ;;
 to setup-globals
-
-  set attitude-weight .5
-  set certainty-weight .25
-  set justification-weight .25
   
-  set certainty-delta .1 ;; the amount certainty increases when an agent repeats their attitude
-  set justification-delta 2;10 ;; the amount justification decreases when an agent "gets away with" unsafe sex
+  ;; the amount certainty increases when an agent repeats their attitude
+  set certainty-delta .1 
+  
+  ;; the amount justification decreases when an agent thinks they "got away with" unsafe sex
+  set justification-delta 2
   
   ;; These could also be set in assign-sex-ed-level
   set no-condom-sex-ed-level 20
@@ -218,12 +201,10 @@ to setup-globals
   ;; For simplicity, use predetermined values to set these variables
   ;; (compared to AIDS model, which uses sliders) 
   
-  set max-friendship-factor 70 ;; .... edit...? 90 ********
-  set max-coupling-factor 40   ;; .... edit...? 85
-    
+  set max-friendship-factor 70
+  set max-coupling-factor 40
   set avg-friendship-tendency (max-friendship-factor / 2)
   set avg-coupling-tendency (max-coupling-factor / 2)
-  
   set avg-relationship-length 25
   
 end
@@ -358,20 +339,18 @@ to setup-people
     ;; a normal distribution based on slider or global values
     assign-normally-distributed-member-variables
     
-    ;; GET RID?? TODO
-    cap-member-variables
     
     ;; Determine how much this agent's likelihood of practicing safe sex
     ;; has changed since last tick.
     ;; (If likelihoods of all agents stop changing significantly,
     ;; the simulation will stop.)
     update-safe-sex-likelihood
-    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
-
+    set old-safe-sex-likelihood safe-sex-likelihood
+    
     
     assign-turtle-color ;; Color is determined by likelihood of practicing safe sex
-    assign-shape ;; Shape is determined by gender and sick status
-    set size 2.5 ;; Make shapes a bit easier to distinguish by increasing size
+    assign-shape        ;; Shape is determined by gender and sick status
+    set size 2.5        ;; Make shapes a bit easier to distinguish by increasing size
   ]
 end
 
@@ -400,7 +379,7 @@ end
 ;; the helper procedure RANDOM-NEAR so that individual agents variables
 ;; follow an approximately "normal" distribution around average values.
 ;;
-to assign-normally-distributed-member-variables
+to assign-normally-distributed-member-variables ;; turtle procedure
   
     ;;
     ;; The below variables will vary for each turtle, and the values
@@ -420,18 +399,21 @@ to assign-normally-distributed-member-variables
     ;; Note: Gender must be set before this is called!
     ;; Assign initial attitude towards safe sex based on gender
     ;; Attitude can change during the simulation through talking to peers
-    ;; and potentially becoming aware of contracting an STI .... TODO FIX ******
+    ;; and being aware of contracting an STI
     ifelse (is-female? self)
     [ set attitude random-near avg-female-condom-intention ]
     [ set attitude random-near avg-male-condom-intention ]
     
     ;; Assign initial certainty based on mesosystem encouragement
-    ;; Certainty increases over time naturally, never decreases in this model ****
+    ;; Certainty increases whenever an agent repeats their attitude to others
+    ;; Currently, certainty does not decrease in this model
     set certainty random-near avg-mesosystem-condom-encouragement
     
     ;; Assign initial justification based on sex ed agent received
     ;; Justification can decrease if agent thinks they "got away with" having unsafe sex
     ;; or increase if they contract an STI themselves
+    ;; Note: in this model, the justification is not justification for
+    ;; the attitude itself, but rather a justification for having safe sex
     assign-sex-ed-level
 
 end
@@ -442,7 +424,7 @@ end
 ;; based on type of sex ed the agent received.
 ;; Used to intialize the agent's justification.
 ;;
-to assign-sex-ed-level
+to assign-sex-ed-level ;; turtle procedure
   
   ;; Note: The condom-sex-ed level and no-condom-sex-ed-level are
   ;; static global values in this model for convenience. Since
@@ -463,13 +445,11 @@ to assign-sex-ed-level
 end
 
 
-
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
 ;;; Set color/shape of agents/links
 ;;;
 ;;; --------------------------------------------------------------------- ;;;
-
 
 ;;
 ;; Set shape based on gender (male or female)
@@ -505,19 +485,16 @@ end
 ;;
 to assign-turtle-color ;; turtle procedure
   
-  cap-member-variables ;; call this just in case a variable went out of accepted range
-  
-  ;update-safe-sex-likelihood ;; ---- call here or no??? no did weird things
-  
-  ;; Contemplated using the gradient extension here, but chose not to
-  ;; If there was a switch statement for netlogo,
-  ;; this could be where you'd use it
-  
+  ;; call this just in case a variable went out of accepted range
+  cap-member-variables 
+ 
   ;06C106 green - 100% likely to engage in safe sex (using a condom)
   ;FFFFFF white - 50% likely of having safe sex 
   ;C10606   red  - 0% likely to use a condom (100% likely to have unsafe sex)
  
-  if (safe-sex-likelihood >= 0)  [ set color [ 193   6   6 ] ] ;; 0-5 % - red
+  ;; If there was a switch statement for NetLogo,
+  ;; this would be where you'd use it
+  if (safe-sex-likelihood >= 0) [ set color [ 193   6   6 ] ] ;; 0-5 % - red
   if (safe-sex-likelihood > 5)  [ set color [ 198  26  26 ] ] ;; 5-10 %
   if (safe-sex-likelihood > 10) [ set color [ 204  51  51 ] ] ;; 10-15 %
   if (safe-sex-likelihood > 15) [ set color [ 210  77  77 ] ] ;; 15-20 %
@@ -527,9 +504,7 @@ to assign-turtle-color ;; turtle procedure
   if (safe-sex-likelihood > 35) [ set color [ 236 178 178 ] ] ;; 35-40 %
   if (safe-sex-likelihood > 40) [ set color [ 242 204 204 ] ] ;; 40-45 %
   if (safe-sex-likelihood > 45) [ set color [ 248 229 229 ] ] ;; 45-50 %
-  
   if (safe-sex-likelihood = 50) [ set color [ 255 255 255 ] ] ;; 50% - white
-  
   if (safe-sex-likelihood > 50) [ set color [ 229 248 229 ] ] ;; 50-55 %
   if (safe-sex-likelihood > 55) [ set color [ 204 242 204 ] ] ;; 55-60 %
   if (safe-sex-likelihood > 60) [ set color [ 178 236 178 ] ] ;; 60-65 %
@@ -584,29 +559,19 @@ to go
   ;; Stop if every single turtle is infected
   if all? turtles [infected?] [ stop ]
   
-  ;; TODO FIX *****
-  ;; if some variables arent changing any more then stop....????... 
-  ;; reach some sort of stable state?
+  ;; If all agents reach a polarized safe-sex-likelihood,
+  ;; or all agents are certain of their attitude (will not change any more)
+  ;; the model has reached a stable state, so stop
   if all? turtles [
     safe-sex-likelihood < 0.1 or
     safe-sex-likelihood > 99.9 or
     certainty > 99.9
     ] [stop]
-  ; (so sometimes the model never ends)....?? FIX
-  
-    ;; (If likelihoods of all agents stop changing significantly,
-    ;; the simulation will stop.)
+ 
  
   ;; record each agent's likelihood before interacting with others,
-   ;; and potentially getting/realizing they are infected 
-   
-  let old-likelihood 0 ;;safe-sex-likelihood ;; temporary variable due to loops for setting
-  
-  
-
-  ask turtles [ set old-likelihood safe-sex-likelihood 
-    set old-safe-sex-likelihood safe-sex-likelihood ; ***//
-    ]
+  ;; and potentially getting/realizing they are infected 
+  ask turtles [ set old-safe-sex-likelihood safe-sex-likelihood ]
   
   ask turtles
   [
@@ -616,12 +581,12 @@ to go
     
     ;; If already coupled with a sexual partner,
     ;; just increase length of relationship
-    ;; (turtles are monogamous in this simulation)
+    ;; (agents are monogamous in this simulation)
     ifelse coupled? [ set couple-length couple-length + 1 ]
     
-    ;; If they are NOT coupled, a turtle tries to find a mate
+    ;; If they are NOT coupled, agent tries to find a mate
  
-    ;; Any turtle can initiate mating if they are not coupled
+    ;; Any agent can initiate mating if they are not coupled
     ;; (and random chance permits)
     [ if (random-float max-coupling-factor < coupling-tendency) [ couple ] ]
   ]
@@ -629,18 +594,18 @@ to go
   ;; give everyone (coupled or not) a chance to make a friend
   ask turtles
   [
-    ;; everyone should attempt to make friends on each tick as well
-    ;; because otherwise, all the sexual partner links break
-    ;; then it becomes single-sex clusters and nothing cool happens
-    
-    ;; If this agent already has reached their maximum limit of friends,
-    ;; don't try to create any more friend links
+    ;; Everyone should attempt to make friends because otherwise,
+    ;; the sexual partner links break and agents end up 
+    ;; only being friends with agents of the same sex
     
     ;; If this agent has not reached their maximum limit of friends,
     ;; try to make a friend / create a friend link
     if ( (count friend-neighbors < num-friends) and
          random-float max-friendship-factor < friendship-tendency )
     [ make-friends ]
+    
+    ;; If this agent already has reached their maximum limit of friends,
+    ;; don't try to create any more friend links
   ]
   
   ;; Agents will uncouple if the length of the relationship reaches
@@ -655,8 +620,6 @@ to go
   ;; of spreading an STI if they have unprotected sex.
   ask turtles [ have-sex ]
   
-  
-  ;; TODO: FIGURE OUT BEST PLACE TO PUT THIS *****
   ;; In order to best simulate that STIs may not present symptoms immediately,
   ;; don't check if infected (known determined by being symptomatic)
   ;; until after talking to friends about attitude and having sex
@@ -664,27 +627,12 @@ to go
   
   ask turtles
   [ 
-    ;cap-member-variables ; make sure no variables got set to < 0 or > 100
-    ;; TODO: STILL NECESSARY?!?!
-    
     update-safe-sex-likelihood
-    
     assign-turtle-color ;; based on safe-sex-likelihood
   ]
-  
-      ;; likelihood can be changed by both the talk-to-peers and check-infected functions
-  ;ask turtles [ set likelihood-delta (safe-sex-likelihood - old-likelihood) 
-  ;  set likelihood-delta (safe-sex-likelihood - old-safe-sex-likelihood)
-  ;  ];; new - old]
 
   tick
 end
-
-;;; --------------------------------------------------------------------- ;;;
-
-
-
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -694,77 +642,29 @@ end
 ;;
 to update-safe-sex-likelihood
   
-  ;; cap variables just in case...???  ;; NECESSARY?!?!!? *****
-  cap-member-variables ; make sure no variables got set to < 0 or > 100
- 
-  
   ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)
   ;; is determined by a combination of the agent's:
   ;;   - attitude (desire)
-  ;;   - justification (knowledgeable background/logical reasoning for attitude)
+  ;;   - justification (knowledgeable background/logical reasoning for safe sex attitude)
   
-  ;; Certainty (confidence in opinion/attitude) only impacts how likely
-  ;; an agent is to change their attitude, and doesn't directly impact
-  ;; likelihood calculation itself
-  
-  ;temp-certainty * certainty-weight1 +
-  ;let certainty-weight1 .25
-  
-  ;; Likelihood is strongly weighted to..... *** previous attitude (likelihood...??)
-  let attitude-weight1 .75 ; was .5 before, but certainty doesnt count
-  let justification-weight1 .25
-  
-
-;; DOES THIS ACCOUNT FOR JUSTIFICATION DECREASING??
-
-  set safe-sex-likelihood (attitude * attitude-weight1 + justification * justification-weight1 )
- 
- 
- 
-  
-  ;; Certainty impacts how resistant an agent is to change their attitude
-  ;; when talking to others, and how many others the agent interacts with
   ;; Certainty is assumed to be independent of attitude value itself,
   ;; even when the attitude is polarized (close to 100 or close to 0)
-  
-  ;; need to take into account whether the certainty (and attitude!)
-  ;; is over 50 or under 50
-  ;; what about 50 exactly...?? *****
-  
-  
-  ;; In order to better deal with positives/negatives,
-  ;; temporarily subtract 50 from all values
-  ;let temp-attitude (attitude - 50)
-  ;let temp-certainty (certainty - 50)
-  ;let temp-justification (justification - 50)
-  
-  ;set old-safe-sex-likelihood safe-sex-likelihood
-  
-  ;; from old version jun 8 or something
-  ;set safe-sex-likelihood (
-  ;  ( temp-attitude * attitude-weight1 +
-  ;  ;temp-certainty * certainty-weight1 +
-  ;  temp-justification * justification-weight1 )
-  ;  + 50 )
-  
-  
-  
-  
-  ;; ******* Jason added, not sure about it **********
-  ;; ******* Jason added, not sure about it ********** oh it's wrong
-  ; WRONG
- ; set safe-sex-likelihood ((attitude / 100) * (certainty / 100) * 100 - 10)   
- 
-  ;; ******* Jason added, not sure about it **********
-  ;; ******* Jason added, not sure about it ********** 
+  ;; Certainty impacts how resistant an agent is to change their attitude
+  ;; when talking to others, and how many others the agent interacts with,
+  ;; but doesn't directly impact likelihood calculation.
 
-; pretty sure this is called elsewhere or on every tick anyway
-;assign-turtle-color ; based on safe-sex-likelihood
+  ;; cap variables just in case
+  cap-member-variables ; make sure no variables got set to < 0 or > 100
+  
+  ;; Likelihood is strongly weighted by attitude
+  let attitude-weight .75
+  let justification-weight .25
+  
+  set safe-sex-likelihood (attitude * attitude-weight + justification * justification-weight)
 
 end
 
-;;---------------------------------------------------------------------
-;;
+
 ;;
 ;; Make sure the member variables don't exceed 100
 ;;
@@ -780,43 +680,38 @@ to cap-member-variables ;; turtle procedure
 end  
 
 
-
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
 ;;; SPREAD ATTITUDES
 ;;;
 ;;; --------------------------------------------------------------------- ;;;
 
-
 ;;
 ;; Agent interacts with its friends (and sexual partner, if any)
 ;; and potentially alters its personal likelihood of practicing safe sex
 ;;
 to talk-to-peers ;; turtle procedure
-
-
-  let convoCount 0
-  ;;( count my-friends )... should they ALWAYS talk to partner too? or just generic? TODO ******
   
   ;; Use certainty to determine how many links this agent talks to per tick
   ;; The more certain a person is in their attitude,
   ;; the more likely they are to discuss it with their peers/links.
   
-  ;; NOTE: These "conversations"/"interactions" are one-directional in this model!! *****
+  let convoCount 0
+  
+  ;; NOTE: These "conversations"/"interactions" are one-directional in this model.
+  ;; Additionally, an agent is not guaranteed to talk to their sexual partner
   while [ convoCount < ( certainty / 100 ) * ( count my-links ) ] 
-    [
+  [
       
       let peer one-of link-neighbors ;; friends or sexual partner, if any
       if (peer != nobody)
       [
         ;; An agent grows more certain of their attitude
         ;; (regardless of what that attitude actually is)
-        ;; every time they express it to someone else ... (repeated expression)****
+        ;; every time they express it to someone else (repeated expression)
           
         set certainty certainty + certainty-delta
-         
-        ;; In order to ...soemthing... account for polarity/extremity of attitude?
-        ;; subtract 50 from it to aid in the calculations/make calcuations right
+        
         
         ;; A person's certainty impacts how likely they are to change their attitude.
         ;; An agent with higher certainty is more resistent to changing their attitude.
@@ -824,7 +719,7 @@ to talk-to-peers ;; turtle procedure
         
         let attitude-change-chance ( (100 - certainty) / 100 )
         
-        
+
         ;; However, an agent doesn't care about how confident their peer
         ;; feels about his/her attitude (their certainty), s/he only cares about
         ;; what reasoning they have to back up their attitude (justification).
@@ -834,62 +729,33 @@ to talk-to-peers ;; turtle procedure
         let peer-persuasion-chance ( [justification] of peer / 100 )
         
         
+        ;; Constants for dampening and getting desired reactions
+        ;; calculated through tinkering with Excel formulas
         let scale-factor 10 
-        
-        ;; a dampening constant????
         let c 0.5
-          
         
-        ;; Your (this agent's) attitude scaled down to be between
+          
+        ;; In order to account for polarity/extremity of attitude
+        ;; subtract 50 from it to aid in the calculations
+        ;; So "your" (this agent's) attitude scaled down to be between
             ;; -50 (very anti safe sex)
             ;; to 0 (neutral)
-            ;; to 50 (very pro safe sex)
-            ;; and divide by 10 because.....??????
-        
+            ;; to 50 (very pro safe sex)   
             
         let my-attitude-scaled ( (attitude - 50) / scale-factor )
         let peer-attitude-scaled ( ([attitude] of peer - 50) / scale-factor )
-        
-        ;; 10000 is 10 * 10 * 10, account for scaling above
         let temp-var ( my-attitude-scaled * my-attitude-scaled * peer-attitude-scaled / (scale-factor ^ 3) ) 
         
         let attitude-change ( c * attitude-change-chance * peer-persuasion-chance * temp-var)
         
         set attitude attitude + attitude-change
-            
-          
-          
-          ; The amount of change is weighted by the....
-          ; and the difference in attitudes between the friend and one of their link neighbors.... still counts???
-          
-    
-          ;; near each other and one same side (above or below 50)
-          ;; SHOULD give small boost to certainty
-          
-                             
-          
-          
-          ;; ******* Jason added, not sure about it **********
-          ;; ******* Jason added, not sure about it **********
-   
-           ;; one part of attitude changing, through communication with peers,
-          ;; is update own justifications
-          ;set justification justification + [justification / 100] of peer
-          
-          ;; ******* Jason added, not sure about it **********
-          ;; ******* Jason added, not sure about it **********
-          
-          
-          ;set attitude (attitude + attitudeChange * .1)
-          
-          ;; should i update after talking to every person??? *******
-          ;; its just a function of the otehr values, so dont htink it matters
-          ;update-safe-sex-likelihood
       ]
+      
       set convoCount convoCount + 1
-    ]
-    
-    update-safe-sex-likelihood ;; update personal likelihood based on talking to peers
+  ]
+  
+    ;; update personal likelihood based on talking to peers
+    update-safe-sex-likelihood 
   
 end
 
@@ -901,58 +767,29 @@ end
 ;;; --------------------------------------------------------------------- ;;;
 
 ;;
-;; Only turtles with sexual partners (coupled) can spread an STI
+;; Only agents with sexual partners (coupled) can spread an STI
 ;;
 ;;
 to have-sex ;; turtle procedure (only for coupled turtles)
   
-    ;; limitations:
-    ;; doesnt account for if some people have a all safe sex always policy
-    ;; doesnt account for potential conversation at mating which may influence opinion or relationship
-    ;; possibly using protection could improve your attitude towards it?
-  
-
-  ;ask turtles with [is-female? self and coupled?]
-  ;; only ask one gender of a couple, so that this isn't called twice per tick???
-  ;; or no, because want each turtle to try mating on each tick incase one is infected and other not??
-  
   
   ask turtles with [coupled?]
   [
-    ;; ******
-    
-    ;; Since this model simulates sexual relations between a male and a female,
-    ;; only one of the partner's desire to use a condom must be strong enough
-    ;; to make sure the couple has safe sex
-    
-    
     ;; Infection can occur if either person is infected, but the infection is unknown.
     ;; This model assumes that people with known infections will continue to couple,
-    ;; but will automatically practice safe sex, regardless of their condom-use tendency.
-    
-    
-    ;; include an extra check / override check?
-    ;; if (infected? and known?) or --> have safe sex
-   
-    ;; ******
-   
-    ;; Note also that for condom use to occur, both people must want to use one.
-    ;; If either person chooses not to use a condom, infection is possible.
-    ;; Changing the primitive in the ifelse statement to AND (instead of OR) will make it
-    ;; so if either person wants to use a condom, infection will not occur.
-    
-    ;; Since this model deals with male/female couples,
-    ;; extensions might choose to modify this.
+    ;; but will always practice safe sex.
 
+    ;; This model simulates sexual relations between a male and a female,
+    ;; so I decided that only one of the partner's desire to use a condom
+    ;; must be strong enough to make sure the couple has safe sex.
     
+    ;; Extensions/modifications may choose to change this so that
+    ;; for condom use to occur, BOTH people must want to use one.
+    ;; This can be done by changing the primitive after the
+    ;; second grouped condition of the ifelse statement from AND to OR
 
-
-    
-    ;; need to check this logic....... ****
-    ;; If neither parter is aware they are infected.... **
-    ;;.......
     ifelse ( (not known? and [not known?] of partner) and
-             (random-float 100 > safe-sex-likelihood) AND   ;; Optional: change this to or for both people having tow ant to use condom *****
+             (random-float 100 > safe-sex-likelihood) AND   ;; Optional: change this to or for both people to have to want to use a condom
              (random-float 100 > ([safe-sex-likelihood] of partner))
            ) 
     [
@@ -960,13 +797,12 @@ to have-sex ;; turtle procedure (only for coupled turtles)
       set had-unsafe-sex? true
       ask partner [ set had-unsafe-sex? true ]
       
-      ;; since the sex should only occur once in a tick,.....??? ***
-      ;; should just have one probability of it being passed in a tick 
+      ;; They had unprotected sex, so infection is possible...
       if (random-float 100 < infection-chance)
       [
         ;; Spread virus between an infected and non-infected coupled partner duo
         if (infected?) [ ask partner [ become-infected ] ]
-        if ([infected?] of partner) [ become-infected ] ;; not sure if i need this if both agents call this on each tick..... ****
+        if ([infected?] of partner) [ become-infected ]
       ]
     ]
     [
@@ -979,13 +815,9 @@ to have-sex ;; turtle procedure (only for coupled turtles)
       ;; This could be modified in extensions to be more realistic and
       ;; account for factors like incorrect/inconsistent condom usage,
       ;; condom failure, or STIs passed through other means.
-      
-      ;; extension - every time have sex with infected increase certainty when dont get infected TODO
     ]
   ]
 end
-
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -1048,7 +880,6 @@ to make-friends ;; turtle procedure
 end
 
 
-
 ;;; --------------------------------------------------------------------- ;;;
 ;;;
 ;;; COUPLING/UNCOUPLING PROCEDURES
@@ -1056,16 +887,17 @@ end
 ;;; --------------------------------------------------------------------- ;;;
 
 ;;
-;; People might couple depending on their gender, their tendency to couple,
+;; Agents might couple depending on their gender, their tendency to couple,
 ;; and if they are already friends/in same clique/nearby a potential single mate
 ;;
-           ;; ----- Try to find a valid partner ----- ;;
-           ;; 1) try existing friend link of opposite sex
-           ;; 2) try opposite sex within friend group, but not a current link
-           ;; 3) try a nearby opposite sex person as a last resort
-           ;; (probability of successful coupling decreases for last 2 options)
+;; ----- Try to find a valid partner ----- ;;
+;; 1) try existing friend link of opposite sex
+;; 2) try opposite sex within friend group, but not a current link
+;; 3) try a nearby opposite sex person as a last resort
+;; (probability of successful coupling decreases for last 2 options)
 ;;
-to couple ;; turtle procedure
+to couple ;; turtle procedure (single turtles only)
+  ;; all my single turtles, now put your hands UP
   
   ;; This agent's clique (social/friend group) id
   let groupID group-membership
@@ -1172,7 +1004,7 @@ end
 ;; If two persons are together for longer than either person's
 ;; commitment variable allows, the couple breaks up.
 ;;
-to uncouple ;; turtle procedure
+to uncouple ;; turtle procedure (coupled turtles only)
   if coupled?
   [
     if (couple-length > commitment) or
@@ -1182,7 +1014,7 @@ to uncouple ;; turtle procedure
         ;; assume they don't go back to being friends
         ask sexual-partner-with partner [die]
         
-        ;; but if you wanted them to "just be friends"... uncomment below
+        ;; but if you wanted them to "just be friends"... uncomment line below
         ;create-friend-with partner [ assign-link-color]
         
         set coupled? false
@@ -1197,7 +1029,6 @@ to uncouple ;; turtle procedure
       ]
   ]
 end
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -1294,16 +1125,13 @@ end
 ;;---------------------------------------------------------------------
 ;;
 ;; Turtle checks for signs of infection (symptoms)
-;; Don't want check-infect and become-infected to happen on same tick
+;; Ideally don't want check-infect and become-infected happening on same tick
 ;; --> not realistic, std symptoms don't instantly show up
-;;
 ;; Otherwise, if not symptomatic, don't change their known? variable
 ;;
 
 to check-infected
-  
-  ;; DOES THE LOGIC HERE INTERFERE WITH WHEN THE CHECK-INFECTED IS CALLED???
-  
+ 
   ;; Justification decreases when an agent thinks they had unsafe sex 
   ;; and observes no negative consequences (i.e. didn't contract an STI,
   ;; or doesn't feel symptoms, regardless of whether s/he is actually infected).
@@ -1315,35 +1143,25 @@ to check-infected
   [ set justification (justification - justification-delta) ]
 
     
-  ;; ***********
-  ;; What if they had safe sex, and didn't get infected.
-  ;; That should be some (small) evidence to the benefits
-  ;; of protection and increase their justification, if only slightly
-  ;; ***********
-  
   ;; If an agent is infected and realizes it (due to being symptomatic)
   ;; Their likelihood of practicing safe sex increases significantly,
-  ;; due to.... **** TODO
+  ;; since we assume that agents are not malicious and intentionally infecting others
   
   if ((infected? and not known?) and
     ((is-male? self and males-symptomatic?) or
     (is-female? self and females-symptomatic?)))
   [
-    ;; *********** FIX ME ............
     set known? true
     set justification 100 ;; after getting an std, turtles always want to have safe sex - logical reason
+    ;; direct experience is always more powerful at changing attitude than just talking about it
     set attitude 100 ;; also set their attitude towards safe sex to 100% positive
   ]
   
-  update-safe-sex-likelihood ; not sure if comment out or not
-  assign-turtle-color ;; pretty sure this is already called in go so dont need to
+  update-safe-sex-likelihood 
+  assign-turtle-color
   assign-shape ;; color of dot changes based on whether the agent knows they are infected
 
 end
-
-
-
-
 
 
 ;;; --------------------------------------------------------------------- ;;;
@@ -1374,7 +1192,6 @@ to-report %M-infected
   [ report 100 * count males with [infected?] / count males]
   [ report 0 ]
 end
-
 
 
 ;; ----- Reporters for safe-sex-attitude measures ----- ;;
@@ -1525,9 +1342,9 @@ weeks
 
 BUTTON
 430
-295
+290
 575
-328
+323
 setup
 setup
 NIL
@@ -1562,9 +1379,9 @@ PENS
 
 BUTTON
 415
-255
+250
 485
-288
+283
 NIL
 select
 T
@@ -1579,19 +1396,19 @@ NIL
 
 TEXTBOX
 420
-235
+230
 580
-253
+248
 Select a person to have an STI
 11
 0.0
 1
 
 TEXTBOX
-10
-235
-315
-280
+40
+230
+345
+275
 Certainty: How confident an agent feels in their atittude.\nMay be influenced by parental involvement, religious background, etc.
 11
 0.0
@@ -1599,9 +1416,9 @@ Certainty: How confident an agent feels in their atittude.\nMay be influenced by
 
 BUTTON
 490
-255
+250
 585
-288
+283
 NIL
 infect-random
 NIL
@@ -1616,9 +1433,9 @@ NIL
 
 CHOOSER
 415
-180
+175
 580
-225
+220
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
@@ -1656,9 +1473,9 @@ HORIZONTAL
 
 SLIDER
 415
-140
+135
 580
-173
+168
 infection-chance
 infection-chance
 0
@@ -1686,9 +1503,9 @@ HORIZONTAL
 
 BUTTON
 430
-335
+330
 500
-375
+370
 go-once
 go
 NIL
@@ -1703,9 +1520,9 @@ NIL
 
 BUTTON
 505
-335
+330
 575
-375
+370
 NIL
 go
 T
@@ -1719,10 +1536,10 @@ NIL
 1
 
 SLIDER
-10
-160
-220
-193
+40
+155
+250
+188
 avg-male-condom-intention
 avg-male-condom-intention
 0
@@ -1734,10 +1551,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-10
-195
-220
-228
+40
+190
+250
+223
 avg-female-condom-intention
 avg-female-condom-intention
 0
@@ -1749,10 +1566,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-10
-280
-285
-313
+40
+275
+315
+308
 avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
@@ -1764,10 +1581,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-10
-145
-250
-163
+40
+140
+280
+158
 Attitude: Intention/desire to use a condom
 11
 0.0
@@ -1775,9 +1592,9 @@ Attitude: Intention/desire to use a condom
 
 TEXTBOX
 450
-115
+110
 585
-133
+128
 STI characteristics
 11
 0.0
@@ -1814,10 +1631,10 @@ Parameters to initialize a social network, consisting of discrete social groups 
 1
 
 TEXTBOX
-10
-315
-320
-390
+40
+310
+350
+385
 Justification: The level of logical reasoning an agent has to rationalize their attitude towards safe sex.\nReceiving sex ed including condom usage increases accurate knowledge about safe sex practices and benefits.
 11
 0.0
@@ -1858,10 +1675,10 @@ PENS
 "F Justification" 1.0 0 -2064490 true "" "plot avg-female-justification"
 
 SLIDER
-10
-390
-227
-423
+40
+385
+257
+418
 %-receive-condom-sex-ed
 %-receive-condom-sex-ed
 0
@@ -1873,9 +1690,9 @@ NIL
 HORIZONTAL
 
 SWITCH
-440
+445
 385
-565
+570
 418
 show-labels?
 show-labels?
@@ -1913,19 +1730,19 @@ PENS
 "F" 10.0 1 -2064490 true "" "histogram [safe-sex-likelihood] of females"
 
 TEXTBOX
-35
-120
-230
-138
+65
+115
+260
+133
 Safe Sex Likelihood Components
 11
 0.0
 1
 
 TEXTBOX
-270
+280
 390
-435
+445
 425
 Shows the exact likelihood of an agent engaging in safe sex.
 11
