@@ -1886,19 +1886,11 @@ Virus on a Network
 
 ## CREDITS AND REFERENCES
 
+Tormala, Z. L., & Rucker, D. D. (2007). Attitude Certainty: A Review of Past Findings and Emerging Perspectives. Social and Personality Psychology Compass, 1(1), 469–492. doi:10.1111/j.1751-9004.2007.00025.x
+
 NetLogo Models not from the Models Library:
 STI model (Lizz Bartos & Landon Basham for LS 426, Winter 2013)
 [Sophia Sullivan Final Project for EECS372 Spring 11] (http://modelingcommons.org/browse/one_model/3023)
-
-
-
-TODO....
-
-For non-Netlogo models that are related, put links or citations in the CREDITS AND REFERENCES section.
-
-
-CREDITS AND REFERENCES
-If the model is based on published sources (or web sites), it's good to include the reference (or URL) information here.
 @#$#@#$#@
 default
 true
