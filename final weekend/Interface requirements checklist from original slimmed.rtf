@@ -1,0 +1,138 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue51;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 --------------------------------------------------------------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b \cf0 *** proofread for spelling/grammar!! - not built into netlogo
+\b0 \
+\
+*** avoid netlogo jargon except for on info tab netlogo features section --> assume no familiarity with programmming in netlogo - 
+\b don't say turtles 
+\b0 when you could say people!!!\
+\
+	\
+\
+\
+
+\b \cb2 \ul INTERFACE/FORMATTING REQUIREMENTS abbreviated CHECKLIST
+\b0 \cb1 \ulnone \
+\
+Interface tab Layout\
+	\uc0\u8259 	2d view on top right\
+	\uc0\u8259 	widgets have a little extra room for text\
+	\uc0\u8259 	not too many decimal places\
+	\uc0\u8259 	Vertically, settings that only affect SETUP should come first, followed by SETUP and GO, followed by settings that are OK to change while the model is running. The idea is to put the controls in the same order the user will use them.\
+\
+\
+Sliders\
+	\uc0\u8259 	Slider units & ranges, \
+	\uc0\u8259 	Use the "units" slot in sliders if appropriate to indicate what units the slider values are in. The slider MIN, MAX, and STEP fields should be set to reasonable choices. Also, make sure the default slider settings are sensible (and match what is described in the info tab, if slider settings are discussed there). \
+	\uc0\u8259 	add units to sliders	\
+	\uc0\u8259 	make sure min, max, step fields are reasonable on sliders\
+\
+\
+NAMING stuff\
+	\uc0\u8259 	all shapes need names\
+	\uc0\u8259 	naming-convention-like-this\
+	\uc0\u8259 	switch-on-grow-grass? - booleans end in ?s\
+	\uc0\u8259 	user-message when things go wrong\
+	\uc0\u8259 	patch size whole #s\
+	\uc0\u8259 	world wrapping yay or nay\
+\
+CODE\
+	\uc0\u8259 	procedure order: setup, go, supporting, plotting\
+	\uc0\u8259 	identify type of procedure to move ;; turtle procedure fd 1 - be breed specific\
+	\uc0\u8259 	The code should be as easy to read as possible.\
+\
+	\uc0\u8259 	Remember to check any included BehaviorSpace experiments to make sure they still run. This is important because you may have changed the names of some of your sliders, etc, and the experiments will still have the outdated names.\
+\
+\
+  The visualization of your agent-based model is very important, as it allows people to watch the process unfold. Clear and informative visualizations can aid in viewer understanding of both agent rules and aggregate-level behavior. In particular, you may want your visualization to emphasize important trends in your model's behavior. Some model's visualizations are more straightforward than others. Often, making a really good model visualization can be a true challenge, requiring careful (and sometimes creative) use of the agents' shapes, sizes, colors, and orientations. It is also often important to display aggregate-level metrics in the form of line plots or histograms, while your model is running. For more information about how to create good visualizations for agent-based models, please see http://ccl.northwestern.edu/~dkor/Tutorial/index.htm and/or http://jasss.soc.surrey.ac.uk/12/2/1.html.\
+\
+\
+--------------------------------------------------------------------------------------------\
+\
+
+\b \cb2 \ul INFO TAB REQUIREMENTS CHECKLIST
+\b0 \cb1 \ulnone \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640
+\cf0 There should be two blank lines between sections.\
+\
+\
+
+\b \ul WHAT IS IT?
+\b0 \ulnone \uc0\u8232 This section should give a general understanding of what the model is trying to explain or show.\
+The first paragraph of WHAT IS IT? should be a concise summary of what the model is about. Like the abstract of an academic paper, this first paragraph should be able to stand on its own as a brief and self- contained description of the model.\
+\
+\
+
+\b \ul HOW IT WORKS
+\b0 \ulnone \uc0\u8232 This section should explain what rules the agents use to create the overall behavior of the model.\
+HOW IT WORKS is about how the model works abstractly, not about how the actual concrete code works. It should explain the rules of the model without referring to programming concepts or the contents of the procedures tab.\
+\
+\
+
+\b \ul HOW TO USE IT
+\b0 \ulnone \uc0\u8232 This section should explain how to use the model, including a description of each of the widgets in the Interface Tab.\
+If the Interface tab is especially complicated, the HOW TO USE IT section could get quite long. If a lot of the stuff in the Interface tab is optional or obscure, you might want to postpone describing that stuff until THINGS TO TRY, in order not to break the overall readability and flow of the info tab. (If you do this, do put a sentence in HOW TO USE IT saying "Some additional options are described below under THINGS TO TRY.")\
+\
+\
+
+\b \ul THINGS TO NOTICE
+\b0 \ulnone \uc0\u8232 This section should give some ideas of things for the user to notice while running the model.\
+\
+
+\i\b The distinction between THINGS TO NOTICE and THINGS TO TRY isn't always obvious. Usually THINGS TO NOTICE are things you can easily notice on the default settings (or with only easy, minor settings changes). THINGS TO NOTICE gets you hooked, THINGS TO TRY involves digging deeper.
+\i0\b0 \
+\
+\
+
+\b \ul THINGS TO TRY
+\b0 \ulnone \uc0\u8232 This section should give some ideas of things for the user to try to do (move sliders, switches, etc.) with the model.\
+\
+\
+
+\i\b Nothing in THINGS TO NOTICE or THINGS TO TRY should require any programming. Those kinds of suggestions go in EXTENDING THE MODEL.
+\i0\b0 \
+\
+\
+
+\b \ul EXTENDING THE MODEL
+\b0 \ulnone \uc0\u8232 This section should give some ideas of things to write in the Procedures Tab to make the model more complicated, detailed, accurate to life, etc.\
+\
+\
+\
+
+\b \ul NETLOGO FEATURES
+\b0 \ulnone \uc0\u8232 This section should point out any especially interesting or unusual features of NetLogo that the model makes use of, particularly in the Procedures tab. It might also point out places where workarounds were needed because of missing features.\
+\
+\
+
+\b \ul RELATED MODELS
+\b0 \ulnone \uc0\u8232 This section should give the names of related models in the Models Library.\
+RELATED MODELS should give the names of a few other NetLogo models that are similar to the one you created. \
+\
+
+\i\b For non-Netlogo models that are related, put links or citations in the CREDITS AND REFERENCES section.
+\i0\b0 \
+\
+\
+
+\b \ul CREDITS AND REFERENCES
+\b0 \ulnone \
+If the model is based on published sources (or web sites), it's good to include the reference (or URL) information here.\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+\
+}

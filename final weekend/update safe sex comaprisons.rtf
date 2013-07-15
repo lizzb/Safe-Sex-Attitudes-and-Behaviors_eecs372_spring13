@@ -1,0 +1,45 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red154\green154\blue154;\red218\green254\blue198;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 to update-safe-sex-likelihood\
+  \
+  let attitude-weight1 .5\
+  let certainty-weight1 .25\
+  let justification-weight1 .25\
+\
+  ;set attitude (attitude * attitude-weight + justification * justification-weight + certainty * certainty-weight)\
+  \
+  \
+  \
+  ;; in order to better deal with positives/negatives, temporarily subtract 50 from all values\
+  let temp-attitude (attitude - 50)\
+  let temp-certainty (certainty - 50)\
+  let temp-justification (justification - 50)\
+  \
+\cf2 ;  set attitude ( temp-attitude * attitude-weight +\
+;                 temp-justification * justification-weight +\
+;                 temp-certainty * certainty-weight )\cf0 \
+\
+  let old-likelihood safe-sex-likelihood\
+  \
+  \
+\cf2   ;set attitude (( temp-attitude * attitude-weight1 +\cf0 \
+  set safe-sex-likelihood (( temp-attitude * attitude-weight1 +\
+                           \cf2  ;temp-certainty * certainty-weight1 +\cf0 \
+                            temp-justification * justification-weight1 ) + 50)\
+                            \
+  \
+  assign-turtle-color ;; based on safe-sex-likelihood\
+end\
+\
+
+\b Jason's wrong equation
+\b0 \
+\pard\pardeftab720
+
+\f1 \cf0 \cb3 set safe-sex-likelihood ((attitude / 100) * (certainty / 100) * 100 - 10) 
+\f0 \cb1 \
+}
