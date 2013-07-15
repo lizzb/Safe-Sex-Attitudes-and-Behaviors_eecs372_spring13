@@ -566,7 +566,7 @@ to assign-link-color ;; link procedure
     [ set color blue]
     [ set color magenta]
     
-  set thickness .15 ; make the link a bit easier to see
+  set thickness .16 ; make the link a bit easier to see
 end
 
 
@@ -697,23 +697,30 @@ end
 ;;
 to update-safe-sex-likelihood
   
-  ;; cap variables just in case...???
+  ;; cap variables just in case...???  ;; NECESSARY?!?!!? *****
   cap-member-variables ; make sure no variables got set to < 0 or > 100
-  ;; NECESSARY?!?!!? *****
+ 
   
   ;; The likelihood of an agent engaging in safe sex behaviors (using a condom)
   ;; is determined by a combination of the agent's:
   ;;   - attitude (desire)
-  ;;   - certainty (confidence in opinion/attitude)
   ;;   - justification (knowledgeable background/logical reasoning for attitude)
   
-  ;; Likelihood is strongly weighted to.....
-  ;;*** previous attitude (likelihood...??)
+  ;; Certainty (confidence in opinion/attitude) only impacts how likely
+  ;; an agent is to change their attitude, and doesn't directly impact
+  ;; likelihood calculation itself
   
+  ;temp-certainty * certainty-weight1 +
+  ;let certainty-weight1 .25
+  
+  ;; Likelihood is strongly weighted to..... *** previous attitude (likelihood...??)
   let attitude-weight1 .75 ; was .5 before, but certainty doesnt count
-  let certainty-weight1 .25
   let justification-weight1 .25
+  
 
+;; DOES THIS ACCOUNT FOR JUSTIFICATION DECREASING??
+
+  set safe-sex-likelihood (attitude * attitude-weight1 + justification * justification-weight1 )
  
  
  
@@ -730,18 +737,18 @@ to update-safe-sex-likelihood
   
   ;; In order to better deal with positives/negatives,
   ;; temporarily subtract 50 from all values
-  let temp-attitude (attitude - 50)
-  let temp-certainty (certainty - 50)
-  let temp-justification (justification - 50)
+  ;let temp-attitude (attitude - 50)
+  ;let temp-certainty (certainty - 50)
+  ;let temp-justification (justification - 50)
   
   ;set old-safe-sex-likelihood safe-sex-likelihood
   
   ;; from old version jun 8 or something
-  set safe-sex-likelihood (
-    ( temp-attitude * attitude-weight1 +
-    ;temp-certainty * certainty-weight1 +
-    temp-justification * justification-weight1 )
-    + 50 )
+  ;set safe-sex-likelihood (
+  ;  ( temp-attitude * attitude-weight1 +
+  ;  ;temp-certainty * certainty-weight1 +
+  ;  temp-justification * justification-weight1 )
+  ;  + 50 )
   
   
   
@@ -792,55 +799,83 @@ to talk-to-peers ;; turtle procedure
 
 
   let convoCount 0
-  ;;( count my-friends )... should they ALWAYS talk to partner too?
-  ;; or just generic? TODO ******
+  ;;( count my-friends )... should they ALWAYS talk to partner too? or just generic? TODO ******
   
   ;; Use certainty to determine how many links this agent talks to per tick
   ;; The more certain a person is in their attitude,
   ;; the more likely they are to discuss it with their peers/links.
   
-  ;; NOTE: These "conversations"/"interactions" are one-directional in this model
+  ;; NOTE: These "conversations"/"interactions" are one-directional in this model!! *****
   while [ convoCount < ( certainty / 100 ) * ( count my-links ) ] 
     [
       
       let peer one-of link-neighbors ;; friends or sexual partner, if any
       if (peer != nobody)
       [
+        ;; An agent grows more certain of their attitude
+        ;; (regardless of what that attitude actually is)
+        ;; every time they express it to someone else ... (repeated expression)****
+          
+        set certainty certainty + certainty-delta
          
-          ;; FIX ***************************
-          ;; what words? attitude? certainty? justification?
-
-          ;; A person's certainty impacts how likely they are to change their attitude.
-          ;; An agent with higher certainty is more resistent to changing their attitude.
-          ;; (100 - certainty) is how likely an agent is to adjust their attitude.
+        ;; In order to ...soemthing... account for polarity/extremity of attitude?
+        ;; subtract 50 from it to aid in the calculations/make calcuations right
+        
+        ;; A person's certainty impacts how likely they are to change their attitude.
+        ;; An agent with higher certainty is more resistent to changing their attitude.
+        ;; (100 - certainty) is how likely an agent is to adjust their attitude.
+        
+        let attitude-change-chance ( (100 - certainty) / 100 )
+        
+        
+        ;; However, an agent doesn't care about how confident their peer
+        ;; feels about his/her attitude (their certainty), s/he only cares about
+        ;; what reasoning they have to back up their attitude (justification).
+        ;; So if the peer has strong justification of their attitude, 
+        ;; the agent is more likely to be swayed
+        
+        let peer-persuasion-chance ( [justification] of peer / 100 )
+        
+        
+        let scale-factor 10 
+        
+        ;; a dampening constant????
+        let c 0.5
           
-          ;; However, an agent doesn't care about how confident their peer
-          ;; feels about his/her attitude (certainty), s/he only cares about
-          ;; what reasoning they have to back up their attitude (justification).
-          
-          
-          ;; An agent grows more certain of their attitude
-          ;; (regardless of what that attitude actually is)
-          ;; over time ..... every time they express it to someone else ...****
-          
-          set certainty certainty + certainty-delta
+        
+        ;; Your (this agent's) attitude scaled down to be between
+            ;; -50 (very anti safe sex)
+            ;; to 0 (neutral)
+            ;; to 50 (very pro safe sex)
+            ;; and divide by 10 because.....??????
+        
+            
+        let my-attitude-scaled ( (attitude - 50) / scale-factor )
+        let peer-attitude-scaled ( ([attitude] of peer - 50) / scale-factor )
+        
+        ;; 10000 is 10 * 10 * 10, account for scaling above
+        let temp-var ( my-attitude-scaled * my-attitude-scaled * peer-attitude-scaled / (scale-factor ^ 3) ) 
+        
+        let attitude-change ( c * attitude-change-chance * peer-persuasion-chance * temp-var)
+        
+        set attitude attitude + attitude-change
+            
           
           
           ; The amount of change is weighted by the....
-          ; and the difference in attitudes between the friend and one of their link neighbors
+          ; and the difference in attitudes between the friend and one of their link neighbors.... still counts???
           
     
           ;; near each other and one same side (above or below 50)
           ;; SHOULD give small boost to certainty
           
                              
-          let attitudeChange ((100 - certainty) / 100 ) * ([attitude] of peer - attitude)
-                               * (justification / 100) * ([ justification / 100 ] of peer)
+          
           
           ;; ******* Jason added, not sure about it **********
           ;; ******* Jason added, not sure about it **********
-          
-          ;; one part of attitude changing, through communication with peers,
+   
+           ;; one part of attitude changing, through communication with peers,
           ;; is update own justifications
           ;set justification justification + [justification / 100] of peer
           
@@ -848,7 +883,7 @@ to talk-to-peers ;; turtle procedure
           ;; ******* Jason added, not sure about it **********
           
           
-          set attitude (attitude + attitudeChange * .1)
+          ;set attitude (attitude + attitudeChange * .1)
           
           ;; should i update after talking to every person??? *******
           ;; its just a function of the otehr values, so dont htink it matters
@@ -920,7 +955,7 @@ to have-sex ;; turtle procedure (only for coupled turtles)
     ;; If neither parter is aware they are infected.... **
     ;;.......
     ifelse ( (not known? and [not known?] of partner) and
-             (random-float 100 > safe-sex-likelihood) or   ;; Optional: change this to AND *****
+             (random-float 100 > safe-sex-likelihood) AND   ;; Optional: change this to or for both people having tow ant to use condom *****
              (random-float 100 > ([safe-sex-likelihood] of partner))
            ) 
     [
@@ -947,6 +982,8 @@ to have-sex ;; turtle procedure (only for coupled turtles)
       ;; This could be modified in extensions to be more realistic and
       ;; account for factors like incorrect/inconsistent condom usage,
       ;; condom failure, or STIs passed through other means.
+      
+      ;; extension - every time have sex with infected increase certainty when dont get infected TODO
     ]
   ]
 end
@@ -1204,9 +1241,28 @@ end
 ;; Infect a random turtle (can do multiple times, if user wishes)
 ;;
 to infect-random
-  if (count turtles > 1)
+  infect-random-female
+  infect-random-male
+  ;if (count turtles > 1)
+  ;[
+  ;  ask n-of 1 turtles with [not infected?]
+  ;  [ become-infected ]
+  ;]
+end
+
+
+to infect-random-female
+  if (count females > 1)
   [
-    ask n-of 1 turtles with [not infected?]
+    ask n-of 1 females with [not infected?]
+    [ become-infected ]
+  ]
+end
+
+to infect-random-male
+  if (count males > 1)
+  [
+    ask n-of 1 males with [not infected?]
     [ become-infected ]
   ]
 end
@@ -1441,11 +1497,11 @@ end
 GRAPHICS-WINDOW
 485
 10
-873
-419
+879
+425
 15
 15
-12.2
+12.4
 1
 10
 1
@@ -1483,10 +1539,10 @@ NIL
 1
 
 MONITOR
-880
-430
-955
-475
+885
+435
+960
+480
 % infected
 %infected
 2
@@ -1494,10 +1550,10 @@ MONITOR
 11
 
 PLOT
-625
-425
-875
-575
+630
+430
+880
+580
 % of Population Infected
 weeks
 percentage
@@ -1514,10 +1570,10 @@ PENS
 "F" 1.0 0 -2064490 true "" "plot %F-infected"
 
 MONITOR
-880
-530
-955
-575
+885
+535
+960
+580
 % F infected
 %F-infected
 2
@@ -1525,10 +1581,10 @@ MONITOR
 11
 
 MONITOR
-880
-480
-955
-525
+885
+485
+960
+530
 % M infected
 %M-infected
 2
@@ -1597,7 +1653,7 @@ CHOOSER
 symptomatic?
 symptomatic?
 "males-symptomatic?" "females-symptomatic?" "both-symptomatic?" "neither-symptomatic?"
-1
+0
 
 SLIDER
 10
@@ -1623,7 +1679,7 @@ avg-num-friends
 avg-num-friends
 2
 clique-size - 1
-5
+7
 1
 1
 NIL
@@ -1638,7 +1694,7 @@ infection-chance
 infection-chance
 0
 100
-26
+45
 1
 1
 NIL
@@ -1653,7 +1709,7 @@ clique-size
 clique-size
 2
 35
-14
+10
 1
 1
 people
@@ -1732,7 +1788,7 @@ avg-mesosystem-condom-encouragement
 avg-mesosystem-condom-encouragement
 0
 100
-30
+90
 1
 1
 NIL
@@ -1759,10 +1815,10 @@ STI characteristics
 1
 
 PLOT
-335
-425
-620
-575
+340
+430
+625
+580
 Average safe sex likelihood
 weeks
 percentages
@@ -1812,9 +1868,9 @@ social-butterflies?
 PLOT
 5
 380
-330
-575
-Components of Safe Sex Behavior
+325
+545
+Safe Sex Likelihood Components
 NIL
 NIL
 0.0
@@ -1825,12 +1881,12 @@ true
 true
 "" ""
 PENS
-"Attitude M" 1.0 0 -14730904 true "" "plot avg-male-attitude"
-"Certainty M" 1.0 0 -13791810 true "" "plot avg-male-certainty"
-"Justification M" 1.0 0 -15040220 true "" "plot avg-male-justification"
-"Attitude F" 1.0 0 -5298144 true "" "plot avg-female-attitude"
-"Certainty F" 1.0 0 -955883 true "" "plot avg-female-certainty"
-"Justification F" 1.0 0 -2064490 true "" "plot avg-female-justification"
+"M Attitude" 1.0 0 -13791810 true "" "plot avg-male-attitude"
+"M Certainty" 1.0 0 -13345367 true "" "plot avg-male-certainty"
+"M Justification" 1.0 0 -11221820 true "" "plot avg-male-justification"
+"F Attitude" 1.0 0 -5825686 true "" "plot avg-female-attitude"
+"F Certainty" 1.0 0 -2674135 true "" "plot avg-female-certainty"
+"F Justification" 1.0 0 -2064490 true "" "plot avg-female-justification"
 
 SLIDER
 10
@@ -1841,7 +1897,7 @@ SLIDER
 %-receive-condom-sex-ed
 0
 100
-42
+82
 1
 1
 NIL
@@ -1873,7 +1929,7 @@ PLOT
 265
 1085
 415
-Average opinion change
+Average likelihood change
 NIL
 NIL
 0.0
@@ -1881,12 +1937,12 @@ NIL
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -10899396 true "" "plot avg-likelihood-change"
-"pen-1" 1.0 0 -13345367 true "" "plot avg-male-likelihood-change"
-"pen-2" 1.0 0 -5825686 true "" "plot avg-female-likelihood-change"
+"Total" 1.0 0 -10899396 true "" "plot avg-likelihood-change"
+"M" 1.0 0 -13345367 true "" "plot avg-male-likelihood-change"
+"F" 1.0 0 -5825686 true "" "plot avg-female-likelihood-change"
 
 TEXTBOX
 165
@@ -1927,13 +1983,13 @@ PLOT
 160
 Safe Sex Likelihood Histogram
 likelihood
-NIL
+# agents
 0.0
 100.0
 0.0
 25.0
 true
-false
+true
 "set-plot-y-range 0 (count turtles / 2.5)" ""
 PENS
 "M" 10.0 1 -13345367 true "" "histogram [safe-sex-likelihood] of males"
@@ -2504,6 +2560,141 @@ NetLogo 5.0.4
     <enumeratedValueSet variable="show-labels?">
       <value value="false"/>
     </enumeratedValueSet>
+  </experiment>
+  <experiment name="some clique sizing and gonnoreahi cant spell" repetitions="5" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="1000"/>
+    <metric>avg-safe-sex-likelihood</metric>
+    <metric>avg-male-safe-sex-likelihood</metric>
+    <metric>avg-female-safe-sex-likelihood</metric>
+    <metric>%infected</metric>
+    <metric>%M-infected</metric>
+    <metric>%F-infected</metric>
+    <metric>avg-likelihood-change</metric>
+    <metric>avg-male-likelihood-change</metric>
+    <metric>avg-female-likelihood-change</metric>
+    <metric>avg-male-attitude</metric>
+    <metric>avg-male-certainty</metric>
+    <metric>avg-male-justification</metric>
+    <metric>avg-female-attitude</metric>
+    <metric>avg-female-certainty</metric>
+    <metric>avg-female-justification</metric>
+    <enumeratedValueSet variable="symptomatic?">
+      <value value="&quot;males-symptomatic?&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="infection-chance">
+      <value value="45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="social-butterflies?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-male-condom-intention">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-female-condom-intention">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-cliques">
+      <value value="4"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-num-friends">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="clique-size">
+      <value value="8"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-labels?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="0" step="10" last="90"/>
+    <steppedValueSet variable="%-receive-condom-sex-ed" first="12" step="10" last="82"/>
+  </experiment>
+  <experiment name="some clique sizing and gonnoreahi cant spell" repetitions="5" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="1000"/>
+    <metric>avg-safe-sex-likelihood</metric>
+    <metric>avg-male-safe-sex-likelihood</metric>
+    <metric>avg-female-safe-sex-likelihood</metric>
+    <metric>%infected</metric>
+    <metric>%M-infected</metric>
+    <metric>%F-infected</metric>
+    <metric>avg-male-attitude</metric>
+    <metric>avg-female-attitude</metric>
+    <enumeratedValueSet variable="symptomatic?">
+      <value value="&quot;males-symptomatic?&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="infection-chance">
+      <value value="45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="social-butterflies?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-male-condom-intention">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-female-condom-intention">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-cliques">
+      <value value="4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-num-friends">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="clique-size">
+      <value value="8"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-labels?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="0" step="10" last="90"/>
+    <steppedValueSet variable="%-receive-condom-sex-ed" first="12" step="10" last="82"/>
+  </experiment>
+  <experiment name="6c-of-10-7-friends" repetitions="5" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <final>ask turtles [show safe-sex-likelihood]</final>
+    <timeLimit steps="1000"/>
+    <metric>avg-safe-sex-likelihood</metric>
+    <metric>avg-male-safe-sex-likelihood</metric>
+    <metric>avg-female-safe-sex-likelihood</metric>
+    <metric>%infected</metric>
+    <metric>%M-infected</metric>
+    <metric>%F-infected</metric>
+    <metric>avg-male-attitude</metric>
+    <metric>avg-female-attitude</metric>
+    <enumeratedValueSet variable="symptomatic?">
+      <value value="&quot;males-symptomatic?&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="infection-chance">
+      <value value="45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="social-butterflies?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-male-condom-intention">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-female-condom-intention">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-cliques">
+      <value value="6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="clique-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="avg-num-friends">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-labels?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="avg-mesosystem-condom-encouragement" first="10" step="10" last="90"/>
+    <steppedValueSet variable="%-receive-condom-sex-ed" first="12" step="10" last="82"/>
   </experiment>
 </experiments>
 @#$#@#$#@
