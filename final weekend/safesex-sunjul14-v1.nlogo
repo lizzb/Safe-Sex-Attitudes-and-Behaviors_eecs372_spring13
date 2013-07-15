@@ -1757,7 +1757,61 @@ This model aims to simulate the spread and development of safe sex attitudes and
 
 ## HOW IT WORKS
 
-blaj;lksadfj
+The NetLogo model is organized as a social network of agents arranged as mostly discrete social circles, with some (optional) central agents (“social butterflies”) that have links to central members of other social groups in addition to links to all members in their clique. Agents start with a certain number of friendship links (limited to between others in their clique), and no sexual partner links. Friend links are gender independent, but sexual partners are not – they require a coupling of one male and one female agent. Individual agent variables are assigned randomly following a normal distribution based on slider or global values.
+
+The model initiates by having one male and one female agent contract a sexually transmitted infection (an STI). The model continues to run until a stop condition is met. Agents are characterized by three variables, Attitude, Certainty and Justification. Likelihood of practicing safe sex is a function of Attitude and Justification. Attitude is in turn a function of Certainty and Justification.
+
+
+On each tick:
+
+-- **Agents interact with their peers about Attitudes towards safe sex.**
+
+  * Agents talk to their friends and sexual partner, and update their Attitude about practicing safe sex
+  * The number of friends the agents talk to is based on their Certainty at a given tick
+  * Agents compare their own Attitude and their friend’s Attitude, which will influence the magnitude and sign of the change of Attitude at each tick
+  * Agents check their Certainty and their friend’s Justification, which will also influence the magnitude and sign of the change of Attitude at each tick
+  * The change in Attitude is used to update each agent’s Attitude to its new state
+  * Certainty and Justification are updated 
+
+
+-- **Agents look for a sexual partner (male-female coupling).**
+
+  * If an agent is NOT coupled, s/he might try to find another single agent of the opposite gender to form a sexual partnership with. Any agent can initiate coupling if they are not coupled and random chance permits (based on their personal/individual coupling tendency). 
+  * A hierarchy of coupling preference exists:  The probability of successfully coupling decreases for each of these types of potential partners:
+    * First agents look at existing friends of the opposite sex;
+    * If they have none, then they choose a person of the opposite sex within their friend group;
+    * If there isn’t one, then they resort to choosing the closest non-linked opposite sex agent.
+    * If both partners are willing to become a couple, they form a sexual‑partner link (if the two agents were previously friends, this destroys their friendship link).
+  * If they are already coupled with a sexual partner, the two agents just increase length of their relationship (agents are monogamous in this simulation).
+
+
+-- **Agents make friends. **
+
+  * Any agent can initiate “friending” with any other agent (independent of gender) if they (and the potential friend) have not reached their maximum limit of friends and random chance permits (based on their personal/individual friendship tendency).
+  * A hierarchy of friending is assumed. The probability of successfully becoming friends decreases for each of these types of potential friends:
+    * First agents look at agents within their friend group that they are not currently friends with;
+    * If there isn’t one, then they resort to choosing the closest non-linked agent.
+    * If both partners are willing to become friends, they form a [blue] friendship link.
+
+
+-- **Agents that (currently) have a sexual partner can potentially uncouple. Agents will uncouple if the length of the relationship reaches the commitment threshold for one of the partners.**
+
+  * The order in which these functions are called on each tick (uncouple after making friends and couple) helps restrict who can couple after uncoupling, simulating that exes would not be immediately friending each other again; this model does not (intend to) simulate instant rebounds.
+
+
+-- **If agents are coupled (have a sexual partner), they have sex.**
+
+  * The likelihood that the couple will engage in safe sex (choose to use a condom) depends on a function of the likelihood of both participants.
+  * If one of the partners is infected and the couple has unprotected sex, there is a chance that they will spread the disease to them/the other partner will become infected (based on the infectiousness/infectivity of the disease). An infected agent is distinguished by a dot on their shape. 
+
+
+-- **Agents check if they are infected. Only agents of genders that are symptomatic will know they are infected.**
+
+  * If an agent knows s/he is infected, s/he will always want to practice safe sex for the rest of the simulation. 
+  * If an agent has unsafe sex and does not notice any consequences (either is not infected, or is not symptomatic, regardless of infection status), that agent’s likelihood of practicing/inclination to practice safe sex will decrease. 
+
+
+Agents do not move (i.e., network is fixed) to allow the viewer to observe the spread of disease easier (a concession to unrealism to improve program clarity). 
 
 
 ## HOW TO USE IT
@@ -1772,10 +1826,6 @@ The SETUP button generates this network and assigns unique values to each indivi
 SETUP will infect one male and one female in the population by default. If the user wants to infect another agent, they can do so through pressing the SELECT button and clicking on an agent, or pressing INFECT-RANDOM. This can also be done while the model is running.
 
 An infected person is denoted with the addition of a dot on their body, and they will have a INFECTION-CHANCE chance of infecting a partner during unprotected sex. If they are of a gender that is symptomatic of the STI (set by the SYMPTOMATIC? chooser), they are aware of their infected status, the dot will be white, and the agent will adjust their attitude and safe sex likelihood to automatically practice safe sex to protect his or her partners. However, if the agent is not a gender that is symptomatic, the dot will appear black, they will be oblivious to their infected state, and continue their normal likelihood of practicing safe sex.
-
-
-As the model runs... mention something about looking at people and their colors and stuff....??? *****
-
 
 The model stops when the entire population is infected, if all agents reach 100% certainty in their attitude, or if all agents have reached a single, unchanging safe-sex-attitude of either 0 or 100.
 
@@ -1794,8 +1844,6 @@ Although some members of the cliques have or develop links to agents in other gr
 Set one of the genders to not be symptomatic. What happens to their justification, in comparison to the other gender? What trends happen to their attitude and safe sex likelihood overall?
 
 Occasionally, there will be an agent that forms a very different likelihood for safe sex than that that of his or her clique, and seemingly refuses to change his or her mind.  (This becomes obvious, since color is used to indicate an individual's safe sex likelihood.) Why does this happen? What circumstances or agent characteristics seem to make this event more likely to happen?
-
-TODO mention attitudes spreading through a clique first....!!! ****
 
 
 ## THINGS TO TRY
@@ -1826,14 +1874,31 @@ n-of is used to split the agent population into two genders evenly.
 
 The random-near function generates many small random numbers and adds them together to determine individual tendencies. This produces an approximately normal distribution of values across the population.
 
+Since NetLogo does not have an equivalent of a switch statement currently, an extremely long list of if statements in the assign-turtle-color function was used.
 
-## RELATED MODELS, CREDITS AND REFERENCES
+
+## RELATED MODELS
 Virus
 AIDS
 Disease Solo
 Virus on a Network
+
+
+## CREDITS AND REFERENCES
+
+NetLogo Models not from the Models Library:
 STI model (Lizz Bartos & Landon Basham for LS 426, Winter 2013)
 [Sophia Sullivan Final Project for EECS372 Spring 11] (http://modelingcommons.org/browse/one_model/3023)
+
+
+
+TODO....
+
+For non-Netlogo models that are related, put links or citations in the CREDITS AND REFERENCES section.
+
+
+CREDITS AND REFERENCES
+If the model is based on published sources (or web sites), it's good to include the reference (or URL) information here.
 @#$#@#$#@
 default
 true
